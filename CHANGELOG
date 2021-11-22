@@ -1,0 +1,21 @@
+# One-Time Secret GLPI Plugin CHANGELOG
+## 0.2.0
+### Bugfixes
+
+ - Lifetime password field moved from Optional Parameters to Password
+ - Optional Parameters string changed to Optional Parameter
+ - FollowUp language changed according to Requester language
+
+## 0.1.1
+### Bugfixes
+
+- Fixed Config API Key encrypted
+
+## 0.1.0
+### Features
+
+- First release
+- Server selection (Default to official)
+- One-Time Secret API setup
+- Default expiration time
+- Multilanguage message
