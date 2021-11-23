@@ -7,7 +7,7 @@ One-Time Secret repository can be found here: https://github.com/onetimesecret/o
 **Please write only in english!**
 
 ## Bugs
-Note that issues are handled on a best-effort basis. If you need a quick fix or any guarantee, please contact TICgal https://tic.gal
+Note that issues are handled on a best-effort basis. If you need a quick fix or any guarantee, please contact TICgal https://tic.gal.
 
 If you found a bug, the first steps to do are:
 
@@ -24,7 +24,7 @@ If you want to work on a new feature, open a ticket.
 If you're just asking for something to be added without doing it yourself, please contact TICgal for a quotation: https://tic.gal.
 
 ## Support request
-Support request are also handled on a best-effort basis.
+Support request are also handled on a best-effort basis. If you need professional support, please contact TICgal https://tic.gal.
 
 ## Translations
 We are using Localazy as translation platform. It is very easy to use. Add your language and start translating: https://localazy.com/p/one-time-secret-glpi 
