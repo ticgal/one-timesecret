@@ -1,5 +1,7 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 ## 1.0.1
+### Feaures
+- Open link in new window or tab
 ### Bugfixes
 - Tweak Localazy integration to drop deprecated translations
 - Update icon
