@@ -153,7 +153,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 				$content = __('Hi,','onetimesecret')."<br><br>".__('As mentioned in our previous conversation, this message is meant to share sensitive information with you.','onetimesecret')."<br><br>";
 				$content .= __('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.','onetimesecret')."<br><br><br><br>";
 				$content .= __('Here you have','onetimesecret')." ";
-				$content .= "<a href='".$text."'>".__('your secret link','onetimesecret')."</a>."."<br><br><br><br>";
+				$content .= "<a href='".$text."' target='_blank'>".__('your secret link','onetimesecret')."</a>."."<br><br><br><br>";
 
 				if($params["passphrase"]!=""){
 					$content .= __('I will send you the required passphrase to open it using an alternative method for security reasons.','onetimesecret')."<br><br>";
