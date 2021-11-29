@@ -1,4 +1,10 @@
 # One-Time Secret GLPI Plugin CHANGELOG
+## 1.0.1
+### Bugfixes
+- Tweak Localazy integration to drop deprecated translations
+- Update icon
+- Fix plugins.glpi-project.org XML screenshots
+- PR to Master
 ## 1.0.0
 ### Features
 - First public release
