@@ -1,10 +1,14 @@
 # One-Time Secret 
-! [One-Time Secret Logo](misc/logoonetimesecret.png)
 A GLPI One-Time Secret integration
-[![License](https://img.shields.io/badge/License-GNU%20AGPLv3-blue.svg?style=flat-square)](https://github.com/ticgal/taskdrop/blob/master/LICENSE)
-[![Twitter](https://img.shields.io/badge/Twitter-TICgal-blue.svg?style=flat-square)](https://twitter.com/ticgalcom)
-[![Web](https://img.shields.io/badge/Web-TICgal-blue.svg?style=flat-square)](https://tic.gal/)
 
+<img src="https://raw.githubusercontent.com/ticgal/one-timesecret/multimedia/onetimesecret-logo-trans-300.png" alt="One-Time Secret for GLPI Logo" height="250px" width="250px" class="js-lazy-loaded">
+
+[![License](https://img.shields.io/badge/License-GNU%20AGPLv3-blue.svg)](https://github.com/ticgal/taskdrop/blob/master/LICENSE)
+[![Twitter](https://img.shields.io/badge/Twitter-TICgal-blue.svg)](https://twitter.com/ticgalcom)
+[![TICgal](https://img.shields.io/badge/Web-TICgal-blue.svg)](https://tic.gal/)
+[![One-Time Secret for GLPI](https://img.shields.io/badge/Web-OneTimeSecret4GLPI-blue.svg)](https://tic.gal/en/project/onetimesecret/)
+[![One-Time Secret](https://img.shields.io/badge/Service-One--Time%20Secret-red)](https://onetimesecret.com)
+[![Localazy](https://img.shields.io/badge/Translate-Localazy-cyan)](https://localazy.com/p/one-time-secret-glpi#translations)
 ## The problem
 
 How are you sending your passwords or secrets? Currently, there's no easy and secure way.
@@ -37,11 +41,6 @@ Read about the project here: https://onetimesecret.com/about
     2. Enable or disable profile-based as you like 
 
 ## How to use it
+You will have a new button on your processing view.
 
-You will have a new button on your processing view
-
-More info: https://tic.gal/project/one-time-secret
-
-# Showcase
-![DocuWare setup](misc/screenshots/onetimesecret-setup-1.png)
--->
+More info: https://tic.gal/project/onetimesecret

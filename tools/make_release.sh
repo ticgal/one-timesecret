@@ -74,7 +74,7 @@ rm -rf PULL_REQUEST_TEMPLATE.md
 rm -rf .tx
 rm -rf $PLUGINNAME.xml
 rm -rf screenshots
-rm -rf localazy.json
+rm -rf locales/localazy*
 
 echo "Creating tarball"
 cd ..

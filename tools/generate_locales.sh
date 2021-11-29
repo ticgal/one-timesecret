@@ -12,6 +12,9 @@ sed -i "s/SOME DESCRIPTIVE TITLE/ONETIMESECRET Glpi Plugin/" onetimesecret.pot
 sed -i "s/FIRST AUTHOR <EMAIL@ADDRESS>, YEAR./TICgal, $(date +%Y)/" onetimesecret.pot
 sed -i "s/YEAR/$(date +%Y)/" onetimesecret.pot
 
+localazy upload
+localazy download
+
 for a in $(ls *.po); do
 	msgmerge -U $a onetimesecret.pot
 	msgfmt $a -o "${a%.*}.mo"
