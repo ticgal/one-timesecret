@@ -1,0 +1,12 @@
+{
+ 
+  "upload": {
+    "type": "pot",
+    "deprecate": "project",
+    "files": "onetimesecret.pot"
+  },
+ 
+  "download": {
+    "files": "${languageCode}_${regionCode}.po"
+  }
+}
