@@ -40,7 +40,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		$config->getFromDB(1);
 		
 		$curl = curl_init();
-		$server = "https://".$config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"])."onetimesecret.com/api";
+		$server = "https://".$config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"]).$config->fields["server"]."/api";
 
 		curl_setopt($curl, CURLOPT_URL, $server);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -77,7 +77,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		}
 
 		curl_setopt_array($curl, array(
-			CURLOPT_URL => 'https://onetimesecret.com/api/v1/share',
+			CURLOPT_URL => 'https://'.$config->fields['server'].'/api/v1/share',
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_ENCODING => '',
 			CURLOPT_MAXREDIRS => 10,
@@ -103,7 +103,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 
 		$data = json_decode($response,true);
 
-		return "https://onetimesecret.com/secret/".$data["secret_key"];
+		return "https://".$config->fields["server"]."/secret/".$data["secret_key"];
 	}
 
 	static function hoursToSeconds($hours){
