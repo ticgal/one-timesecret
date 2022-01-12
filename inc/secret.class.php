@@ -71,9 +71,10 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 
 		$curl = curl_init();
 
-		$post_fields = 'secret='.$params["password"].'&ttl='.self::hoursToSeconds($params["lifetime"]);
+		$post_fields = ['secret'=>$params["password"],
+		'ttl'=>self::hoursToSeconds($params["lifetime"])];
 		if($params["passphrase"]!=""){
-			$post_fields .= '&passphrase='.$params["passphrase"];
+			$post_fields ["passphrase"]= $params["passphrase"];
 		}
 
 		curl_setopt_array($curl, array(
@@ -90,8 +91,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		  
 		  
 			CURLOPT_HTTPHEADER => array(
-				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"])),
-			'Content-Type: application/x-www-form-urlencoded'
+				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"]))
 			),
 		));
 
@@ -99,7 +99,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 
 		curl_close($curl);
 
-		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
+		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 		$data = json_decode($response,true);
 
