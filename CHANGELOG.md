@@ -6,7 +6,7 @@
 - Fixed errors at secrets with special characters
 
 ## 1.0.1
-### Feaures
+### Features
 - Open link in new window or tab
 ### Bugfixes
 - Tweak Localazy integration to drop deprecated translations
