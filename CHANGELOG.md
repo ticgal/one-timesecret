@@ -1,7 +1,7 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 ## 1.1.0
 ### Features
-
+- Added French and Arabic translations
 ### Bugfixes
 - Fixed errors at secrets with special characters
 
