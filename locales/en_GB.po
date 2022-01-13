@@ -2,19 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-12 17:21+0100\n"
-"Language: ar\n"
+"POT-Creation-Date: 2022-01-13 09:41+0100\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
-"Plural-Forms: nplurals=6; plural=(n==0) ? 0 : (n==1) ? 1 : (n==2) ? 2 : (n"
-"%100>=3 && n%100<=10) ? 3 : (n%100>=11 && n%100<=99) ? 4 : 5;\n"
+"Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
 #: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
 #: inc/link.class.php:39
 msgid "One-Time Secret"
-msgstr "سر لمرة واحدة"
+msgstr "One-Time Secret"
 
 #: inc/config.class.php:92
 msgid "Configuration"
@@ -22,49 +21,51 @@ msgstr "Configuration"
 
 #: inc/config.class.php:105
 msgid "API key"
-msgstr "مفتاح API"
+msgstr "API key"
 
 #: inc/config.class.php:109
 msgid "Lifetime"
-msgstr "أوقات الحياة"
+msgstr "Lifetime"
 
 #: inc/config.class.php:110 inc/link.class.php:91
 msgid "Password lifetime (hours)"
-msgstr "كلمة المرور(ساعات)"
+msgstr "Password lifetime (hours)"
 
 #: inc/link.class.php:75
 msgid "Create a password"
-msgstr "قم بإنشاء كلمة مرور"
+msgstr "Create a password"
 
 #: inc/link.class.php:98
 msgid "Optional parameter"
-msgstr "معلمة اختيارية"
+msgstr "Optional parameter"
 
 #: inc/link.class.php:101
 msgid "Passphrase"
-msgstr "عبارة المرور"
+msgstr "Passphrase"
 
 #: inc/profile.class.php:94
 msgid "Display OneTimeSecret button"
-msgstr "عرض زر سر مرة واحدة"
+msgstr "Display OneTimeSecret button"
 
 #: inc/secret.class.php:153
 msgid "Hi,"
-msgstr "مرحبًا!"
+msgstr "Hi,"
 
 #: inc/secret.class.php:153
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
-msgstr "كما ذكرنا في محدثنا السابقة هده الرسالة ستنشر معك معلومة حساسة"
+msgstr ""
+"As mentioned in our previous conversation, this message is meant to share "
+"sensitive information with you."
 
 #: inc/secret.class.php:154
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
 msgstr ""
-"الرابط السري <b> يعمل مرة واحدة فقط </ b> ثم <b> يختفي إلى الأبد </ b>. لا "
-"تفتحه إذا لم تكن أنت المقصود متلقي"
+"A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
+"not open it if you are not the intended recipient."
 
 #: inc/secret.class.php:155
 msgid "Here you have"
@@ -72,29 +73,29 @@ msgstr "Here you have"
 
 #: inc/secret.class.php:156
 msgid "your secret link"
-msgstr "رابطك السري"
+msgstr "your secret link"
 
 #: inc/secret.class.php:159
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
 msgstr ""
-"ترجمة المصدر سأرسل لك عبارة المرور المطلوبة لفتحها باستخدام طريقة بديلة "
-"لأسباب أمنية."
+"I will send you the required passphrase to open it using an alternative "
+"method for security reasons."
 
 #: inc/secret.class.php:161
 msgid "Bear in mind:"
-msgstr "يأخذ بنظر الأعتبار:"
+msgstr "Bear in mind:"
 
 #: inc/secret.class.php:161
 msgid "A secret link can only be opened once and will expire afterwards."
-msgstr "لا يمكن فتح الرابط السري إلا مرة واحدة وستنتهي صلاحيته بعد ذلك"
+msgstr "A secret link can only be opened once and will expire afterwards."
 
 #: inc/secret.class.php:162
-#, fuzzy, php-format
+#, php-format
 msgid "This secret link will expire %1$s hours after its generation."
-msgstr "ستنتهي صلاحية هذا الارتباط السري بعد٪ 1 $ s ساعة من إنشائه"
+msgstr "This secret link will expire %1$s hours after its generation."
 
 #: inc/secret.class.php:163
 msgid "Regards,"
-msgstr "يعتبر"
+msgstr "Regards,"
