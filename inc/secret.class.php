@@ -115,29 +115,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 	static function addFollowup($params,$text='') {
 		global $DB, $CFG_GLPI;
 
-		//Switch to the desired language
-		$bak_language = $_SESSION["glpilanguage"];$bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
-
-		$query = [
-			'FROM'=>Ticket_User::getTable(),
-			'WHERE'=> [
-				'tickets_id' => $params["tickets_id"],
-				'type' => 1
-			]
-		];
-
-		foreach ($DB->request($query) as $ticket_user) {
-			$user = new User();
-			$user->getFromDB($ticket_user["users_id"]);
-			$lang = $user->fields["language"];
-			if($lang==null){
-				$lang=$CFG_GLPI["language"];
-			}
-		}
 		
-		$_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
-		Session::loadLanguage($lang);
-		$_SESSION["glpilanguage"] = $lang;
 
 		$query = [
 			'FROM'=>Ticket::getTable(),
@@ -162,13 +140,47 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 				$content .= "<li>".sprintf(__('This secret link will expire %1$s hours after its generation.','onetimesecret'),$params["lifetime"])."</li></ul>";
 				$content .= "<br>". __("Regards,",'onetimesecret');
 				
+				//Switch to the desired language
+				$bak_language = $_SESSION["glpilanguage"];$bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
 
-				$input = [
-					'items_id'=>$params["tickets_id"],
-					'itemtype'=>Ticket::getType(),
-					'content'=>$content,
-					'users_id'=> Session::getLoginUserID()
+				$query = [
+					'FROM'=>Ticket_User::getTable(),
+					'WHERE'=> [
+						'tickets_id' => $params["tickets_id"],
+						'type' => 1
+					]
 				];
+				$input=[];
+				foreach ($DB->request($query) as $ticket_user) {
+					$user = new User();
+					$user->getFromDB($ticket_user["users_id"]);
+					$lang = $user->fields["language"];
+					if($lang==null){
+						$lang=$CFG_GLPI["language"];
+					}
+
+					if(Session::getLoginUserID()==$ticket_user["users_id"]){
+						$input = [
+							'items_id'=>$params["tickets_id"],
+							'itemtype'=>Ticket::getType(),
+							'content'=>$content,
+							'_status'=>Ticket::ASSIGNED,
+							'users_id'=> Session::getLoginUserID()
+						];
+					}else{
+						$input = [
+							'items_id'=>$params["tickets_id"],
+							'itemtype'=>Ticket::getType(),
+							'content'=>$content,
+							'users_id'=> Session::getLoginUserID()
+						];
+					}
+				}
+		
+				$_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
+				Session::loadLanguage($lang);
+				$_SESSION["glpilanguage"] = $lang;
+
 				$input=Toolbox::sanitize($input);
 				$fup->add($input);
 
