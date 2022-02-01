@@ -5,62 +5,62 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
 "Project-Id-Version: One-Time Secret-GLPI\n"
-"Language: gl_ES\n"
+"Language: en_GB\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
 msgid "API key"
-msgstr "API key"
+msgstr "API Key"
 
 msgid "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient."
-msgstr "Unha ligazón secreta <strong>só funciona unha vez</strong> e <strong>despois desaparece para sempre.</strong>. Por favor, non a abras se non és o destinatario."
+msgstr "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient."
 
 msgid "A secret link can only be opened once and will expire afterwards."
-msgstr "Unha ligazón secreta só se pode abrir unha vez e caducará despois."
+msgstr "A secret link can only be opened once and will expire afterwards."
 
 msgid "As mentioned in our previous conversation, this message is meant to share sensitive information with you."
-msgstr "Como mencionamos na nosa conversa anterior, esta mensaxe está destinada a compartir información confidencial contigo."
+msgstr "As mentioned in our previous conversation, this message is meant to share sensitive information with you."
 
 msgid "Bear in mind:"
-msgstr "Ten en conta:"
+msgstr "Bear in mind:"
 
 msgid "Configuration"
-msgstr "Configuración"
+msgstr "Configuration"
 
 msgid "Create a password"
-msgstr "Crear un contrasinal"
+msgstr "Create a password"
 
 msgid "Display OneTimeSecret button"
-msgstr "Mostra o botón One-Time Secret"
+msgstr "Display OneTimeSecret button"
 
 msgid "Here you have"
-msgstr "Aquí tes"
+msgstr "Here you have "
 
 msgid "Hi,"
-msgstr "Ola!"
+msgstr "Hi,"
 
 msgid "I will send you the required passphrase to open it using an alternative method for security reasons."
-msgstr "Enviareiche a frase de acceso necesaria para abrila mediante un método alternativo por motivos de seguridade."
+msgstr "I will send you the required passphrase to open it using an alternative method for security reasons."
 
 msgid "Lifetime"
-msgstr "Vida útil"
+msgstr "Lifetime"
 
 msgid "One-Time Secret"
 msgstr "One-Time Secret"
 
 msgid "Optional parameter"
-msgstr "Parámetro opcional"
+msgstr "Optional parameter"
 
 msgid "Passphrase"
-msgstr "Frase de contrasinal"
+msgstr "Passphrase"
 
 msgid "Password lifetime (hours)"
-msgstr "Validez do contrasinal (horas)"
+msgstr "Password lifetime (hours)"
 
 msgid "Regards,"
-msgstr "Saúdos,"
+msgstr "Regards,"
 
 msgid "This secret link will expire %1$s hours after its generation."
-msgstr "Esta ligazón secreta caducará %1$s horas despois da súa xeración."
+msgstr "This secret link will expire %1$s hours after its generation."
 
 msgid "your secret link"
-msgstr "a túa ligazón segreda"
+msgstr "your secret link"

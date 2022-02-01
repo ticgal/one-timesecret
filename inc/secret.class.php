@@ -2,7 +2,7 @@
 /*
  -------------------------------------------------------------------------
  OneTimeSecret plugin for GLPI
- Copyright (C) 2021 by the TICgal Team.
+ Copyright (C) 2021-2022 by the TICgal Team.
  https://www.tic.gal
  -------------------------------------------------------------------------
  LICENSE
@@ -20,11 +20,11 @@
  --------------------------------------------------------------------------
  @package   OneTimeSecret
  @author    the TICgal team
- @copyright Copyright (c) 2021 TICgal team
+ @copyright Copyright (c) 2021-2022 TICgal team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://www.tic.gal
- @since     2021
+ @since     2021-2022
  ----------------------------------------------------------------------
 */
 
@@ -40,7 +40,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		$config->getFromDB(1);
 		
 		$curl = curl_init();
-		$server = "https://".$config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"])."onetimesecret.com/api";
+		$server = "https://".$config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"]).$config->fields["server"]."/api";
 
 		curl_setopt($curl, CURLOPT_URL, $server);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -71,13 +71,14 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 
 		$curl = curl_init();
 
-		$post_fields = 'secret='.$params["password"].'&ttl='.self::hoursToSeconds($params["lifetime"]);
+		$post_fields = ['secret'=>$params["password"],
+		'ttl'=>self::hoursToSeconds($params["lifetime"])];
 		if($params["passphrase"]!=""){
-			$post_fields .= '&passphrase='.$params["passphrase"];
+			$post_fields ["passphrase"]= $params["passphrase"];
 		}
 
 		curl_setopt_array($curl, array(
-			CURLOPT_URL => 'https://onetimesecret.com/api/v1/share',
+			CURLOPT_URL => 'https://'.$config->fields['server'].'/api/v1/share',
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_ENCODING => '',
 			CURLOPT_MAXREDIRS => 10,
@@ -90,8 +91,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		  
 		  
 			CURLOPT_HTTPHEADER => array(
-				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"])),
-			'Content-Type: application/x-www-form-urlencoded'
+				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"]))
 			),
 		));
 
@@ -99,11 +99,11 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 
 		curl_close($curl);
 
-		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
+		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 		$data = json_decode($response,true);
 
-		return "https://onetimesecret.com/secret/".$data["secret_key"];
+		return "https://".$config->fields["server"]."/secret/".$data["secret_key"];
 	}
 
 	static function hoursToSeconds($hours){
@@ -115,29 +115,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 	static function addFollowup($params,$text='') {
 		global $DB, $CFG_GLPI;
 
-		//Switch to the desired language
-		$bak_language = $_SESSION["glpilanguage"];$bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
-
-		$query = [
-			'FROM'=>Ticket_User::getTable(),
-			'WHERE'=> [
-				'tickets_id' => $params["tickets_id"],
-				'type' => 1
-			]
-		];
-
-		foreach ($DB->request($query) as $ticket_user) {
-			$user = new User();
-			$user->getFromDB($ticket_user["users_id"]);
-			$lang = $user->fields["language"];
-			if($lang==null){
-				$lang=$CFG_GLPI["language"];
-			}
-		}
 		
-		$_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
-		Session::loadLanguage($lang);
-		$_SESSION["glpilanguage"] = $lang;
 
 		$query = [
 			'FROM'=>Ticket::getTable(),
@@ -162,13 +140,47 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 				$content .= "<li>".sprintf(__('This secret link will expire %1$s hours after its generation.','onetimesecret'),$params["lifetime"])."</li></ul>";
 				$content .= "<br>". __("Regards,",'onetimesecret');
 				
+				//Switch to the desired language
+				$bak_language = $_SESSION["glpilanguage"];$bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
 
-				$input = [
-					'items_id'=>$params["tickets_id"],
-					'itemtype'=>Ticket::getType(),
-					'content'=>$content,
-					'users_id'=> Session::getLoginUserID()
+				$query = [
+					'FROM'=>Ticket_User::getTable(),
+					'WHERE'=> [
+						'tickets_id' => $params["tickets_id"],
+						'type' => 1
+					]
 				];
+				$input=[];
+				foreach ($DB->request($query) as $ticket_user) {
+					$user = new User();
+					$user->getFromDB($ticket_user["users_id"]);
+					$lang = $user->fields["language"];
+					if($lang==null){
+						$lang=$CFG_GLPI["language"];
+					}
+
+					if(Session::getLoginUserID()==$ticket_user["users_id"]){
+						$input = [
+							'items_id'=>$params["tickets_id"],
+							'itemtype'=>Ticket::getType(),
+							'content'=>$content,
+							'_status'=>Ticket::ASSIGNED,
+							'users_id'=> Session::getLoginUserID()
+						];
+					}else{
+						$input = [
+							'items_id'=>$params["tickets_id"],
+							'itemtype'=>Ticket::getType(),
+							'content'=>$content,
+							'users_id'=> Session::getLoginUserID()
+						];
+					}
+				}
+		
+				$_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
+				Session::loadLanguage($lang);
+				$_SESSION["glpilanguage"] = $lang;
+
 				$input=Toolbox::sanitize($input);
 				$fup->add($input);
 

@@ -1,102 +1,103 @@
-# ONETIMESECRET Glpi Plugin.
-# Copyright (C) 2021-2022 TICgal
-# This file is distributed under the same license as the PACKAGE package.
-# TICgal, 2021-2022
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-13 10:09+0100\n"
-"PO-Revision-Date: 2022-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2022-01-13 10:04+0100\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+"Plural-Forms: nplurals=6; plural=(n==0) ? 0 : (n==1) ? 1 : (n==2) ? 2 : (n"
+"%100>=3 && n%100<=10) ? 3 : (n%100>=11 && n%100<=99) ? 4 : 5;\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
 
 #: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
 #: inc/link.class.php:39
 msgid "One-Time Secret"
-msgstr ""
+msgstr "سر لمرة واحدة"
 
 #: inc/config.class.php:92
 msgid "Configuration"
-msgstr ""
+msgstr "التكوين"
 
 #: inc/config.class.php:105
 msgid "API key"
-msgstr ""
+msgstr "مفتاح API"
 
 #: inc/config.class.php:109
 msgid "Lifetime"
-msgstr ""
+msgstr "أوقات الحياة"
 
 #: inc/config.class.php:110 inc/link.class.php:91
 msgid "Password lifetime (hours)"
-msgstr ""
+msgstr "كلمة المرور(ساعات)"
 
 #: inc/link.class.php:75
 msgid "Create a password"
-msgstr ""
+msgstr "قم بإنشاء كلمة مرور"
 
 #: inc/link.class.php:98
 msgid "Optional parameter"
-msgstr ""
+msgstr "معلمة اختيارية"
 
 #: inc/link.class.php:101
 msgid "Passphrase"
-msgstr ""
+msgstr "عبارة المرور"
 
 #: inc/profile.class.php:94
 msgid "Display OneTimeSecret button"
-msgstr ""
+msgstr "عرض زر سر مرة واحدة"
 
 #: inc/secret.class.php:153
 msgid "Hi,"
-msgstr ""
+msgstr "مرحبًا!"
 
 #: inc/secret.class.php:153
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
-msgstr ""
+msgstr "كما ذكرنا في محدثنا السابقة هده الرسالة ستنشر معك معلومة حساسة"
 
 #: inc/secret.class.php:154
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
 msgstr ""
+"الرابط السري <b> يعمل مرة واحدة فقط </b> ثم <b> يختفي إلى الأبد </b>. لا "
+"تفتحه إذا لم تكن أنت المقصود متلقي"
 
 #: inc/secret.class.php:155
 msgid "Here you have"
-msgstr ""
+msgstr "هنا لديك"
 
 #: inc/secret.class.php:156
 msgid "your secret link"
-msgstr ""
+msgstr "رابطك السري"
 
 #: inc/secret.class.php:159
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
 msgstr ""
+"ترجمة المصدر سأرسل لك عبارة المرور المطلوبة لفتحها باستخدام طريقة بديلة "
+"لأسباب أمنية."
 
 #: inc/secret.class.php:161
 msgid "Bear in mind:"
-msgstr ""
+msgstr "يأخذ بنظر الأعتبار:"
 
 #: inc/secret.class.php:161
 msgid "A secret link can only be opened once and will expire afterwards."
-msgstr ""
+msgstr "لا يمكن فتح الرابط السري إلا مرة واحدة وستنتهي صلاحيته بعد ذلك"
 
 #: inc/secret.class.php:162
 #, php-format
 msgid "This secret link will expire %1$s hours after its generation."
-msgstr ""
+msgstr "ستنتهي صلاحية هذا الارتباط السري بعد %1$s ساعة من إنشائه"
 
 #: inc/secret.class.php:163
 msgid "Regards,"
-msgstr ""
+msgstr "يعتبر"
