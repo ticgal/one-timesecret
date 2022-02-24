@@ -90,7 +90,7 @@ class PluginOnetimesecretLink extends CommonDBTM {
 
 		echo "<td>".__("Password lifetime (hours)","onetimesecret")."</td><td>";
 		Dropdown::showNumber('lifetime', ['min'   => 1,
-                                          'max'   => 24,
+                                          'max'   => 72,
                                           'value' => $config->fields["lifetime"]]);
 
 		echo "</tr>";
