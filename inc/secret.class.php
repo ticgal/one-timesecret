@@ -137,7 +137,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 					$content .= __('I will send you the required passphrase to open it using an alternative method for security reasons.','onetimesecret')."<br><br>";
 				}
 				$content .= __('Bear in mind:','onetimesecret')."<br><ul><li>".__("A secret link can only be opened once and will expire afterwards.",'onetimesecret')."</li>";
-				$content .= "<li>".sprintf(__('This secret link will expire %1$s hours after its generation.','onetimesecret'),$params["lifetime"])."</li></ul>";
+				$content .= "<li>".sprintf(__('This secret link will expire %1$s after its generation.','onetimesecret'),Html::timestampToString($params["lifetime"],false))."</li></ul>";
 				$content .= "<br>". __("Regards,",'onetimesecret');
 				
 				//Switch to the desired language

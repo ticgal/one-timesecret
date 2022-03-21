@@ -88,10 +88,21 @@ class PluginOnetimesecretLink extends CommonDBTM {
 		echo "<input type='password' name='password' id='password' size='40' >";
 		echo "</td></tr>\n";
 
-		echo "<td>".__("Password lifetime (hours)","onetimesecret")."</td><td>";
-		Dropdown::showNumber('lifetime', ['min'   => 1,
-                                          'max'   => 24,
-                                          'value' => $config->fields["lifetime"]]);
+		echo "<td>".__("Password lifetime","onetimesecret")."</td><td>";
+		$one_day_in_sec=86400;
+		$one_minute_in_sec=60;
+		$possible_values = [];
+
+		$possible_values[$one_day_in_sec*7]=sprintf(_n('%d day', '%d days', 7),7);
+		$possible_values[$one_day_in_sec*3]=sprintf(_n('%d day', '%d days', 3),3);
+		$possible_values[$one_day_in_sec]=sprintf(_n('%d day', '%d days', 1),1);
+		$possible_values[($one_minute_in_sec*60)*12]=sprintf(_n('%d hour', '%d hours', 12),12);
+		$possible_values[($one_minute_in_sec*60)*4]=sprintf(_n('%d hour', '%d hours', 4),4);
+		$possible_values[$one_minute_in_sec*60]=sprintf(_n('%d hour', '%d hours', 1),1);
+		$possible_values[$one_minute_in_sec*30]=sprintf(_n('%d minute', '%d minutes', 30),30);
+		$possible_values[$one_minute_in_sec*5]=sprintf(_n('%d minute', '%d minutes', 5),5);
+		
+		Dropdown::showFromArray('lifetime', $possible_values,['value' => $config->fields["lifetime"]]);
 
 		echo "</tr>";
 
