@@ -1,4 +1,10 @@
 # One-Time Secret GLPI Plugin CHANGELOG
+## 1.1.2
+### Features
+- New lifetime dropdown with same options as the one on the oficial page
+### Bugfixes
+- Changed some strings about password lifetime
+
 ## 1.1.1
 ### Features
 
