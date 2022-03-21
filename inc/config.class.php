@@ -107,6 +107,7 @@ class PluginOnetimesecretConfig extends CommonDBTM {
 		echo "</td></tr>\n";
 
 		echo "<tr><th colspan='4'>".__('One-Time Secret')." - ".__('Lifetime','onetimesecret')."</th></tr>";
+
 		echo "<td>".__("Password lifetime", "onetimesecret")."</td><td>";
 
 		$one_day_in_sec=86400;

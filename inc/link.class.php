@@ -88,6 +88,7 @@ class PluginOnetimesecretLink extends CommonDBTM {
 		echo "<input type='password' name='password' id='password' size='40' >";
 		echo "</td></tr>\n";
 
+
 		echo "<td>".__("Password lifetime","onetimesecret")."</td><td>";
 		$one_day_in_sec=86400;
 		$one_minute_in_sec=60;
@@ -103,6 +104,7 @@ class PluginOnetimesecretLink extends CommonDBTM {
 		$possible_values[$one_minute_in_sec*5]=sprintf(_n('%d minute', '%d minutes', 5),5);
 		
 		Dropdown::showFromArray('lifetime', $possible_values,['value' => $config->fields["lifetime"]]);
+
 
 		echo "</tr>";
 
