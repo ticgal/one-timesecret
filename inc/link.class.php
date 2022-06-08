@@ -44,6 +44,11 @@ class PluginOnetimesecretLink extends CommonDBTM {
 		return __('One-Time Secret','onetimesecret');
 	}
 
+	public static function getIcon()
+    {
+        return 'ti ti-checkbox';
+    }
+
 	static function timelineAction($params=[]) {
 		global $DB;
 		$item=$params['item'];
@@ -61,7 +66,9 @@ class PluginOnetimesecretLink extends CommonDBTM {
 						$timeline["PluginOnetimesecretLink_" . 1] = [
 							'type' => PluginOnetimesecretLink::class,
 							'item' => $obj,
-							'itiltype' => 'PluginOnetimesecretLink'
+							'itiltype' => 'PluginOnetimesecretLink',
+							'icon' => "fa-solid fa-s",
+							'label' => self::getTypeName()
 						];
 						return $timeline;
 					}
