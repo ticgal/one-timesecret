@@ -103,7 +103,7 @@ class PluginOnetimesecretConfig extends CommonDBTM {
 
 		echo "<tr class='tab_bg_1'>";
 		echo "<td>".__("API key", "onetimesecret")."</td><td>";
-		echo "<input type='password' name='apikey' id='apikey' size='40' value=\"".$config->fields["apikey"]."\">";
+		echo "<input type='password' name='apikey' id='apikey' size='40' value='".(new GLPIKey())->decrypt($config->fields["apikey"])."'>";
 		echo "</td></tr>\n";
 
 		echo "<tr><th colspan='4'>".__('One-Time Secret')." - ".__('Lifetime','onetimesecret')."</th></tr>";

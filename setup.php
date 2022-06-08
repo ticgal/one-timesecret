@@ -46,7 +46,7 @@ function plugin_init_onetimesecret() {
 		Plugin::registerClass('PluginOnetimesecretConfig', ['addtabon' => 'Config']);
 		$PLUGIN_HOOKS['config_page']['onetimesecret']='front/config.form.php';
 
-		$PLUGIN_HOOKS['timeline_actions']['onetimesecret']=['PluginOnetimesecretLink','timelineAction'];
+		$PLUGIN_HOOKS['timeline_answer_actions']['onetimesecret']=['PluginOnetimesecretLink','timelineAction'];
 
 		Plugin::registerClass('PluginOnetimesecretProfile', ['addtabon' => 'Profile']);
 

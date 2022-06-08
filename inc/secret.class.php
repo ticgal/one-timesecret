@@ -27,6 +27,7 @@
  @since     2021-2022
  ----------------------------------------------------------------------
 */
+use Glpi\Toolbox\Sanitizer;
 
 if(!defined("GLPI_ROOT")) {
 	die("Sorry. You can't access directly to this file");
@@ -38,10 +39,10 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 	static function authentication(){
 		$config = new PluginOnetimesecretConfig();
 		$config->getFromDB(1);
-		
+		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
 		$curl = curl_init();
-		$server = "https://".$config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"]).$config->fields["server"]."/api";
-
+		$server = "https://".$config->fields["email"] . ":" . $apikey."@".$config->fields["server"]."/api";
+		echo $server;
 		curl_setopt($curl, CURLOPT_URL, $server);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_ENCODING, '');
@@ -51,7 +52,9 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
 		$headers = array();
-		$headers[] = "Content-Type: application/x-www-form-urlencoded";
+		$headers[] = 'Authorization: Basic ' . base64_encode($config->fields["email"].':'.$apikey) ."\r\n";
+		$headers[] = "Content-Type: text/html; charset=utf-8\r\n";
+		$headers[] = "Content-type: application/x-www-form-urlencoded\r\n";
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
 		$result = curl_exec($curl);
@@ -68,9 +71,9 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 	static function createSecret($params=[]) {
 		$config = new PluginOnetimesecretConfig();
 		$config->getFromDB(1);
-
+		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
 		$curl = curl_init();
-
+		
 		$post_fields = ['secret'=>$params["password"],
 		'ttl'=>self::hoursToSeconds($params["lifetime"])];
 		if($params["passphrase"]!=""){
@@ -91,7 +94,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		  
 		  
 			CURLOPT_HTTPHEADER => array(
-				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . Toolbox::sodiumDecrypt($config->fields["apikey"]))
+				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . $apikey)
 			),
 		));
 
@@ -181,7 +184,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 				Session::loadLanguage($lang);
 				$_SESSION["glpilanguage"] = $lang;
 
-				$input=Toolbox::sanitize($input);
+				$input=Sanitizer::sanitize($input);
 				$fup->add($input);
 
 				// Restore default language
@@ -194,4 +197,6 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 			}
 		}
 	}
+
+
 }

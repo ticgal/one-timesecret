@@ -35,6 +35,11 @@ if(!defined('GLPI_ROOT')) {
 class PluginOnetimesecretLink extends CommonDBTM {
 	public static $rightname='followup';
 
+	public function getItilObjectItemType()
+    {
+        return str_replace('One-Time Secret', '', $this->getType());
+    }
+
 	static function getTypeName($nb=0) {
 		return __('One-Time Secret','onetimesecret');
 	}
@@ -42,16 +47,23 @@ class PluginOnetimesecretLink extends CommonDBTM {
 	static function timelineAction($params=[]) {
 		global $DB;
 		$item=$params['item'];
+		$config= new PluginOnetimesecretConfig();
+		$config->getFromDB(1);
 		switch ($item::getType()) {
 			case Ticket::getType():
 				$req = $DB->request('glpi_profilerights',
 					['profiles_id' => $_SESSION['glpiactiveprofile']["id"],
 						'name' => 'plugin_onetimesecret_send'
 					]);
-				if ($right = $req->next()) {
-					if ($item->getField('status')<Ticket::SOLVED && $right["rights"] == 1) {
-						$rand=$params['rand'];
-						echo "<li class='document' style='background-color:#FFB8A7;' onclick='javascript:viewAddSubitem".$item->fields['id']."$rand(\"".self::getType()."\");'>"."<img style='margin-right:10px;vertical-align:bottom;' src='https://onetimesecret.com/img/favicon.png'/>".self::getTypeName()."</li>";
+				foreach ($req as $right) {
+					if ($item->getField('status')<Ticket::SOLVED && $right["rights"] == 1) {						
+						$obj=new self();
+						$timeline["PluginOnetimesecretLink_" . 1] = [
+							'type' => PluginOnetimesecretLink::class,
+							'item' => $obj,
+							'itiltype' => 'PluginOnetimesecretLink'
+						];
+						return $timeline;
 					}
 				}
 				
@@ -136,4 +148,25 @@ class PluginOnetimesecretLink extends CommonDBTM {
    }
 
 
+   static function install(Migration $migration) {
+	global $DB;
+	$default_charset = DBConnection::getDefaultCharset();
+	$default_collation = DBConnection::getDefaultCollation();
+	$default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
+
+	$table = self::getTable();
+
+	if (!$DB->tableExists($table)) {
+		$migration->displayMessage("Installing $table");
+		$query = "CREATE TABLE IF NOT EXISTS $table (
+			`id` int {$default_key_sign} NOT NULL auto_increment,
+			`secret` VARCHAR(255)  NOT NULL DEFAULT '',
+			`ttl` int(11) NOT NULL DEFAULT '24',
+			`passphrase` VARCHAR(255)  NOT NULL DEFAULT '',
+			PRIMARY KEY (`id`)
+		)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+		
+		$DB->query($query) or die($DB->error());
+	}
+}
 }
