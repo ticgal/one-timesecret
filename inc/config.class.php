@@ -103,7 +103,7 @@ class PluginOnetimesecretConfig extends CommonDBTM {
 
 		echo "<tr class='tab_bg_1'>";
 		echo "<td>".__("API key", "onetimesecret")."</td><td>";
-		echo "<input type='password' name='apikey' id='apikey' size='40' value=\"".Toolbox::sodiumDecrypt($config->fields["apikey"])."\">";
+		echo "<input type='password' name='apikey' id='apikey' size='40' value='".(new GLPIKey())->decrypt($config->fields["apikey"])."'>";
 		echo "</td></tr>\n";
 
 		echo "<tr><th colspan='4'>".__('One-Time Secret')." - ".__('Lifetime','onetimesecret')."</th></tr>";
@@ -146,23 +146,26 @@ class PluginOnetimesecretConfig extends CommonDBTM {
 
 	static function install(Migration $migration) {
 		global $DB;
+		$default_charset = DBConnection::getDefaultCharset();
+		$default_collation = DBConnection::getDefaultCollation();
+		$default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
 
 		$table = self::getTable();
 		$config = new self();
 		if (!$DB->tableExists($table)) {
 			$migration->displayMessage("Installing $table");
 			$query = "CREATE TABLE IF NOT EXISTS $table (
-				`id` int(11) NOT NULL auto_increment,
+				`id` int {$default_key_sign} NOT NULL auto_increment,
 				`server` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'onetimesecret.com',
-				`email` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-				`apikey` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+				`email` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+				`apikey` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
 				`lifetime` int(11) NOT NULL DEFAULT '24',
 				`debug` tinyint(1) NOT NULL default '1',
-				`users_id` int(11) NOT NULL DEFAULT '0',
+				`users_id` int {$default_key_sign} NOT NULL DEFAULT '0',
 				PRIMARY KEY (`id`)
-			)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+			
 			$DB->query($query) or die($DB->error());
-
 			$users_id = 0;
 			$user = new User();
 			$a_users = $user->find(['name' => 'Plugin_Onetimesecret']);

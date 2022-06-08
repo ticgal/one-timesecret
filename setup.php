@@ -27,9 +27,9 @@ OneTimeSecret plugin is distributed in the hope that it will be useful,
  @since     2021-2022
  ----------------------------------------------------------------------
 */
-define ('PLUGIN_ONETIMESECRET_VERSION','1.1.2');
-define ('PLUGIN_ONETIMESECRET_MIN_GLPI','9.5.0');
-define ('PLUGIN_ONETIMESECRET_MAX_GLPI','9.6.0');
+define ('PLUGIN_ONETIMESECRET_VERSION','2.0.0');
+define ('PLUGIN_ONETIMESECRET_MIN_GLPI','10.0');
+define ('PLUGIN_ONETIMESECRET_MAX_GLPI','11.0');
 
 /**
  * Init the hooks of the plugins - Needed
@@ -46,7 +46,7 @@ function plugin_init_onetimesecret() {
 		Plugin::registerClass('PluginOnetimesecretConfig', ['addtabon' => 'Config']);
 		$PLUGIN_HOOKS['config_page']['onetimesecret']='front/config.form.php';
 
-		$PLUGIN_HOOKS['timeline_actions']['onetimesecret']=['PluginOnetimesecretLink','timelineAction'];
+		$PLUGIN_HOOKS['timeline_answer_actions']['onetimesecret']=['PluginOnetimesecretLink','timelineAction'];
 
 		Plugin::registerClass('PluginOnetimesecretProfile', ['addtabon' => 'Profile']);
 
