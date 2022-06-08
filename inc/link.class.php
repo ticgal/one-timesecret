@@ -44,10 +44,6 @@ class PluginOnetimesecretLink extends CommonDBTM {
 		return __('One-Time Secret','onetimesecret');
 	}
 
-	public static function getIcon()
-    {
-        return 'ti ti-checkbox';
-    }
 
 	static function timelineAction($params=[]) {
 		global $DB;
