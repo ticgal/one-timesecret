@@ -37,13 +37,24 @@ if(!defined("GLPI_ROOT")) {
 class PluginOnetimesecretSecret extends CommonDBTM {
 
 	static function authentication(){
+		global $CFG_GLPI;
+
 		$config = new PluginOnetimesecretConfig();
 		$config->getFromDB(1);
 		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
 		$curl = curl_init();
 		$server = "https://".$config->fields["email"] . ":" . $apikey."@".$config->fields["server"]."/api";
-		echo $server;
+
 		curl_setopt($curl, CURLOPT_URL, $server);
+		if (!empty($CFG_GLPI["proxy_name"])) {
+			curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
+		}
+		if(!empty($CFG_GLPI["proxy_user"])){
+			$proxy_creds      = !empty($CFG_GLPI["proxy_user"])
+			? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"]) 
+			: "";
+			curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
+		}
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_ENCODING, '');
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
@@ -69,6 +80,8 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 	}
 
 	static function createSecret($params=[]) {
+		global $CFG_GLPI;
+		
 		$config = new PluginOnetimesecretConfig();
 		$config->getFromDB(1);
 		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
@@ -97,6 +110,16 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . $apikey)
 			),
 		));
+
+		if (!empty($CFG_GLPI["proxy_name"])) {
+			curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
+		}
+		if(!empty($CFG_GLPI["proxy_user"])){
+			$proxy_creds      = !empty($CFG_GLPI["proxy_user"])
+			? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"]) 
+			: "";
+			curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
+		}
 
 		$response = curl_exec($curl);
 
