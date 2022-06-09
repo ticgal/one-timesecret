@@ -2,6 +2,7 @@
 ## 2.0.1
 ### Features
 - it_IT language added #10085
+- Proxy management #8311
 
 ## 2.0.0
 ### Features
