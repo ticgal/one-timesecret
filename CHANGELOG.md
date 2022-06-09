@@ -1,12 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
-## 2.0.1
-### Features
-- it_IT language added #10085
-- Proxy management #8311
-
 ## 2.0.0
 ### Features
-- GLPI 10 compatibility
+- GLPI 10 compatibility #10086
+- it_IT language added #10085
+- Proxy management #8311
 
 ## 1.1.2
 ### Features
