@@ -73,6 +73,7 @@ class PluginOnetimesecretLink extends CommonDBTM {
 				
 				break;
 		}
+		return [];
 	}
 
 	function showForm($ID, array $params=[]) {
