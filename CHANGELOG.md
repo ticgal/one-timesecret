@@ -1,4 +1,8 @@
 # One-Time Secret GLPI Plugin CHANGELOG
+## 1.1.3 - 2022-07-29
+### Bugfixes
+- Only create secrets if password field is not empty  #10698
+
 ## 1.1.2
 ### Features
 - New lifetime dropdown with same options as the one on the oficial page
