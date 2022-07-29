@@ -2,13 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-21 11:40+0100\n"
+"POT-Creation-Date: 2022-07-29 10:49+0200\n"
 "Language: es_EC\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
+
+#: front/link.form.php:39
+#, fuzzy
+msgid "Password is missing"
+msgstr "Password lifetime"
 
 #: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
 #: inc/link.class.php:39
@@ -27,7 +32,7 @@ msgstr "Clave API"
 msgid "Lifetime"
 msgstr "Vigencia"
 
-#: inc/config.class.php:110 inc/link.class.php:91
+#: inc/config.class.php:111 inc/link.class.php:92
 msgid "Password lifetime"
 msgstr "Password lifetime"
 
@@ -35,11 +40,11 @@ msgstr "Password lifetime"
 msgid "Create a password"
 msgstr "Crear contraseña"
 
-#: inc/link.class.php:109
+#: inc/link.class.php:111
 msgid "Optional parameter"
 msgstr "Parámetro opcional"
 
-#: inc/link.class.php:112
+#: inc/link.class.php:114
 msgid "Passphrase"
 msgstr "Frase de contraseña"
 
