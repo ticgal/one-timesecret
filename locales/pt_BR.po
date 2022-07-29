@@ -2,13 +2,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-08 17:43+0200\n"
+"POT-Creation-Date: 2022-07-29 11:23+0200\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
 "Plural-Forms: nplurals=2; plural=(n>=0 && n<=1) ? 0 : 1;\n"
+
+#: front/link.form.php:39
+msgid "Password is missing"
+msgstr "Password is missing"
 
 #: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
 #: inc/link.class.php:44
@@ -27,19 +31,19 @@ msgstr "Chave API"
 msgid "Lifetime"
 msgstr "Tempo de vida"
 
-#: inc/config.class.php:111 inc/link.class.php:107
+#: inc/config.class.php:111 inc/link.class.php:108
 msgid "Password lifetime"
 msgstr "Password lifetime"
 
-#: inc/link.class.php:90
+#: inc/link.class.php:91
 msgid "Create a password"
 msgstr "Criar uma senha"
 
-#: inc/link.class.php:126
+#: inc/link.class.php:127
 msgid "Optional parameter"
 msgstr "Parâmetro opcional"
 
-#: inc/link.class.php:129
+#: inc/link.class.php:130
 msgid "Passphrase"
 msgstr "Chave de segurança"
 
@@ -47,11 +51,11 @@ msgstr "Chave de segurança"
 msgid "Display OneTimeSecret button"
 msgstr "Exibir botão OneTimeSecret"
 
-#: inc/secret.class.php:134
+#: inc/secret.class.php:157
 msgid "Hi,"
 msgstr "Oi,"
 
-#: inc/secret.class.php:134
+#: inc/secret.class.php:157
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -59,7 +63,7 @@ msgstr ""
 "Como mencionado em nossa conversa anterior, esta mensagem tem o objetivo de "
 "compartilhar informações confidenciais com você."
 
-#: inc/secret.class.php:135
+#: inc/secret.class.php:158
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -67,15 +71,15 @@ msgstr ""
 "Um link secreto <b>funciona apenas uma vez</b> e <b>então desaparece para "
 "sempre</b>. Não o abra se você não é o destinatário correto."
 
-#: inc/secret.class.php:136
+#: inc/secret.class.php:159
 msgid "Here you have"
 msgstr "Aqui está"
 
-#: inc/secret.class.php:137
+#: inc/secret.class.php:160
 msgid "your secret link"
 msgstr "seu link secreto"
 
-#: inc/secret.class.php:140
+#: inc/secret.class.php:163
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -83,19 +87,19 @@ msgstr ""
 "Eu vou lhe encaminhar a chave necessária para abrir usando um método "
 "alternativo por razões de segurança."
 
-#: inc/secret.class.php:142
+#: inc/secret.class.php:165
 msgid "Bear in mind:"
 msgstr "Tenha em mente:"
 
-#: inc/secret.class.php:142
+#: inc/secret.class.php:165
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "Um link secreto só pode ser aberto uma vez e expira em seguida."
 
-#: inc/secret.class.php:143
+#: inc/secret.class.php:166
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "This secret link will expire %1$s after its generation."
 
-#: inc/secret.class.php:144
+#: inc/secret.class.php:167
 msgid "Regards,"
 msgstr "Saudações,"

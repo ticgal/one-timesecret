@@ -35,7 +35,12 @@ if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecr
 	Html::displayNotFoundError();
 }
 
-PluginOnetimesecretSecret::authentication();
-$link = PluginOnetimesecretSecret::createSecret($_POST);
-PluginOnetimesecretSecret::addFollowup($_POST,$link);
+if (!isset($_POST['password'])||$_POST['password']=="") {
+    Session::addMessageAfterRedirect(__("Password is missing", "permissions"));
+}else{
+    PluginOnetimesecretSecret::authentication();
+    $link = PluginOnetimesecretSecret::createSecret($_POST);
+    PluginOnetimesecretSecret::addFollowup($_POST,$link);
+}
+
 Html::back();
