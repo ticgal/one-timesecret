@@ -1,7 +1,7 @@
 # One-Time Secret 
 A GLPI One-Time Secret integration
 
-<img src="https://raw.githubusercontent.com/ticgal/one-timesecret/multimedia/onetimesecret-logo-trans-300.png" alt="One-Time Secret for GLPI Logo" height="250px" width="250px" class="js-lazy-loaded">
+<img src="https://raw.githubusercontent.com/ticgal/one-timesecret/multimedia/onetimesecret.png" alt="One-Time Secret for GLPI Logo" height="250px" width="250px" class="js-lazy-loaded">
 
 [![License](https://img.shields.io/badge/License-GNU%20AGPLv3-blue.svg)](https://github.com/ticgal/taskdrop/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/badge/Twitter-TICgal-blue.svg)](https://twitter.com/ticgalcom)
