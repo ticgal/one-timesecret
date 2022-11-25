@@ -90,7 +90,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		$post_fields = ['secret'=>Sanitizer::decodeHtmlSpecialChars($params["password"]),
 		'ttl'=>self::hoursToSeconds($params["lifetime"])];
 		if($params["passphrase"]!=""){
-			$post_fields ["passphrase"]= $params["passphrase"];
+			$post_fields["passphrase"]= Sanitizer::decodeHtmlSpecialChars($params["passphrase"]);
 		}
 
 		curl_setopt_array($curl, array(
