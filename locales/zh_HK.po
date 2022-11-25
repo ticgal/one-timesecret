@@ -3,13 +3,12 @@ msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-25 12:46+0100\n"
-"Language: ar_SA\n"
+"Language: zh_HK@Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
-"Plural-Forms: nplurals=6; plural=(n==0) ? 0 : (n==1) ? 1 : (n==2) ? 2 : (n"
-"%100>=3 && n%100<=10) ? 3 : (n%100>=11 && n%100<=99) ? 4 : 5;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: front/link.form.php:39
 msgid "Password is missing"
@@ -18,19 +17,19 @@ msgstr "Password is missing"
 #: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
 #: inc/link.class.php:44
 msgid "One-Time Secret"
-msgstr "معلمة اختيارية"
+msgstr "一次性嘅秘密"
 
 #: inc/config.class.php:92
 msgid "Configuration"
-msgstr "التكوين"
+msgstr "Configuration"
 
 #: inc/config.class.php:105
 msgid "API key"
-msgstr "مفتاح API"
+msgstr "API 密鑰"
 
 #: inc/config.class.php:109
 msgid "Lifetime"
-msgstr "أوقات الحياة"
+msgstr "Lifetime"
 
 #: inc/config.class.php:111 inc/link.class.php:108
 msgid "Password lifetime"
@@ -38,70 +37,65 @@ msgstr "Password lifetime"
 
 #: inc/link.class.php:91
 msgid "Create a password"
-msgstr "قم بإنشاء كلمة مرور"
+msgstr "創建密碼"
 
 #: inc/link.class.php:127
 msgid "Optional parameter"
-msgstr "معلمة اختيارية"
+msgstr "可以揀嘅範圍"
 
 #: inc/link.class.php:130
 msgid "Passphrase"
-msgstr "عبارة المرور"
+msgstr "密碼"
 
 #: inc/profile.class.php:94
 msgid "Display OneTimeSecret button"
-msgstr "عرض زر سر مرة واحدة"
+msgstr "顯示一次性檢視按鈕"
 
 #: inc/secret.class.php:154
 msgid "Hi,"
-msgstr "مرحبًا!"
+msgstr "嗨，"
 
 #: inc/secret.class.php:154
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
-msgstr "كما ذكرنا في محدثنا السابقة هده الرسالة ستنشر معك معلومة حساسة"
+msgstr "正如我們之前的對話中提到的，此敏感信息只與您共享。"
 
 #: inc/secret.class.php:155
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
 msgstr ""
-"الرابط السري <b> يعمل مرة واحدة فقط </b> ثم <b> يختفي إلى الأبد </b>. لا "
-"تفتحه إذا لم تكن أنت المقصود متلقي"
+"秘密鏈接<b>只工作一次</b>，<b>然後永遠消失</b>。如果您不是預定的收件人，請不"
+"要打開它。"
 
 #: inc/secret.class.php:156
 msgid "Here you have"
-msgstr "هنا لديك"
+msgstr "你原有嘅喺哩到"
 
 #: inc/secret.class.php:157
 msgid "your secret link"
-msgstr "رابطك السري"
+msgstr "你的秘密鏈結"
 
 #: inc/secret.class.php:160
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
-msgstr ""
-"ترجمة المصدر سأرسل لك عبارة المرور المطلوبة لفتحها باستخدام طريقة بديلة "
-"لأسباب أمنية."
+msgstr "基於安全理由，我將會給您發出替代性的密碼用作打開它。"
 
 #: inc/secret.class.php:162
 msgid "Bear in mind:"
-msgstr "يأخذ بنظر الأعتبار:"
+msgstr "記得："
 
 #: inc/secret.class.php:162
 msgid "A secret link can only be opened once and will expire afterwards."
-msgstr "لا يمكن فتح الرابط السري إلا مرة واحدة وستنتهي صلاحيته بعد ذلك"
+msgstr "哩個秘密鏈結只可以打開一次，開過一次之後就會過期用唔到。"
 
 #: inc/secret.class.php:163
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
-msgstr ""
-"ستنتهي صلاحية هذا الرابط بعد %1$s بعد ان يتم توليده\n"
-"\n"
-" "
+msgstr "This secret link will expire %1$s after its generation."
 
 #: inc/secret.class.php:164
 msgid "Regards,"
-msgstr "يعتبر"
+msgstr "問候，"
