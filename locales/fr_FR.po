@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-25 11:56+0100\n"
+"POT-Creation-Date: 2022-11-25 12:46+0100\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,7 +12,7 @@ msgstr ""
 
 #: front/link.form.php:39
 msgid "Password is missing"
-msgstr "Password is missing"
+msgstr "Mot de passe manquant"
 
 #: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
 #: inc/link.class.php:44
@@ -53,7 +53,7 @@ msgstr "Afficher le bouton OneTimeSecret"
 
 #: inc/secret.class.php:154
 msgid "Hi,"
-msgstr "Salut"
+msgstr "Bonjour,"
 
 #: inc/secret.class.php:154
 msgid ""
@@ -77,7 +77,7 @@ msgstr "Ici, vous avez"
 
 #: inc/secret.class.php:157
 msgid "your secret link"
-msgstr "votre lien secret"
+msgstr "le lien contenant votre secret"
 
 #: inc/secret.class.php:160
 msgid ""
@@ -100,8 +100,8 @@ msgstr ""
 #: inc/secret.class.php:163
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
-msgstr "Ce lien secret expirera %1$s après sa génération."
+msgstr "Ce lien contenant votre secret expirera %1$s après sa génération."
 
 #: inc/secret.class.php:164
 msgid "Regards,"
-msgstr "À bientôt,"
+msgstr "Cordialement"
