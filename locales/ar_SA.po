@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-29 11:23+0200\n"
+"POT-Creation-Date: 2022-11-25 11:56+0100\n"
 "Language: ar_SA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,17 +52,17 @@ msgstr "عبارة المرور"
 msgid "Display OneTimeSecret button"
 msgstr "عرض زر سر مرة واحدة"
 
-#: inc/secret.class.php:157
+#: inc/secret.class.php:154
 msgid "Hi,"
 msgstr "مرحبًا!"
 
-#: inc/secret.class.php:157
+#: inc/secret.class.php:154
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
 msgstr "كما ذكرنا في محدثنا السابقة هده الرسالة ستنشر معك معلومة حساسة"
 
-#: inc/secret.class.php:158
+#: inc/secret.class.php:155
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -70,15 +70,15 @@ msgstr ""
 "الرابط السري <b> يعمل مرة واحدة فقط </b> ثم <b> يختفي إلى الأبد </b>. لا "
 "تفتحه إذا لم تكن أنت المقصود متلقي"
 
-#: inc/secret.class.php:159
+#: inc/secret.class.php:156
 msgid "Here you have"
 msgstr "هنا لديك"
 
-#: inc/secret.class.php:160
+#: inc/secret.class.php:157
 msgid "your secret link"
 msgstr "رابطك السري"
 
-#: inc/secret.class.php:163
+#: inc/secret.class.php:160
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -86,19 +86,19 @@ msgstr ""
 "ترجمة المصدر سأرسل لك عبارة المرور المطلوبة لفتحها باستخدام طريقة بديلة "
 "لأسباب أمنية."
 
-#: inc/secret.class.php:165
+#: inc/secret.class.php:162
 msgid "Bear in mind:"
 msgstr "يأخذ بنظر الأعتبار:"
 
-#: inc/secret.class.php:165
+#: inc/secret.class.php:162
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "لا يمكن فتح الرابط السري إلا مرة واحدة وستنتهي صلاحيته بعد ذلك"
 
-#: inc/secret.class.php:166
+#: inc/secret.class.php:163
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "This secret link will expire %1$s after its generation."
 
-#: inc/secret.class.php:167
+#: inc/secret.class.php:164
 msgid "Regards,"
 msgstr "يعتبر"
