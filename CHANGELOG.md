@@ -1,4 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
+
+## 2.0.2 - 2022-11-25
+### Bugfixes
+- Decode HTML special chars from secret and passphrase #11964
+
 ## 2.0.1 - 2022-07-29
 ### Bugfixes
 - Only create secrets if password field is not empty GLPI 10 #10698

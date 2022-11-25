@@ -87,10 +87,10 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
 		$curl = curl_init();
 		
-		$post_fields = ['secret'=>$params["password"],
+		$post_fields = ['secret'=>Sanitizer::decodeHtmlSpecialChars($params["password"]),
 		'ttl'=>self::hoursToSeconds($params["lifetime"])];
 		if($params["passphrase"]!=""){
-			$post_fields ["passphrase"]= $params["passphrase"];
+			$post_fields["passphrase"]= Sanitizer::decodeHtmlSpecialChars($params["passphrase"]);
 		}
 
 		curl_setopt_array($curl, array(
@@ -102,10 +102,7 @@ class PluginOnetimesecretSecret extends CommonDBTM {
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CUSTOMREQUEST => 'POST',
-		  
 			CURLOPT_POSTFIELDS => $post_fields,
-		  
-		  
 			CURLOPT_HTTPHEADER => array(
 				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . $apikey)
 			),
