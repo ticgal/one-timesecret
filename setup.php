@@ -27,7 +27,7 @@ OneTimeSecret plugin is distributed in the hope that it will be useful,
  @since     2021-2022
  ----------------------------------------------------------------------
 */
-define ('PLUGIN_ONETIMESECRET_VERSION','2.0.1');
+define ('PLUGIN_ONETIMESECRET_VERSION','2.0.2');
 define ('PLUGIN_ONETIMESECRET_MIN_GLPI','10.0');
 define ('PLUGIN_ONETIMESECRET_MAX_GLPI','11.0');
 
