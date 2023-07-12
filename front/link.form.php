@@ -28,19 +28,19 @@
  ----------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 $plugin = new Plugin();
 if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
-	Html::displayNotFoundError();
+    Html::displayNotFoundError();
 }
 
-if (!isset($_POST['password'])||$_POST['password']=="") {
+if (!isset($_POST['password']) || $_POST['password'] == "") {
     Session::addMessageAfterRedirect(__("Password is missing", "permissions"));
-}else{
+} else {
     PluginOnetimesecretSecret::authentication();
     $link = PluginOnetimesecretSecret::createSecret($_POST);
-    PluginOnetimesecretSecret::addFollowup($_POST,$link);
+    PluginOnetimesecretSecret::addFollowup($_POST, $link);
 }
 
 Html::back();

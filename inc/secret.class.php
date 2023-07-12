@@ -30,193 +30,199 @@
 use Glpi\Toolbox\Sanitizer;
 
 if(!defined("GLPI_ROOT")) {
-	die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 
-class PluginOnetimesecretSecret extends CommonDBTM {
+class PluginOnetimesecretSecret extends CommonDBTM
+{
+    public static function authentication()
+    {
+        global $CFG_GLPI;
 
-	static function authentication(){
-		global $CFG_GLPI;
+        $config = PluginOnetimesecretConfig::getInstance();
+        $apikey = (new GLPIKey())->decrypt($config->fields["apikey"]);
+        $curl = curl_init();
+        $server = "https://".$config->fields["email"] . ":" . $apikey."@".$config->fields["server"]."/api";
 
-		$config = new PluginOnetimesecretConfig();
-		$config->getFromDB(1);
-		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
-		$curl = curl_init();
-		$server = "https://".$config->fields["email"] . ":" . $apikey."@".$config->fields["server"]."/api";
+        curl_setopt($curl, CURLOPT_URL, $server);
+        if (!empty($CFG_GLPI["proxy_name"])) {
+            curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
+        }
+        if(!empty($CFG_GLPI["proxy_user"])) {
+            $proxy_creds      = !empty($CFG_GLPI["proxy_user"])
+            ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
+            : "";
+            curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 0);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
-		curl_setopt($curl, CURLOPT_URL, $server);
-		if (!empty($CFG_GLPI["proxy_name"])) {
-			curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
-		}
-		if(!empty($CFG_GLPI["proxy_user"])){
-			$proxy_creds      = !empty($CFG_GLPI["proxy_user"])
-			? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"]) 
-			: "";
-			curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
-		}
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_ENCODING, '');
-		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 0);
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        $headers = array();
+        $headers[] = 'Authorization: Basic ' . base64_encode($config->fields["email"].':'.$apikey) ."\r\n";
+        $headers[] = "Content-Type: text/html; charset=utf-8\r\n";
+        $headers[] = "Content-type: application/x-www-form-urlencoded\r\n";
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-		$headers = array();
-		$headers[] = 'Authorization: Basic ' . base64_encode($config->fields["email"].':'.$apikey) ."\r\n";
-		$headers[] = "Content-Type: text/html; charset=utf-8\r\n";
-		$headers[] = "Content-type: application/x-www-form-urlencoded\r\n";
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($curl);
 
-		$result = curl_exec($curl);
+        if (curl_errno($curl)) {
+            echo "Error:" . curl_error($curl);
+        }
 
-		if (curl_errno($curl)) {
-			echo "Error:" . curl_error($curl);
-		}
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
+        curl_close($curl);
+    }
 
-		curl_close($curl);
-	}
+    public static function createSecret($params=[])
+    {
+        global $CFG_GLPI;
 
-	static function createSecret($params=[]) {
-		global $CFG_GLPI;
-		
-		$config = new PluginOnetimesecretConfig();
-		$config->getFromDB(1);
-		$apikey=(new GLPIKey())->decrypt($config->fields["apikey"]);
-		$curl = curl_init();
-		
-		$post_fields = ['secret'=>Sanitizer::decodeHtmlSpecialChars($params["password"]),
-		'ttl'=>self::hoursToSeconds($params["lifetime"])];
-		if($params["passphrase"]!=""){
-			$post_fields["passphrase"]= Sanitizer::decodeHtmlSpecialChars($params["passphrase"]);
-		}
+        $config = PluginOnetimesecretConfig::getInstance();
+        $apikey = (new GLPIKey())->decrypt($config->fields["apikey"]);
+        $curl = curl_init();
 
-		curl_setopt_array($curl, array(
-			CURLOPT_URL => 'https://'.$config->fields['server'].'/api/v1/share',
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => '',
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 0,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => 'POST',
-			CURLOPT_POSTFIELDS => $post_fields,
-			CURLOPT_HTTPHEADER => array(
-				"Authorization: Basic " . base64_encode($config->fields["email"] . ":" . $apikey)
-			),
-		));
+        $post_fields = [
+            'secret' 	=> Sanitizer::decodeHtmlSpecialChars($params["password"]),
+            'ttl' 		=> self::hoursToSeconds($params["lifetime"])
+        ];
 
-		if (!empty($CFG_GLPI["proxy_name"])) {
-			curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
-		}
-		if(!empty($CFG_GLPI["proxy_user"])){
-			$proxy_creds      = !empty($CFG_GLPI["proxy_user"])
-			? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"]) 
-			: "";
-			curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
-		}
+        if($params["passphrase"] != "") {
+            $post_fields["passphrase"] = Sanitizer::decodeHtmlSpecialChars($params["passphrase"]);
+        }
 
-		$response = curl_exec($curl);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL 			=> 'https://'.$config->fields['server'].'/api/v1/share',
+            CURLOPT_RETURNTRANSFER 	=> true,
+            CURLOPT_ENCODING 		=> '',
+            CURLOPT_MAXREDIRS 		=> 10,
+            CURLOPT_TIMEOUT 		=> 0,
+            CURLOPT_FOLLOWLOCATION 	=> true,
+            CURLOPT_HTTP_VERSION 	=> CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST 	=> 'POST',
+            CURLOPT_POSTFIELDS 		=> $post_fields,
+            CURLOPT_HTTPHEADER 		=> array(
+                "Authorization: Basic " . base64_encode($config->fields["email"] . ":" . $apikey)
+            ),
+        ));
 
-		curl_close($curl);
+        if (!empty($CFG_GLPI["proxy_name"])) {
+            curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
+        }
+        if(!empty($CFG_GLPI["proxy_user"])) {
+            $proxy_creds      = !empty($CFG_GLPI["proxy_user"])
+            ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
+            : "";
+            curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
+        }
 
-		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $response = curl_exec($curl);
 
-		$data = json_decode($response,true);
+        curl_close($curl);
 
-		return "https://".$config->fields["server"]."/secret/".$data["secret_key"];
-	}
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-	static function hoursToSeconds($hours){
-		$minutes = $hours * 60;
-		$seconds = $minutes * 60;
-		return $seconds;
-	}
+        $data = json_decode($response, true);
 
-	static function addFollowup($params,$text='') {
-		global $DB, $CFG_GLPI;
+        return "https://".$config->fields["server"]."/secret/".$data["secret_key"];
+    }
 
-		
+    public static function hoursToSeconds($hours)
+    {
+        $minutes = $hours * 60;
+        $seconds = $minutes * 60;
+        return $seconds;
+    }
 
-		$query = [
-			'FROM'=>Ticket::getTable(),
-			'WHERE'=> [
-				'id' => $params["tickets_id"]
-			]
-		];
-		foreach ($DB->request($query) as $ticket) {
+    public static function addFollowup($params, $text='')
+    {
+        global $DB, $CFG_GLPI;
 
-			if ($ticket['status'] < Ticket::SOLVED) {
-				$fup = new ITILFollowup();
+        $query = [
+            'FROM' => Ticket::getTable(),
+            'WHERE' => [
+                'id' => $params["tickets_id"]
+            ]
+        ];
 
-				$content = __('Hi,','onetimesecret')."<br><br>".__('As mentioned in our previous conversation, this message is meant to share sensitive information with you.','onetimesecret')."<br><br>";
-				$content .= __('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.','onetimesecret')."<br><br><br><br>";
-				$content .= __('Here you have','onetimesecret')." ";
-				$content .= "<a href='".$text."' target='_blank'>".__('your secret link','onetimesecret')."</a>."."<br><br><br><br>";
+        foreach ($DB->request($query) as $ticket) {
 
-				if($params["passphrase"]!=""){
-					$content .= __('I will send you the required passphrase to open it using an alternative method for security reasons.','onetimesecret')."<br><br>";
-				}
-				$content .= __('Bear in mind:','onetimesecret')."<br><ul><li>".__("A secret link can only be opened once and will expire afterwards.",'onetimesecret')."</li>";
-				$content .= "<li>".sprintf(__('This secret link will expire %1$s after its generation.','onetimesecret'),Html::timestampToString($params["lifetime"],false))."</li></ul>";
-				$content .= "<br>". __("Regards,",'onetimesecret');
-				
-				//Switch to the desired language
-				$bak_language = $_SESSION["glpilanguage"];$bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
+            if ($ticket['status'] < Ticket::SOLVED) {
+                $fup = new ITILFollowup();
 
-				$query = [
-					'FROM'=>Ticket_User::getTable(),
-					'WHERE'=> [
-						'tickets_id' => $params["tickets_id"],
-						'type' => 1
-					]
-				];
-				$input=[];
-				foreach ($DB->request($query) as $ticket_user) {
-					$user = new User();
-					$user->getFromDB($ticket_user["users_id"]);
-					$lang = $user->fields["language"];
-					if($lang==null){
-						$lang=$CFG_GLPI["language"];
-					}
+                $content = __('Hi,', 'onetimesecret')."<br><br>".__('As mentioned in our previous conversation, this message is meant to share sensitive information with you.', 'onetimesecret')."<br><br>";
+                $content .= __('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret')."<br><br><br><br>";
+                $content .= __('Here you have', 'onetimesecret')." ";
+                $content .= "<a href='".$text."' target='_blank'>".__('your secret link', 'onetimesecret')."</a>."."<br><br><br><br>";
 
-					if(Session::getLoginUserID()==$ticket_user["users_id"]){
-						$input = [
-							'items_id'=>$params["tickets_id"],
-							'itemtype'=>Ticket::getType(),
-							'content'=>$content,
-							'_status'=>Ticket::ASSIGNED,
-							'users_id'=> Session::getLoginUserID()
-						];
-					}else{
-						$input = [
-							'items_id'=>$params["tickets_id"],
-							'itemtype'=>Ticket::getType(),
-							'content'=>$content,
-							'users_id'=> Session::getLoginUserID()
-						];
-					}
-				}
-		
-				$_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
-				Session::loadLanguage($lang);
-				$_SESSION["glpilanguage"] = $lang;
+                if($params["passphrase"]!="") {
+                    $content .= __('I will send you the required passphrase to open it using an alternative method for security reasons.', 'onetimesecret')."<br><br>";
+                }
+                $content .= __('Bear in mind:', 'onetimesecret')."<br><ul><li>".__("A secret link can only be opened once and will expire afterwards.", 'onetimesecret')."</li>";
+                $content .= "<li>".sprintf(__('This secret link will expire %1$s after its generation.', 'onetimesecret'), Html::timestampToString($params["lifetime"], false))."</li></ul>";
+                $content .= "<br>". __("Regards,", 'onetimesecret');
 
-				$input=Sanitizer::sanitize($input);
-				$fup->add($input);
+                //Switch to the desired language
+                $bak_language = $_SESSION["glpilanguage"];
+                $bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
 
-				// Restore default language
-				$_SESSION["glpilanguage"] = $bak_language;Session::loadLanguage();
-				if ($bak_dropdowntranslations !== null) {
-					$_SESSION['glpi_dropdowntranslations'] = $bak_dropdowntranslations;
-				} else {
-					unset($_SESSION['glpi_dropdowntranslations']);
-				}
-			}
-		}
-	}
+                $query = [
+                    'FROM' => Ticket_User::getTable(),
+                    'WHERE' => [
+                        'tickets_id' => $params["tickets_id"],
+                        'type' => 1
+                    ]
+                ];
+                $input = [];
+                foreach ($DB->request($query) as $ticket_user) {
+                    $user = new User();
+                    $user->getFromDB($ticket_user["users_id"]);
+                    $lang = $user->fields["language"];
+                    if($lang == null) {
+                        $lang = $CFG_GLPI["language"];
+                    }
 
+                    if(Session::getLoginUserID() == $ticket_user["users_id"]) {
+                        $input = [
+                            'items_id' 	=> $params["tickets_id"],
+                            'itemtype' 	=> Ticket::getType(),
+                            'content' 	=> $content,
+                            '_status' 	=> Ticket::ASSIGNED,
+                            'users_id' 	=> Session::getLoginUserID()
+                        ];
+                    } else {
+                        $input = [
+                            'items_id' 	=> $params["tickets_id"],
+                            'itemtype' 	=> Ticket::getType(),
+                            'content' 	=> $content,
+                            'users_id' 	=> Session::getLoginUserID()
+                        ];
+                    }
+                }
 
+                $_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
+                Session::loadLanguage($lang);
+                $_SESSION["glpilanguage"] = $lang;
+
+                $input = Sanitizer::sanitize($input);
+                $fup->add($input);
+
+                // Restore default language
+                $_SESSION["glpilanguage"] = $bak_language;
+                Session::loadLanguage();
+                if ($bak_dropdowntranslations !== null) {
+                    $_SESSION['glpi_dropdowntranslations'] = $bak_dropdowntranslations;
+                } else {
+                    unset($_SESSION['glpi_dropdowntranslations']);
+                }
+            }
+        }
+
+        return true;
+    }
 }

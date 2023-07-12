@@ -22,7 +22,7 @@
  @author    the TICgal team
  @copyright Copyright (c) 2021-2022 TICgal team
  @license   AGPL License 3.0 or (at your option) any later version
-				http://www.gnu.org/licenses/agpl-3.0-standalone.html
+                http://www.gnu.org/licenses/agpl-3.0-standalone.html
  @link      https://www.tic.gal
  @since     2021-2022
  ----------------------------------------------------------------------
@@ -31,16 +31,16 @@ include('../../../inc/includes.php');
 
 $plugin = new Plugin();
 if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
-	Html::displayNotFoundError();
+    Html::displayNotFoundError();
 }
 
 Session::checkRight('config', UPDATE);
 
 $config = new PluginOnetimesecretConfig();
 if (isset($_POST["update"])) {
-	$config->check($_POST['id'], UPDATE);
-	$_POST["apikey"]=Toolbox::sodiumEncrypt($_POST["apikey"]);
-	$config->update($_POST);
-	Html::back();
+    $config->check($_POST['id'], UPDATE);
+    $_POST["apikey"] = (new GLPIKey())->encrypt($_POST["apikey"]);
+    $config->update($_POST);
+    Html::back();
 }
 Html::redirect($CFG_GLPI["root_doc"]."/front/config.form.php?forcetab=".urlencode('PluginOnetimesecretConfig$1'));

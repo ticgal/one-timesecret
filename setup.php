@@ -27,30 +27,35 @@ OneTimeSecret plugin is distributed in the hope that it will be useful,
  @since     2021-2022
  ----------------------------------------------------------------------
 */
-define ('PLUGIN_ONETIMESECRET_VERSION','2.0.2');
-define ('PLUGIN_ONETIMESECRET_MIN_GLPI','10.0');
-define ('PLUGIN_ONETIMESECRET_MAX_GLPI','11.0');
+use Glpi\Plugin\Hooks;
+
+define('PLUGIN_ONETIMESECRET_VERSION', '2.0.3');
+define('PLUGIN_ONETIMESECRET_MIN_GLPI', '10.0');
+define('PLUGIN_ONETIMESECRET_MAX_GLPI', '11.0');
 
 /**
  * Init the hooks of the plugins - Needed
  *
  * @return void
  */
-function plugin_init_onetimesecret() {
-	global $PLUGIN_HOOKS,$CFG_GLPI;
+function plugin_init_onetimesecret()
+{
+    global $PLUGIN_HOOKS;
 
-	$PLUGIN_HOOKS['csrf_compliant']['onetimesecret'] = true;
+    $PLUGIN_HOOKS['csrf_compliant']['onetimesecret'] = true;
 
-	$plugin=new Plugin();
-	if ($plugin->isActivated('onetimesecret')) {
-		Plugin::registerClass('PluginOnetimesecretConfig', ['addtabon' => 'Config']);
-		$PLUGIN_HOOKS['config_page']['onetimesecret']='front/config.form.php';
+    $plugin = new Plugin();
+    if ($plugin->isActivated('onetimesecret')) {
+        Plugin::registerClass('PluginOnetimesecretConfig', ['addtabon' => 'Config']);
 
-		$PLUGIN_HOOKS['timeline_answer_actions']['onetimesecret']=['PluginOnetimesecretLink','timelineAction'];
+        Plugin::registerClass('PluginOnetimesecretProfile', ['addtabon' => 'Profile']);
 
-		Plugin::registerClass('PluginOnetimesecretProfile', ['addtabon' => 'Profile']);
+        $PLUGIN_HOOKS['config_page']['onetimesecret'] = 'front/config.form.php';
 
-	}
+        $PLUGIN_HOOKS[Hooks::TIMELINE_ANSWER_ACTIONS]['onetimesecret'] = [
+            'PluginOnetimesecretLink','timelineAction'
+        ];
+    }
 }
 
 /**
@@ -58,21 +63,22 @@ function plugin_init_onetimesecret() {
  *
  * @return array
  */
-function plugin_version_onetimesecret() {
-	return [
-		'name'=> 'OneTimeSecret',
-		'version' => PLUGIN_ONETIMESECRET_VERSION,
-		'author' => '<a href="https://tic.gal">TICgal</a>',
-		'homepage' => 'https://tic.gal',
-		'license' => 'GPLv3+',
-		'minGlpiVersion' => PLUGIN_ONETIMESECRET_MIN_GLPI,
-		'requirements' => [
-			'glpi'   => [
-				'min' => PLUGIN_ONETIMESECRET_MIN_GLPI,
-				'max' => PLUGIN_ONETIMESECRET_MAX_GLPI,
-			]
-		]
-	];
+function plugin_version_onetimesecret()
+{
+    return [
+        'name'		=> 'OneTimeSecret',
+        'version' 	=> PLUGIN_ONETIMESECRET_VERSION,
+        'author' 	=> '<a href="https://tic.gal">TICgal</a>',
+        'homepage' 	=> 'https://tic.gal',
+        'license' 	=> 'GPLv3+',
+        'minGlpiVersion' => PLUGIN_ONETIMESECRET_MIN_GLPI,
+        'requirements' => [
+            'glpi'  => [
+                'min' => PLUGIN_ONETIMESECRET_MIN_GLPI,
+                'max' => PLUGIN_ONETIMESECRET_MAX_GLPI,
+            ]
+        ]
+    ];
 }
 
 /**
@@ -80,8 +86,9 @@ function plugin_version_onetimesecret() {
  *
  * @return boolean
  */
-function plugin_onetimesecret_check_prerequisites() {
-   return true;
+function plugin_onetimesecret_check_prerequisites()
+{
+    return true;
 }
 
 /**
@@ -92,13 +99,14 @@ function plugin_onetimesecret_check_prerequisites() {
  *
  * @return boolean
  */
-function plugin_onetimesecret_check_config($verbose = false) {
-   if (true) { // Your configuration check
-      return true;
-   }
+function plugin_onetimesecret_check_config($verbose = false)
+{
+    if (true) { // Your configuration check
+        return true;
+    }
 
-   if ($verbose) {
-      echo "Installed, but not configured";
-   }
-   return false;
+    if ($verbose) {
+        echo "Installed, but not configured";
+    }
+    return false;
 }
