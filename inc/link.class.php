@@ -32,6 +32,8 @@ if(!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\Application\View\TemplateRenderer;
+
 class PluginOnetimesecretLink extends CommonDBTM
 {
     public static $rightname = 'followup';
@@ -62,14 +64,14 @@ class PluginOnetimesecretLink extends CommonDBTM
                     ]
                 );
                 foreach ($req as $right) {
-                    if ($item->getField('status')<Ticket::SOLVED && $right["rights"] == 1) {
-                        $obj=new self();
+                    if ($item->getField('status') < Ticket::SOLVED && $right["rights"] == 1) {
+                        $obj = new self();
                         $timeline["PluginOnetimesecretLink_" . 1] = [
-                            'type' => PluginOnetimesecretLink::class,
-                            'item' => $obj,
-                            'itiltype' => 'PluginOnetimesecretLink',
-                            'icon' => "fa-solid fa-s",
-                            'label' => self::getTypeName()
+                            'type'      => PluginOnetimesecretLink::class,
+                            'item'      => $obj,
+                            'itiltype'  => 'PluginOnetimesecretLink',
+                            'icon'      => "fa-solid fa-s pe-1",
+                            'label'     => self::getTypeName()
                         ];
                         return $timeline;
                     }
@@ -87,31 +89,6 @@ class PluginOnetimesecretLink extends CommonDBTM
         $item = $params['parent'];
         $entity = $item->getEntityID();
 
-        echo "<div class='firstbloc'>";
-        echo "<form name='documentitem_form".$rand."' id='documentitem_form".
-                $rand."' method='post' action='".Toolbox::getItemTypeFormURL(self::getType()).
-                "' enctype=\"multipart/form-data\">";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_2'><th colspan='5'>".__('Create a password', 'onetimesecret')."</th></tr>";
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td colspan='2'>";
-        echo "<input type='hidden' name='entities_id' value='$entity'>";
-        echo "<input type='hidden' name='is_recursive' value='".$item->isRecursive()."'>";
-        echo "<input type='hidden' name='itemtype' value='".$item->getType()."'>";
-        echo "<input type='hidden' name='items_id' value='".$item->getID()."'>";
-        echo "<input type='hidden' name='tickets_id' value='".$item->getID()."'>";
-        echo "</td>";
-
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td width='25%'>".__("Password")."</td><td>";
-        echo "<input type='password' name='password' id='password' size='40' >";
-        echo "</td></tr>\n";
-
-        echo "<td>".__("Password lifetime", "onetimesecret")."</td><td>";
         $one_day_in_sec = 86400;
         $one_minute_in_sec = 60;
         $possible_values = [];
@@ -125,27 +102,16 @@ class PluginOnetimesecretLink extends CommonDBTM
         $possible_values[$one_minute_in_sec*30] = sprintf(_n('%d minute', '%d minutes', 30), 30);
         $possible_values[$one_minute_in_sec*5] = sprintf(_n('%d minute', '%d minutes', 5), 5);
 
-        Dropdown::showFromArray('lifetime', $possible_values, ['value' => $config->fields["lifetime"]]);
-
-        echo "</tr>";
-
-        echo "<tr><th colspan='4'>".__('Optional parameter', 'onetimesecret')."</th></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td width='25%'>".__("Passphrase", "onetimesecret")."</td><td>";
-        echo "<input type='text' name='passphrase' id='passphrase' size='40' >";
-        echo "</td></tr>\n";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2' class='center'>";
-        echo "<input type='submit' name='add' value=\""._sx('button', 'Send')."\"class='submit'>";
-        echo "</td>";
-        echo "</tr>";
-
-        echo "</table>";
-        Html::closeForm();
-        echo "</div>";
+        $template = "@onetimesecret/link.html.twig";
+        $template_options = [
+            'item'              => $item,
+            'entity'            => $entity,
+            'action'            => Toolbox::getItemTypeFormURL(self::getType()),
+            'rand'              => $rand,
+            'possible_values'   => $possible_values,
+            'lifetime'          => $config->fields["lifetime"]
+        ];
+        TemplateRenderer::getInstance()->display($template, $template_options);
     }
 
     public function getEmpty()

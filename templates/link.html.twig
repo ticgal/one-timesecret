@@ -1,0 +1,78 @@
+{#
+-------------------------------------------------------------------------
+OneTimeSecret plugin for GLPI
+Copyright (C) 2021-2023 by the TICgal Team.
+https://www.tic.gal
+-------------------------------------------------------------------------
+LICENSE
+This file is part of the OneTimeSecret plugin.
+OneTimeSecret plugin is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+OneTimeSecret plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with OneTimeSecret. If not, see
+<http: //www.gnu.org/licenses />.
+--------------------------------------------------------------------------
+@package OneTimeSecret
+@author the TICgal team
+@copyright Copyright (c) 2021-2023 TICgal team
+@license AGPL License 3.0 or (at your option) any later version
+http://www.gnu.org/licenses/agpl-3.0-standalone.html
+@link https://www.tic.gal
+@since 2021-2023
+----------------------------------------------------------------------
+#}
+
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set field_options = {
+'field_class': 'col-12',
+} %}
+
+<form name='documentitem_form{{rand}}' id='documentitem_form{{rand}}' method='post' action='{{action}}'
+    enctype="multipart/form-data" class="d-flex flex-column">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+    <input type='hidden' name='entities_id' value='{{entity}}'>
+    <input type='hidden' name='is_recursive' value='{{item.isRecursive}}'>
+    <input type='hidden' name='itemtype' value='{{item.getType}}'>
+    <input type='hidden' name='items_id' value='{{item.getID}}'>
+    <input type='hidden' name='tickets_id' value='{{item.getID}}'>
+
+    <div class="mb-3">
+        <label class="col-form-label">{{ __('Create a password', 'onetimesecret') }}</label>
+
+        {{fields.passwordField(
+        'password',
+        '',
+        __("Password"),
+        field_options|merge({'clearable': false})
+        ) }}
+
+        {{fields.dropdownArrayField(
+        'lifetime',
+        lifetime,
+        possible_values,
+        __("Password lifetime", "onetimesecret"),
+        field_options
+        ) }}
+
+        <label class="col-form-label">{{ __('Optional parameter', 'onetimesecret') }}</label>
+
+        {{ fields.textField(
+        'passphrase',
+        '',
+        __("Passphrase", "onetimesecret"),
+        field_options
+        ) }}
+    </div>
+
+    <div class="d-flex justify-content-center card-footer mx-n3 mb-n3">
+        <div class="input-group">
+            <button type="submit" name='add' class="btn btn-primary">{{__('Send')}}</button>
+        </div>
+    </div>
+</form>

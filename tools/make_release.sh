@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PLUGINNAME="handover"
+PLUGINNAME="onetimesecret"
 
 if [ ! "$#" -eq 2 ]
 then
