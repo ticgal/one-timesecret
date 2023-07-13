@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 
 {% import 'components/form/fields_macros.html.twig' as fields %}
 {% set field_options = {
-'field_class': 'col-12',
+'field_class': 'col-12'
 } %}
 
 <form name='documentitem_form{{rand}}' id='documentitem_form{{rand}}' method='post' action='{{action}}'
@@ -43,12 +43,12 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
     <input type='hidden' name='tickets_id' value='{{item.getID}}'>
 
     <div class="mb-3">
-        <label class="col-form-label">{{ __('Create a password', 'onetimesecret') }}</label>
+        <label class="col-form-label">{{ __('Create a secret', 'onetimesecret') }}</label>
 
         {{fields.passwordField(
         'password',
         '',
-        __("Password"),
+        __("Secret", "onetimesecret"),
         field_options|merge({'clearable': false})
         ) }}
 
@@ -56,7 +56,7 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
         'lifetime',
         lifetime,
         possible_values,
-        __("Password lifetime", "onetimesecret"),
+        __("Secret lifetime", "onetimesecret"),
         field_options
         ) }}
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-13 09:31+0200\n"
+"POT-Creation-Date: 2023-07-13 11:06+0200\n"
 "Language: zh_HK@Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -13,6 +13,14 @@ msgstr ""
 #: front/link.form.php:39
 msgid "Password is missing"
 msgstr "Password is missing"
+
+#: front/link.form.php:46
+msgid "Something wrong happened"
+msgstr ""
+
+#: front/link.form.php:49
+msgid "Please, check the configuration"
+msgstr ""
 
 #: inc/config.class.php:63 inc/config.class.php:68 inc/config.class.php:86
 #: inc/link.class.php:48
@@ -31,7 +39,7 @@ msgstr "API 密鑰"
 msgid "Lifetime"
 msgstr "Lifetime"
 
-#: inc/config.class.php:105 templates/link.html.twig:59
+#: inc/config.class.php:105
 msgid "Password lifetime"
 msgstr "Password lifetime"
 
@@ -39,17 +47,17 @@ msgstr "Password lifetime"
 msgid "Display OneTimeSecret button"
 msgstr "顯示一次性檢視按鈕"
 
-#: inc/secret.class.php:158
+#: inc/secret.class.php:162
 msgid "Hi,"
 msgstr "嗨，"
 
-#: inc/secret.class.php:158
+#: inc/secret.class.php:162
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
 msgstr "正如我們之前的對話中提到的，此敏感信息只與您共享。"
 
-#: inc/secret.class.php:159
+#: inc/secret.class.php:163
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -57,40 +65,50 @@ msgstr ""
 "秘密鏈接<b>只工作一次</b>，<b>然後永遠消失</b>。如果您不是預定的收件人，請不"
 "要打開它。"
 
-#: inc/secret.class.php:160
+#: inc/secret.class.php:164
 msgid "Here you have"
 msgstr "你原有嘅喺哩到"
 
-#: inc/secret.class.php:161
+#: inc/secret.class.php:165
 msgid "your secret link"
 msgstr "你的秘密鏈結"
 
-#: inc/secret.class.php:164
+#: inc/secret.class.php:168
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
 msgstr "基於安全理由，我將會給您發出替代性的密碼用作打開它。"
 
-#: inc/secret.class.php:166
+#: inc/secret.class.php:170
 msgid "Bear in mind:"
 msgstr "記得："
 
-#: inc/secret.class.php:166
+#: inc/secret.class.php:170
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "哩個秘密鏈結只可以打開一次，開過一次之後就會過期用唔到。"
 
-#: inc/secret.class.php:167
+#: inc/secret.class.php:171
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "This secret link will expire %1$s after its generation."
 
-#: inc/secret.class.php:168
+#: inc/secret.class.php:172
 msgid "Regards,"
 msgstr "問候，"
 
 #: templates/link.html.twig:46
-msgid "Create a password"
+#, fuzzy
+msgid "Create a secret"
 msgstr "創建密碼"
+
+#: templates/link.html.twig:51
+msgid "Secret"
+msgstr ""
+
+#: templates/link.html.twig:59
+#, fuzzy
+msgid "Secret lifetime"
+msgstr "Password lifetime"
 
 #: templates/link.html.twig:63
 msgid "Optional parameter"

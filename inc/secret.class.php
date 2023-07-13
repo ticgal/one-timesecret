@@ -79,7 +79,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
         curl_close($curl);
     }
 
-    public static function createSecret($params=[])
+    public static function createSecret($params = [])
     {
         global $CFG_GLPI;
 
@@ -129,7 +129,11 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
         $data = json_decode($response, true);
 
-        return "https://".$config->fields["server"]."/secret/".$data["secret_key"];
+        if(isset($data["secret_key"]) && $data["secret_key"] != "") {
+            return "https://".$config->fields["server"]."/secret/".$data["secret_key"];
+        } else {
+            return false;
+        }
     }
 
     public static function hoursToSeconds($hours)

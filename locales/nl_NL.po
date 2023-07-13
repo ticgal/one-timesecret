@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-13 09:31+0200\n"
+"POT-Creation-Date: 2023-07-13 11:06+0200\n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -13,6 +13,14 @@ msgstr ""
 #: front/link.form.php:39
 msgid "Password is missing"
 msgstr "Wachtwoord ontbreekt"
+
+#: front/link.form.php:46
+msgid "Something wrong happened"
+msgstr ""
+
+#: front/link.form.php:49
+msgid "Please, check the configuration"
+msgstr ""
 
 #: inc/config.class.php:63 inc/config.class.php:68 inc/config.class.php:86
 #: inc/link.class.php:48
@@ -31,7 +39,7 @@ msgstr "API sleutel"
 msgid "Lifetime"
 msgstr "levensduur"
 
-#: inc/config.class.php:105 templates/link.html.twig:59
+#: inc/config.class.php:105
 msgid "Password lifetime"
 msgstr "Wachtwoord levensduur"
 
@@ -39,11 +47,11 @@ msgstr "Wachtwoord levensduur"
 msgid "Display OneTimeSecret button"
 msgstr "OneTimeSecret-knop weergeven"
 
-#: inc/secret.class.php:158
+#: inc/secret.class.php:162
 msgid "Hi,"
 msgstr "Hallo"
 
-#: inc/secret.class.php:158
+#: inc/secret.class.php:162
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -51,7 +59,7 @@ msgstr ""
 "Zoals vermeld in ons vorige gesprek, is dit bericht bedoeld om gevoelige "
 "informatie met u te delen."
 
-#: inc/secret.class.php:159
+#: inc/secret.class.php:163
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -59,15 +67,15 @@ msgstr ""
 "Een geheime link <b> werkt maar 1 keer </b> en <b>verdwijnt dan voor altijd "
 "</b>.open dit niet als het niet voor u bedoeld is."
 
-#: inc/secret.class.php:160
+#: inc/secret.class.php:164
 msgid "Here you have"
 msgstr "Hier heb je"
 
-#: inc/secret.class.php:161
+#: inc/secret.class.php:165
 msgid "your secret link"
 msgstr "uw geheime link"
 
-#: inc/secret.class.php:164
+#: inc/secret.class.php:168
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -75,26 +83,36 @@ msgstr ""
 "Om veiligheidsredenen stuur ik u de vereiste wachtwoordzin om te openen via "
 "een alternatieve methode."
 
-#: inc/secret.class.php:166
+#: inc/secret.class.php:170
 msgid "Bear in mind:"
 msgstr "Hou rekening met:"
 
-#: inc/secret.class.php:166
+#: inc/secret.class.php:170
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "Een geheime link kan maar één keer worden geopend en vervalt daarna."
 
-#: inc/secret.class.php:167
+#: inc/secret.class.php:171
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "Deze geheime link vervalt %1$s na het aanmaken ervan."
 
-#: inc/secret.class.php:168
+#: inc/secret.class.php:172
 msgid "Regards,"
 msgstr "Met vriendelijke groeten,"
 
 #: templates/link.html.twig:46
-msgid "Create a password"
+#, fuzzy
+msgid "Create a secret"
 msgstr "Wachtwoord instellen"
+
+#: templates/link.html.twig:51
+msgid "Secret"
+msgstr ""
+
+#: templates/link.html.twig:59
+#, fuzzy
+msgid "Secret lifetime"
+msgstr "Wachtwoord levensduur"
 
 #: templates/link.html.twig:63
 msgid "Optional parameter"

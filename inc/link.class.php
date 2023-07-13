@@ -59,8 +59,9 @@ class PluginOnetimesecretLink extends CommonDBTM
             case Ticket::getType():
                 $req = $DB->request(
                     'glpi_profilerights',
-                    ['profiles_id' => $_SESSION['glpiactiveprofile']["id"],
-                        'name' => 'plugin_onetimesecret_send'
+                    [
+                        'profiles_id'   => $_SESSION['glpiactiveprofile']["id"],
+                        'name'          => 'plugin_onetimesecret_send'
                     ]
                 );
                 foreach ($req as $right) {

@@ -126,7 +126,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if ($item->getType()=='Config') {
+        if ($item->getType() == 'Config') {
             return self::getTypeName();
         }
         return '';
@@ -181,7 +181,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
             }
             $config->add([
                 'id' 		=> 1,
-                'users_id' => $users_id
+                'users_id'  => $users_id
             ]);
         }
     }
