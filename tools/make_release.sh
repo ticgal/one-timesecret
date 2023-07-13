@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PLUGINNAME="onetimesecret"
+PLUGINNAME="handover"
 
 if [ ! "$#" -eq 2 ]
 then
@@ -43,6 +43,11 @@ fi
 echo "Copy to  /tmp directory"
 git checkout-index -a -f --prefix=/tmp/$PLUGINNAME/
 
+if [ -e vendor ]
+then
+    cp -R vendor/ /tmp/$PLUGINNAME/
+fi
+
 echo "Move to this directory"
 cd /tmp/$PLUGINNAME
 
@@ -58,7 +63,6 @@ echo "Compile locale files"
 ./tools/generate_locales.sh
 
 echo "Delete various scripts and directories"
-rm -rf vendor
 rm -rf RoboFile.php
 rm -rf tools
 rm -rf phpunit
@@ -78,7 +82,7 @@ rm -rf locales/localazy*
 
 echo "Creating tarball"
 cd ..
-tar czf "glpi-$PLUGINNAME-$RELEASE.tar.tgz" $PLUGINNAME
+tar czf "$PLUGINNAME-$RELEASE.tar.tgz" $PLUGINNAME
 
 cd $INIT_PWD;
 
