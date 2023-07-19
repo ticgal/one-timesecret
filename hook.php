@@ -27,51 +27,49 @@
  @since     2021-2022
  ----------------------------------------------------------------------
 */
-function plugin_onetimesecret_install() {
-	$migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
+function plugin_onetimesecret_install()
+{
+    $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 
-	// Parse inc directory
-	foreach (glob(dirname(__FILE__).'/inc/*') as $filepath) {
-		// Load *.class.php files and get the class name
-		if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
-			$classname = 'PluginOnetimesecret' . ucfirst($matches[1]);
-			include_once($filepath);
-			// If the install method exists, load it
-			if (method_exists($classname, 'install')) {
-				$classname::install($migration);
-			}
-		}
-	}
-	$conf = Config::getConfigurationValues('core', ['notifications_push']);
-	if (!isset($conf['notifications_push'])) {
-		Config::setConfigurationValues('core', ['notifications_push' => 0]);
-	}
+    // Parse inc directory
+    foreach (glob(dirname(__FILE__).'/inc/*') as $filepath) {
+        // Load *.class.php files and get the class name
+        if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
+            $classname = 'PluginOnetimesecret' . ucfirst($matches[1]);
+            include_once($filepath);
+            // If the install method exists, load it
+            if (method_exists($classname, 'install')) {
+                $classname::install($migration);
+            }
+        }
+    }
+    $conf = Config::getConfigurationValues('core', ['notifications_push']);
+    if (!isset($conf['notifications_push'])) {
+        Config::setConfigurationValues('core', ['notifications_push' => 0]);
+    }
 
-
-	return true;
+    return true;
 }
 
-function plugin_onetimesecret_uninstall() {
-	$migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
+function plugin_onetimesecret_uninstall()
+{
+    $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 
-	// Parse inc directory
-	foreach (glob(dirname(__FILE__).'/inc/*') as $filepath) {
-		// Load *.class.php files and get the class name
-		if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
-			$classname = 'PluginOnetimesecret' . ucfirst($matches[1]);
-			include_once($filepath);
-			// If the uninstall method exists, load it
-			if (method_exists($classname, 'uninstall')) {
-				$classname::uninstall($migration);
-			}
-		}
-	}
-	$config=new Config();
-	$config->deleteConfigurationValues(['core', 'notifications_push']);
+    // Parse inc directory
+    foreach (glob(dirname(__FILE__).'/inc/*') as $filepath) {
+        // Load *.class.php files and get the class name
+        if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
+            $classname = 'PluginOnetimesecret' . ucfirst($matches[1]);
+            include_once($filepath);
+            // If the uninstall method exists, load it
+            if (method_exists($classname, 'uninstall')) {
+                $classname::uninstall($migration);
+            }
+        }
+    }
 
+    $config = new Config();
+    $config->deleteConfigurationValues(['core', 'notifications_push']);
 
-	return true;
+    return true;
 }
-
-
-

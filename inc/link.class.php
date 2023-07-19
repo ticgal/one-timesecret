@@ -71,9 +71,20 @@ class PluginOnetimesecretLink extends CommonDBTM
                             'type'      => PluginOnetimesecretLink::class,
                             'item'      => $obj,
                             'itiltype'  => 'PluginOnetimesecretLink',
-                            'icon'      => "fa-solid fa-s pe-1",
+                            'icon'      => "fa-solid fa-s px-1",
                             'label'     => self::getTypeName()
                         ];
+
+                        $color = 'DD4A22';
+                        $style = <<<CSS
+                            .action-PluginOnetimesecretLink_1, .action-PluginOnetimesecretLink_1:hover {
+                                background-color: #$color;
+                                color: white;
+                            }
+                        CSS;
+
+                        echo "<style>$style</style>";
+
                         return $timeline;
                     }
                 }
