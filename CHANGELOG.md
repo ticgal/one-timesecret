@@ -2,6 +2,7 @@
 
 ## 2.0.3 - 2023-07-12
 - Fix obsolete and unused functions #16303
+- Update styles and form template
 
 ## 2.0.2 - 2022-11-25
 ### Bugfixes
