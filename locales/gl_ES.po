@@ -1,124 +1,91 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: One-Time Secret-GLPI\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-19 12:44+0200\n"
-"Language: gl_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
+"Project-Id-Version: One-Time Secret-GLPI\n"
+"Language: gl_ES\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
+
+#: inc/config.class.php:105
+msgid "API key"
+msgstr "API key"
+
+#: inc/secret.class.php:155
+msgid "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient."
+msgstr "Unha ligazón secreta <strong>só funciona unha vez</strong> e <strong>despois desaparece para sempre.</strong>. Por favor, non a abras se non és o destinatario."
+
+#: inc/secret.class.php:162
+msgid "A secret link can only be opened once and will expire afterwards."
+msgstr "Unha ligazón secreta só se pode abrir unha vez e caducará despois."
+
+#: inc/secret.class.php:154
+msgid "As mentioned in our previous conversation, this message is meant to share sensitive information with you."
+msgstr "Como mencionamos na nosa conversa anterior, esta mensaxe está destinada a compartir información confidencial contigo."
+
+#: inc/secret.class.php:162
+msgid "Bear in mind:"
+msgstr "Ten en conta:"
+
+#: inc/config.class.php:92
+msgid "Configuration"
+msgstr "Configuración"
+
+#: inc/link.class.php:91
+msgid "Create a password"
+msgstr "Crear un contrasinal"
+
+#: inc/profile.class.php:94
+msgid "Display OneTimeSecret button"
+msgstr "Mostra o botón One-Time Secret"
+
+#: inc/secret.class.php:156
+msgid "Here you have"
+msgstr "Aquí tes"
+
+#: inc/secret.class.php:154
+msgid "Hi,"
+msgstr "Ola!"
+
+#: inc/secret.class.php:160
+msgid "I will send you the required passphrase to open it using an alternative method for security reasons."
+msgstr "Enviareiche a frase de acceso necesaria para abrila mediante un método alternativo por motivos de seguridade."
+
+#: inc/config.class.php:109
+msgid "Lifetime"
+msgstr "Vida útil"
+
+#: inc/config.class.php:57 inc/config.class.php:61 inc/config.class.php:92
+#: inc/link.class.php:44
+msgid "One-Time Secret"
+msgstr "One-Time Secret"
+
+#: inc/link.class.php:127
+msgid "Optional parameter"
+msgstr "Parámetro opcional"
+
+#: inc/link.class.php:130
+msgid "Passphrase"
+msgstr "Frase de contrasinal"
 
 #: front/link.form.php:39
 msgid "Password is missing"
 msgstr "Falta o contrasinal"
 
-#: front/link.form.php:46
-msgid "Something wrong happened"
-msgstr ""
-
-#: front/link.form.php:49
-msgid "Please, check the configuration"
-msgstr ""
-
-#: inc/config.class.php:63 inc/config.class.php:68 inc/config.class.php:86
-#: inc/link.class.php:48
-msgid "One-Time Secret"
-msgstr "One-Time Secret"
-
-#: inc/config.class.php:86
-msgid "Configuration"
-msgstr "Configuración"
-
-#: inc/config.class.php:99
-msgid "API key"
-msgstr "API key"
-
-#: inc/config.class.php:103
-msgid "Lifetime"
-msgstr "Vida útil"
-
-#: inc/config.class.php:105
+#: inc/config.class.php:111 inc/link.class.php:108
 msgid "Password lifetime"
 msgstr "Duración do contrasinal"
 
-#: inc/profile.class.php:102
-msgid "Display OneTimeSecret button"
-msgstr "Mostra o botón One-Time Secret"
-
-#: inc/secret.class.php:162
-msgid "Hi,"
-msgstr "Ola!"
-
-#: inc/secret.class.php:162
-msgid ""
-"As mentioned in our previous conversation, this message is meant to share "
-"sensitive information with you."
-msgstr ""
-"Como mencionamos na nosa conversa anterior, esta mensaxe está destinada a "
-"compartir información confidencial contigo."
+#: inc/secret.class.php:164
+msgid "Regards,"
+msgstr "Saúdos,"
 
 #: inc/secret.class.php:163
-msgid ""
-"A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
-"not open it if you are not the intended recipient."
-msgstr ""
-"Unha ligazón secreta <strong>só funciona unha vez</strong> e <strong>despois "
-"desaparece para sempre.</strong>. Por favor, non a abras se non és o "
-"destinatario."
-
-#: inc/secret.class.php:164
-msgid "Here you have"
-msgstr "Aquí tes"
-
-#: inc/secret.class.php:165
-msgid "your secret link"
-msgstr "a túa ligazón segreda"
-
-#: inc/secret.class.php:168
-msgid ""
-"I will send you the required passphrase to open it using an alternative "
-"method for security reasons."
-msgstr ""
-"Enviareiche a frase de acceso necesaria para abrila mediante un método "
-"alternativo por motivos de seguridade."
-
-#: inc/secret.class.php:170
-msgid "Bear in mind:"
-msgstr "Ten en conta:"
-
-#: inc/secret.class.php:170
-msgid "A secret link can only be opened once and will expire afterwards."
-msgstr "Unha ligazón secreta só se pode abrir unha vez e caducará despois."
-
-#: inc/secret.class.php:171
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "Esta ligazón secreta caducará %1$s despois da súa xeración."
 
-#: inc/secret.class.php:172
-msgid "Regards,"
-msgstr "Saúdos,"
-
-#: templates/link.html.twig:46
-#, fuzzy
-msgid "Create a secret"
-msgstr "Crear un contrasinal"
-
-#: templates/link.html.twig:51
-msgid "Secret"
-msgstr ""
-
-#: templates/link.html.twig:59
-#, fuzzy
-msgid "Secret lifetime"
-msgstr "Duración do contrasinal"
-
-#: templates/link.html.twig:63
-msgid "Optional parameter"
-msgstr "Parámetro opcional"
-
-#: templates/link.html.twig:68
-msgid "Passphrase"
-msgstr "Frase de contrasinal"
+#: inc/secret.class.php:157
+msgid "your secret link"
+msgstr "a túa ligazón segreda"

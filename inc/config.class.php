@@ -62,12 +62,12 @@ class PluginOnetimesecretConfig extends CommonDBTM
 
     public static function getTypeName($nb=0)
     {
-        return __('One-Time Secret', 'onetimesecret');
+        return 'One-Time Secret';
     }
 
     public static function getMenuName()
     {
-        return __('One-Time Secret', 'onetimesecret');
+        return 'One-Time Secret';
     }
 
     public static function getInstance()

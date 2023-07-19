@@ -186,5 +186,4 @@ class PluginOnetimesecretProfile extends Profile
             ProfileRight::deleteProfileRights([$data['field']]);
         }
     }
-
 }
