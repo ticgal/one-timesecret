@@ -31,6 +31,8 @@ if(!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\Application\View\TemplateRenderer;
+
 class PluginOnetimesecretConfig extends CommonDBTM
 {
     private static $_instance = null;
@@ -79,47 +81,38 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return self::$_instance;
     }
 
+    public static function getLifetimes()
+    {
+        $one_day_in_sec = 86400;
+        $one_hour_in_sec = 3600;
+        $one_minute_in_sec = 60;
+
+        $lifetimes = [];
+
+        $lifetimes[$one_day_in_sec*7] = sprintf(_n('%d day', '%d days', 7), 7);
+        $lifetimes[$one_day_in_sec*3] = sprintf(_n('%d day', '%d days', 3), 3);
+        $lifetimes[$one_day_in_sec] = sprintf(_n('%d day', '%d days', 1), 1);
+        $lifetimes[$one_hour_in_sec*12] = sprintf(_n('%d hour', '%d hours', 12), 12);
+        $lifetimes[$one_hour_in_sec*4] = sprintf(_n('%d hour', '%d hours', 4), 4);
+        $lifetimes[$one_hour_in_sec] = sprintf(_n('%d hour', '%d hours', 1), 1);
+        $lifetimes[$one_minute_in_sec*30] = sprintf(_n('%d minute', '%d minutes', 30), 30);
+        $lifetimes[$one_minute_in_sec*5] = sprintf(_n('%d minute', '%d minutes', 5), 5);
+
+        return $lifetimes;
+    }
+
     public static function showConfigForm()
     {
         $config = self::getInstance();
 
-        $config->showFormHeader(['colspan' => 2, 'formtitle' => __('One-Time Secret', 'onetimesecret')." - ".__('Configuration', 'onetimesecret')]);
+        $lifetimes = self::getLifetimes();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>".__("Server")."</td><td>";
-        echo "<input type='text' name='server' id='server' size='40'  value=\"".$config->fields["server"]."\">";
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>".__("Email")."</td><td>";
-        echo "<input type='text' name='email' id='email' size='40' value=\"".$config->fields["email"]."\">";
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>".__("API key", "onetimesecret")."</td><td>";
-        echo "<input type='password' name='apikey' id='apikey' size='40' value='".(new GLPIKey())->decrypt($config->fields["apikey"])."'>";
-        echo "</td></tr>\n";
-
-        echo "<tr><th colspan='4'>".__('One-Time Secret')." - ".__('Lifetime', 'onetimesecret')."</th></tr>";
-
-        echo "<td>".__("Password lifetime", "onetimesecret")."</td><td>";
-
-        $one_day_in_sec = 86400;
-        $one_minute_in_sec = 60;
-        $possible_values = [];
-
-        $possible_values[$one_day_in_sec*7] = sprintf(_n('%d day', '%d days', 7), 7);
-        $possible_values[$one_day_in_sec*3] = sprintf(_n('%d day', '%d days', 3), 3);
-        $possible_values[$one_day_in_sec] = sprintf(_n('%d day', '%d days', 1), 1);
-        $possible_values[($one_minute_in_sec*60)*12] = sprintf(_n('%d hour', '%d hours', 12), 12);
-        $possible_values[($one_minute_in_sec*60)*4] = sprintf(_n('%d hour', '%d hours', 4), 4);
-        $possible_values[$one_minute_in_sec*60] = sprintf(_n('%d hour', '%d hours', 1), 1);
-        $possible_values[$one_minute_in_sec*30] = sprintf(_n('%d minute', '%d minutes', 30), 30);
-        $possible_values[$one_minute_in_sec*5] = sprintf(_n('%d minute', '%d minutes', 5), 5);
-
-        Dropdown::showFromArray('lifetime', $possible_values, ['value' => $config->fields["lifetime"]]);
-
-        $config->showFormButtons(['candel' => false]);
+        $template = "@onetimesecret/config.html.twig";
+        $template_options = [
+            'item'      => $config,
+            'lifetimes' => $lifetimes
+        ];
+        TemplateRenderer::getInstance()->display($template, $template_options);
 
         return false;
     }

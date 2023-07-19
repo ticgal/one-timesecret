@@ -101,18 +101,7 @@ class PluginOnetimesecretLink extends CommonDBTM
         $item = $params['parent'];
         $entity = $item->getEntityID();
 
-        $one_day_in_sec = 86400;
-        $one_minute_in_sec = 60;
-        $possible_values = [];
-
-        $possible_values[$one_day_in_sec*7] = sprintf(_n('%d day', '%d days', 7), 7);
-        $possible_values[$one_day_in_sec*3] = sprintf(_n('%d day', '%d days', 3), 3);
-        $possible_values[$one_day_in_sec] = sprintf(_n('%d day', '%d days', 1), 1);
-        $possible_values[($one_minute_in_sec*60)*12] = sprintf(_n('%d hour', '%d hours', 12), 12);
-        $possible_values[($one_minute_in_sec*60)*4] = sprintf(_n('%d hour', '%d hours', 4), 4);
-        $possible_values[$one_minute_in_sec*60] = sprintf(_n('%d hour', '%d hours', 1), 1);
-        $possible_values[$one_minute_in_sec*30] = sprintf(_n('%d minute', '%d minutes', 30), 30);
-        $possible_values[$one_minute_in_sec*5] = sprintf(_n('%d minute', '%d minutes', 5), 5);
+        $lifetimes = PluginOnetimesecretConfig::getLifetimes();
 
         $template = "@onetimesecret/link.html.twig";
         $template_options = [
@@ -120,7 +109,7 @@ class PluginOnetimesecretLink extends CommonDBTM
             'entity'            => $entity,
             'action'            => Toolbox::getItemTypeFormURL(self::getType()),
             'rand'              => $rand,
-            'possible_values'   => $possible_values,
+            'possible_values'   => $lifetimes,
             'lifetime'          => $config->fields["lifetime"]
         ];
         TemplateRenderer::getInstance()->display($template, $template_options);

@@ -1,0 +1,103 @@
+{#
+-------------------------------------------------------------------------
+OneTimeSecret plugin for GLPI
+Copyright (C) 2021-2023 by the TICgal Team.
+https://www.tic.gal
+-------------------------------------------------------------------------
+LICENSE
+This file is part of the OneTimeSecret plugin.
+OneTimeSecret plugin is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+OneTimeSecret plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with OneTimeSecret. If not, see
+<http: //www.gnu.org/licenses />.
+--------------------------------------------------------------------------
+@package OneTimeSecret
+@author the TICgal team
+@copyright Copyright (c) 2021-2023 TICgal team
+@license AGPL License 3.0 or (at your option) any later version
+http://www.gnu.org/licenses/agpl-3.0-standalone.html
+@link https://www.tic.gal
+@since 2021-2023
+----------------------------------------------------------------------
+#}
+
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import 'components/form/buttons.html.twig' as buttons %}
+
+{% set no_header = no_header|default(not item.isNewItem() and not _get._in_modal|default(false)) %}
+{% set bg = '' %}
+{% if item.isDeleted() %}
+{% set bg = 'asset-deleted' %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+
+    {{ include('components/form/header.html.twig', {'in_twig': true, 'no_header': true}) }}
+    {% set params = params ?? [] %}
+    {% set field_options = {} %}
+
+    <div class="card-body d-flex flex-wrap">
+        <div class="col-12 col-xxl-12 flex-column">
+            <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+                <div class="row flex-row align-items-start flex-grow-1">
+                    <div class="row flex-row">
+                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="id" value="{{item.fields['id']}}" />
+
+                        {% if item.isfield('server') %}
+                        {{ fields.textField(
+                        'server',
+                        item.fields['server'],
+                        __("Server"),
+                        field_options
+                        ) }}
+                        {% endif %}
+
+                        {% if item.isfield('email') %}
+                        {{ fields.textField(
+                        'email',
+                        item.fields['email'],
+                        __("Email"),
+                        field_options
+                        ) }}
+                        {% endif %}
+
+                        {% if item.isField('apikey') %}
+                        {{ fields.passwordField(
+                        'apikey',
+                        item.fields['apikey'],
+                        __('API key', 'onetimesecret'),
+                        field_options
+                        ) }}
+                        {% endif %}
+
+                        <div class="hr-text">
+                            <i class="fa fa-stopwatch"></i>
+                            <span>{{__('Lifetime', 'onetimesecret')}}</span>
+                        </div>
+
+                        {% if item.isField('lifetime') %}
+                        {{ fields.dropdownArrayField(
+                        'lifetime',
+                        item.fields['lifetime'],
+                        lifetimes,
+                        __('Secret lifetime', 'onetimesecret'),
+                        field_options
+                        ) }}
+                        {% endif %}
+
+                    </div> {# .row #}
+                </div> {# .row #}
+            </div> {# .flex-row #}
+        </div> {# .flex-column #}
+    </div> {# .flex-wrap #}
+
+    {{ include('components/form/buttons.html.twig') }}
+</div>

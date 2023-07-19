@@ -1,21 +1,14 @@
-# English translations for PACKAGE package.
-# Copyright (C) 2023 TICgal
-# This file is distributed under the same license as the PACKAGE package.
-# Automatically generated, 2023.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-13 11:06+0200\n"
-"PO-Revision-Date: 2023-07-13 11:06+0200\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"POT-Creation-Date: 2023-07-19 12:44+0200\n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Localazy (https://localazy.com)\n"
+"Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
 #: front/link.form.php:39
 msgid "Password is missing"
@@ -23,11 +16,11 @@ msgstr "Password is missing"
 
 #: front/link.form.php:46
 msgid "Something wrong happened"
-msgstr "Something wrong happened"
+msgstr ""
 
 #: front/link.form.php:49
 msgid "Please, check the configuration"
-msgstr "Please, check the configuration"
+msgstr ""
 
 #: inc/config.class.php:63 inc/config.class.php:68 inc/config.class.php:86
 #: inc/link.class.php:48
@@ -108,16 +101,18 @@ msgid "Regards,"
 msgstr "Regards,"
 
 #: templates/link.html.twig:46
+#, fuzzy
 msgid "Create a secret"
-msgstr "Create a secret"
+msgstr "Create a password"
 
 #: templates/link.html.twig:51
 msgid "Secret"
-msgstr "Secret"
+msgstr ""
 
 #: templates/link.html.twig:59
+#, fuzzy
 msgid "Secret lifetime"
-msgstr "Secret lifetime"
+msgstr "Password lifetime"
 
 #: templates/link.html.twig:63
 msgid "Optional parameter"
