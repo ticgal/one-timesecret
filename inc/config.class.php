@@ -1,4 +1,5 @@
 <?php
+
 /*
  -------------------------------------------------------------------------
  OneTimeSecret plugin for GLPI
@@ -27,7 +28,8 @@
  @since     2021-2022
  ----------------------------------------------------------------------
 */
-if(!defined('GLPI_ROOT')) {
+
+if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
@@ -60,7 +62,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return Session::haveRight('config', UPDATE);
     }
 
-    public static function getTypeName($nb=0)
+    public static function getTypeName($nb = 0)
     {
         return 'One-Time Secret';
     }
@@ -89,14 +91,14 @@ class PluginOnetimesecretConfig extends CommonDBTM
 
         $lifetimes = [];
 
-        $lifetimes[$one_day_in_sec*7] = sprintf(_n('%d day', '%d days', 7), 7);
-        $lifetimes[$one_day_in_sec*3] = sprintf(_n('%d day', '%d days', 3), 3);
+        $lifetimes[$one_day_in_sec * 7] = sprintf(_n('%d day', '%d days', 7), 7);
+        $lifetimes[$one_day_in_sec * 3] = sprintf(_n('%d day', '%d days', 3), 3);
         $lifetimes[$one_day_in_sec] = sprintf(_n('%d day', '%d days', 1), 1);
-        $lifetimes[$one_hour_in_sec*12] = sprintf(_n('%d hour', '%d hours', 12), 12);
-        $lifetimes[$one_hour_in_sec*4] = sprintf(_n('%d hour', '%d hours', 4), 4);
+        $lifetimes[$one_hour_in_sec * 12] = sprintf(_n('%d hour', '%d hours', 12), 12);
+        $lifetimes[$one_hour_in_sec * 4] = sprintf(_n('%d hour', '%d hours', 4), 4);
         $lifetimes[$one_hour_in_sec] = sprintf(_n('%d hour', '%d hours', 1), 1);
-        $lifetimes[$one_minute_in_sec*30] = sprintf(_n('%d minute', '%d minutes', 30), 30);
-        $lifetimes[$one_minute_in_sec*5] = sprintf(_n('%d minute', '%d minutes', 5), 5);
+        $lifetimes[$one_minute_in_sec * 30] = sprintf(_n('%d minute', '%d minutes', 30), 30);
+        $lifetimes[$one_minute_in_sec * 5] = sprintf(_n('%d minute', '%d minutes', 5), 5);
 
         return $lifetimes;
     }
@@ -137,9 +139,9 @@ class PluginOnetimesecretConfig extends CommonDBTM
     {
         global $DB;
 
-        $default_charset 	= DBConnection::getDefaultCharset();
-        $default_collation 	= DBConnection::getDefaultCollation();
-        $default_key_sign 	= DBConnection::getDefaultPrimaryKeySignOption();
+        $default_charset    = DBConnection::getDefaultCharset();
+        $default_collation  = DBConnection::getDefaultCollation();
+        $default_key_sign   = DBConnection::getDefaultPrimaryKeySignOption();
 
         $table = self::getTable();
         $config = new self();
@@ -163,8 +165,8 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $a_users = $user->find(['name' => 'Plugin_Onetimesecret']);
             if (count($a_users) == '0') {
                 $input = [
-                    'name' 		=> 'Plugin_Onetimesecret',
-                    'password' 	=> mt_rand(30, 39),
+                    'name'      => 'Plugin_Onetimesecret',
+                    'password'  => mt_rand(30, 39),
                     'firstname' => 'Plugin_Onetimesecret'
                 ];
                 $users_id = $user->add($input);
@@ -173,7 +175,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
                 $users_id = $user['id'];
             }
             $config->add([
-                'id' 		=> 1,
+                'id'        => 1,
                 'users_id'  => $users_id
             ]);
         }

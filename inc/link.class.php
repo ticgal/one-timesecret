@@ -93,7 +93,7 @@ class PluginOnetimesecretLink extends CommonDBTM
         return [];
     }
 
-    public function showForm($ID, array $params=[])
+    public function showForm($ID, array $params = [])
     {
         $config = PluginOnetimesecretConfig::getInstance();
 
