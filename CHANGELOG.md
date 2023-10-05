@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 2.1.0 - 2023-10-05
+### Features
+- Fix form for GLPI 10.0.10  #17725
+
 ## 2.0.3 - 2023-07-12
 - Fix obsolete and unused functions #16303
 - Update styles and form template
