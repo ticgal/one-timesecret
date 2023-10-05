@@ -136,6 +136,21 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return true;
     }
 
+    public function prepareInputForUpdate($input)
+    {
+        if (isset($input['apikey'])) {
+            if (!empty($input['apikey'])) {
+                $input['apikey'] = (new GLPIKey())->encrypt($input["apikey"]);
+            } else {
+                unset($input['apikey']);
+            }
+        }
+        if (isset($input['_blank_apikey'])) {
+            $input['apikey'] = '';
+        }
+        return $input;
+    }
+
     public static function install(Migration $migration)
     {
         global $DB;
