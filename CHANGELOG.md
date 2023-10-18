@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 2.1.1 - 2023-10-18
+### Bugfixes
+- Fix unused field that generates warning php logs #17969
+
 ## 2.1.0 - 2023-10-05
 ### Features
 - Fix form for GLPI 10.0.10  #17725
