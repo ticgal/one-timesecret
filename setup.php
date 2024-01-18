@@ -69,11 +69,11 @@ function plugin_init_onetimesecret()
 function plugin_version_onetimesecret()
 {
     return [
-        'name'		=> 'OneTimeSecret',
-        'version' 	=> PLUGIN_ONETIMESECRET_VERSION,
-        'author' 	=> '<a href="https://tic.gal">TICgal</a>',
-        'homepage' 	=> 'https://tic.gal',
-        'license' 	=> 'GPLv3+',
+        'name'      => 'OneTimeSecret',
+        'version'   => PLUGIN_ONETIMESECRET_VERSION,
+        'author'    => '<a href="https://tic.gal">TICgal</a>',
+        'homepage'  => 'https://tic.gal',
+        'license'   => 'GPLv3+',
         'minGlpiVersion' => PLUGIN_ONETIMESECRET_MIN_GLPI,
         'requirements' => [
             'glpi'  => [

@@ -83,7 +83,7 @@ class PluginOnetimesecretLink extends CommonDBTM
                                 background-color: #$color;
                                 color: white;
                             }
-                        CSS;
+CSS;
 
                         echo "<style>$style</style>";
 
@@ -134,12 +134,13 @@ class PluginOnetimesecretLink extends CommonDBTM
         if (!$DB->tableExists($table)) {
             $migration->displayMessage("Installing $table");
             $query = "CREATE TABLE IF NOT EXISTS $table (
-			`id` int {$default_key_sign} NOT NULL auto_increment,
-			`secret` VARCHAR(255) NOT NULL DEFAULT '',
-			`ttl` int(11) NOT NULL DEFAULT '24',
-			`passphrase` VARCHAR(255) NOT NULL DEFAULT '',
-			PRIMARY KEY (`id`)
-		)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+                `id` int {$default_key_sign} NOT NULL auto_increment,
+                `secret` VARCHAR(255) NOT NULL DEFAULT '',
+                `ttl` int(11) NOT NULL DEFAULT '24',
+                `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
+                PRIMARY KEY (`id`)
+            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset}
+            COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->query($query) or die($DB->error());
         }
