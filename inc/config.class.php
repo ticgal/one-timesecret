@@ -127,7 +127,8 @@ class PluginOnetimesecretConfig extends CommonDBTM
         $template = "@onetimesecret/config.html.twig";
         $template_options = [
             'item'      => $config,
-            'lifetimes' => $lifetimes
+            'lifetimes' => $lifetimes,
+            'conn'      => PluginOnetimesecretSecret::authentication()
         ];
         TemplateRenderer::getInstance()->display($template, $template_options);
 

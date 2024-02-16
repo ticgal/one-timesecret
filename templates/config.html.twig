@@ -43,61 +43,64 @@
     {% set params = params ?? [] %}
     {% set field_options = {'full_width': true} %}
 
-    <div class="card-body d-flex flex-wrap">
-        <div class="col-12 col-xxl-12 flex-column">
-            <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
-                <div class="row flex-row align-items-start flex-grow-1">
-                    <div class="row flex-row">
-                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
-                        <input type="hidden" name="id" value="{{item.fields['id']}}" />
+    <div class="row">
+        <div class="row ps-4">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="id" value="{{item.fields['id']}}" />
 
-                        {% if item.isfield('server') %}
-                        {{ fields.textField(
-                        'server',
-                        item.fields['server'],
-                        __("Server"),
-                        field_options
-                        ) }}
-                        {% endif %}
+            {% if item.isfield('server') %}
+            {{ fields.textField(
+            'server',
+            item.fields['server'],
+            __("Server"),
+            field_options
+            ) }}
+            {% endif %}
 
-                        {% if item.isfield('email') %}
-                        {{ fields.textField(
-                        'email',
-                        item.fields['email'],
-                        __("Email"),
-                        field_options
-                        ) }}
-                        {% endif %}
+            {% if item.isfield('email') %}
+            {{ fields.textField(
+            'email',
+            item.fields['email'],
+            __("Email"),
+            field_options
+            ) }}
+            {% endif %}
 
-                        {% if item.isField('apikey') %}
-                        {{ fields.passwordField(
-                        'apikey',
-                        item.fields['apikey'],
-                        __('API key', 'onetimesecret'),
-                        field_options
-                        ) }}
-                        {% endif %}
+            {% if item.isField('apikey') %}
+            {{ fields.passwordField(
+            'apikey',
+            item.fields['apikey'],
+            __('API key', 'onetimesecret'),
+            field_options
+            ) }}
+            {% endif %}
 
-                        <div class="hr-text">
-                            <i class="fa fa-stopwatch"></i>
-                            <span>{{__('Lifetime', 'onetimesecret')}}</span>
-                        </div>
+            <div class="hr-text">
+                <i class="fa fa-stopwatch"></i>
+                <span>{{__('Lifetime', 'onetimesecret')}}</span>
+            </div>
 
-                        {% if item.isField('lifetime') %}
-                        {{ fields.dropdownArrayField(
-                        'lifetime',
-                        item.fields['lifetime'],
-                        lifetimes,
-                        __('Secret lifetime', 'onetimesecret'),
-                        field_options|merge({'width': 'auto'})
-                        ) }}
-                        {% endif %}
+            {% if item.isField('lifetime') %}
+            {{ fields.dropdownArrayField(
+            'lifetime',
+            item.fields['lifetime'],
+            lifetimes,
+            __('Secret lifetime', 'onetimesecret'),
+            field_options|merge({'width': 'auto'})
+            ) }}
+            {% endif %}
+        </div>
+    </div>
 
-                    </div> {# .row #}
-                </div> {# .row #}
-            </div> {# .flex-row #}
-        </div> {# .flex-column #}
-    </div> {# .flex-wrap #}
+    <div class="form-field row col-12 mt-2">
+        {% if conn and conn[0] matches '{^2\d{2}}' %}
+        <label class="form-label text-xxl-end">{{__('Connection established','onetimesecret')}}
+            <i class="fa fa-circle" style="color: #23E767;"></i></label>
+        {% else %}
+        <label class="form-label text-xxl-end">{{__('Check credentials','onetimesecret')}}
+            <i class="fa fa-circle" style="color: #E72323;"></i></label>
+        {% endif %}
+    </div>
 
     {{ include('components/form/buttons.html.twig') }}
 </div>

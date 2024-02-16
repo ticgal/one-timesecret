@@ -41,9 +41,9 @@ class PluginOnetimesecretSecret extends CommonDBTM
     /**
      * authentication
      *
-     * @return void
+     * @return array
      */
-    public static function authentication(): void
+    public static function authentication(): array
     {
         global $CFG_GLPI;
 
@@ -85,6 +85,8 @@ class PluginOnetimesecretSecret extends CommonDBTM
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
+
+        return [$httpcode, $result];
     }
 
     /**
