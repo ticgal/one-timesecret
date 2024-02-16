@@ -90,16 +90,16 @@
             ) }}
             {% endif %}
         </div>
-    </div>
 
-    <div class="form-field row col-12 mt-2">
-        {% if conn and conn[0] matches '{^2\d{2}}' %}
-        <label class="form-label text-xxl-end">{{__('Connection established','onetimesecret')}}
-            <i class="fa fa-circle" style="color: #23E767;"></i></label>
-        {% else %}
-        <label class="form-label text-xxl-end">{{__('Check credentials','onetimesecret')}}
-            <i class="fa fa-circle" style="color: #E72323;"></i></label>
-        {% endif %}
+        <div class="form-field row col-12 mt-2">
+            {% if conn and conn[0] matches '{^2\d{2}}' %}
+            <label class="form-label text-xxl-end">{{__('Connection established','onetimesecret')}}
+                <i class="fa fa-circle" style="color: #23E767;"></i></label>
+            {% else %}
+            <label class="form-label text-xxl-end">{{__('Check credentials','onetimesecret')}}
+                <i class="fa fa-circle" style="color: #E72323;"></i></label>
+            {% endif %}
+        </div>
     </div>
 
     {{ include('components/form/buttons.html.twig') }}
