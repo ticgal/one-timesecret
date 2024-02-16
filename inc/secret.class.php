@@ -36,17 +36,22 @@ if (!defined("GLPI_ROOT")) {
     die("Sorry. You can't access directly to this file");
 }
 
-
 class PluginOnetimesecretSecret extends CommonDBTM
 {
-    public static function authentication()
+    /**
+     * authentication
+     *
+     * @return void
+     */
+    public static function authentication(): void
     {
         global $CFG_GLPI;
 
         $config = PluginOnetimesecretConfig::getInstance();
         $apikey = (new GLPIKey())->decrypt($config->fields["apikey"]);
         $curl = curl_init();
-        $server = "https://" . $config->fields["email"] . ":" . $apikey . "@" . $config->fields["server"] . "/api";
+        $server = "https://" . $config->fields["email"] . ":" . $apikey;
+        $server .= "@" . $config->fields["server"] . "/api";
 
         curl_setopt($curl, CURLOPT_URL, $server);
         if (!empty($CFG_GLPI["proxy_name"])) {
@@ -82,7 +87,13 @@ class PluginOnetimesecretSecret extends CommonDBTM
         curl_close($curl);
     }
 
-    public static function createSecret($params = [])
+    /**
+     * createSecret
+     *
+     * @param  array $params
+     * @return bool|string
+     */
+    public static function createSecret(array $params = []): bool|string
     {
         global $CFG_GLPI;
 
@@ -139,14 +150,27 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
     }
 
-    public static function hoursToSeconds($hours)
+    /**
+     * hoursToSeconds
+     *
+     * @param  int $hours
+     * @return int
+     */
+    public static function hoursToSeconds(int $hours): int
     {
         $minutes = $hours * 60;
         $seconds = $minutes * 60;
         return $seconds;
     }
 
-    public static function addFollowup($params, $text = '')
+    /**
+     * addFollowup
+     *
+     * @param  array $params
+     * @param  string $text
+     * @return bool
+     */
+    public static function addFollowup(array $params, string $text = ''): bool
     {
         global $DB, $CFG_GLPI;
 

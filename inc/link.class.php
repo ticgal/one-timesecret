@@ -40,23 +40,48 @@ class PluginOnetimesecretLink extends CommonDBTM
 {
     public static $rightname = 'followup';
 
-    public function getItilObjectItemType()
+    /**
+     * getItilObjectItemType
+     *
+     * @return string
+     */
+    public function getItilObjectItemType(): string
     {
         return str_replace('One-Time Secret', '', $this->getType());
     }
 
-    public static function getTypeName($nb = 0)
+    /**
+     * getTypeName
+     *
+     * @param  mixed $nb
+     * @return string
+     */
+    public static function getTypeName($nb = 0): string
     {
         return __('One-Time Secret', 'onetimesecret');
     }
 
-    public static function timelineAction($params = [])
+    /**
+     * getEmpty
+     *
+     * @return bool
+     */
+    public function getEmpty(): bool
+    {
+        return true;
+    }
+
+    /**
+     * timelineAction
+     *
+     * @param  array $params
+     * @return array
+     */
+    public static function timelineAction(array $params = []): array
     {
         global $DB;
 
         $item = $params['item'];
-        $config = PluginOnetimesecretConfig::getInstance();
-
         switch ($item::getType()) {
             case Ticket::getType():
                 $req = $DB->request(
@@ -77,25 +102,25 @@ class PluginOnetimesecretLink extends CommonDBTM
                             'label'     => self::getTypeName()
                         ];
 
-                        $color = 'DD4A22';
-                        $style = <<<CSS
-                            .action-PluginOnetimesecretLink_1, .action-PluginOnetimesecretLink_1:hover {
-                                background-color: #$color;
-                                color: white;
-                            }
-CSS;
-
-                        echo "<style>$style</style>";
-
+                        $href = Plugin::getWebDir('onetimesecret') . "/css/link.css";
+                        echo "<link href='{$href}' rel='stylesheet' />";
                         return $timeline;
                     }
                 }
                 break;
         }
+
         return [];
     }
 
-    public function showForm($ID, array $params = [])
+    /**
+     * showForm
+     *
+     * @param  mixed $ID
+     * @param  mixed $params
+     * @return void
+     */
+    public function showForm($ID, array $params = []): void
     {
         $config = PluginOnetimesecretConfig::getInstance();
 
@@ -117,12 +142,13 @@ CSS;
         TemplateRenderer::getInstance()->display($template, $template_options);
     }
 
-    public function getEmpty()
-    {
-        return true;
-    }
-
-    public static function install(Migration $migration)
+    /**
+     * install
+     *
+     * @param  mixed $migration
+     * @return void
+     */
+    public static function install(Migration $migration): void
     {
         global $DB;
         $default_charset = DBConnection::getDefaultCharset();

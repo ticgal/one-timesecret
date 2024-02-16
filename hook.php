@@ -30,7 +30,12 @@
  * -------------------------------------------------------------------------
  */
 
-function plugin_onetimesecret_install()
+/**
+ * plugin_onetimesecret_install
+ *
+ * @return bool
+ */
+function plugin_onetimesecret_install(): bool
 {
     $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 
@@ -55,7 +60,12 @@ function plugin_onetimesecret_install()
     return true;
 }
 
-function plugin_onetimesecret_uninstall()
+/**
+ * plugin_onetimesecret_uninstall
+ *
+ * @return bool
+ */
+function plugin_onetimesecret_uninstall(): bool
 {
     $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 

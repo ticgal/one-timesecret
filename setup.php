@@ -41,7 +41,7 @@ define('PLUGIN_ONETIMESECRET_MAX_GLPI', '11.0');
  *
  * @return void
  */
-function plugin_init_onetimesecret()
+function plugin_init_onetimesecret(): void
 {
     global $PLUGIN_HOOKS;
 
@@ -66,7 +66,7 @@ function plugin_init_onetimesecret()
  *
  * @return array
  */
-function plugin_version_onetimesecret()
+function plugin_version_onetimesecret(): array
 {
     return [
         'name'      => 'OneTimeSecret',
@@ -89,7 +89,7 @@ function plugin_version_onetimesecret()
  *
  * @return boolean
  */
-function plugin_onetimesecret_check_prerequisites()
+function plugin_onetimesecret_check_prerequisites(): bool
 {
     return true;
 }
@@ -102,7 +102,7 @@ function plugin_onetimesecret_check_prerequisites()
  *
  * @return boolean
  */
-function plugin_onetimesecret_check_config($verbose = false)
+function plugin_onetimesecret_check_config($verbose = false): bool
 {
     if (true) { // Your configuration check
         return true;
@@ -111,5 +111,6 @@ function plugin_onetimesecret_check_config($verbose = false)
     if ($verbose) {
         echo "Installed, but not configured";
     }
+
     return false;
 }
