@@ -41,7 +41,7 @@
 
     {{ include('components/form/header.html.twig', {'in_twig': true, 'no_header': true}) }}
     {% set params = params ?? [] %}
-    {% set field_options = {} %}
+    {% set field_options = {'full_width': true} %}
 
     <div class="card-body d-flex flex-wrap">
         <div class="col-12 col-xxl-12 flex-column">
@@ -89,7 +89,7 @@
                         item.fields['lifetime'],
                         lifetimes,
                         __('Secret lifetime', 'onetimesecret'),
-                        field_options
+                        field_options|merge({'width': 'auto'})
                         ) }}
                         {% endif %}
 
