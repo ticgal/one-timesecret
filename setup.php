@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 
 use Glpi\Plugin\Hooks;
 
-define('PLUGIN_ONETIMESECRET_VERSION', '2.1.1');
+define('PLUGIN_ONETIMESECRET_VERSION', '2.1.2');
 define('PLUGIN_ONETIMESECRET_MIN_GLPI', '10.0.10');
 define('PLUGIN_ONETIMESECRET_MAX_GLPI', '11.0');
 
@@ -45,13 +45,13 @@ function plugin_init_onetimesecret()
 {
     global $PLUGIN_HOOKS;
 
-    $PLUGIN_HOOKS['csrf_compliant']['onetimesecret'] = true;
+    $PLUGIN_HOOKS[Hooks::CSRF_COMPLIANT]['onetimesecret'] = true;
 
     $plugin = new Plugin();
     if ($plugin->isActivated('onetimesecret')) {
-        Plugin::registerClass('PluginOnetimesecretConfig', ['addtabon' => 'Config']);
+        Plugin::registerClass(PluginOnetimesecretConfig::class, ['addtabon' => 'Config']);
 
-        Plugin::registerClass('PluginOnetimesecretProfile', ['addtabon' => 'Profile']);
+        Plugin::registerClass(PluginOnetimesecretProfile::class, ['addtabon' => 'Profile']);
 
         $PLUGIN_HOOKS['config_page']['onetimesecret'] = 'front/config.form.php';
 

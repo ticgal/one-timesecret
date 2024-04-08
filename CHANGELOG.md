@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 2.1.2 - 2024-04-08
+### Bugfixes
+- Fix scaped characters in secret and passphrase #21465
+
 ## 2.1.1 - 2023-10-18
 ### Bugfixes
 - Fix unused field that generates warning php logs #17969

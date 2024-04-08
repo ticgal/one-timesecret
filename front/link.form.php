@@ -41,6 +41,9 @@ if (!isset($_POST['password']) || $_POST['password'] == "") {
     Session::addMessageAfterRedirect(__("Secret is missing", "onetimesecret"));
 } else {
     PluginOnetimesecretSecret::authentication();
+    // remove slashes
+    $_POST['password'] = stripslashes($_POST['password']);
+    $_POST['passphrase'] = stripslashes($_POST['passphrase']);
     $link = PluginOnetimesecretSecret::createSecret($_POST);
     if ($link) {
         PluginOnetimesecretSecret::addFollowup($_POST, $link);
