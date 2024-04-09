@@ -1,36 +1,41 @@
 <?php
 
-/*
--------------------------------------------------------------------------
-OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
-https://www.tic.gal
--------------------------------------------------------------------------
-LICENSE
-This file is part of the OneTimeSecret plugin.
-OneTimeSecret plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
-OneTimeSecret plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with OneTimeSecret. If not, see
-<http: //www.gnu.org/licenses />.
---------------------------------------------------------------------------
-@package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
-@license AGPL License 3.0 or (at your option) any later version
-http://www.gnu.org/licenses/agpl-3.0-standalone.html
-@link https://www.tic.gal
-@since 2021-2023
-----------------------------------------------------------------------
-*/
+/**
+ * -------------------------------------------------------------------------
+ * OneTimeSecret plugin for GLPI
+ * Copyright (C) 2021-2024 by the TICgal Team.
+ * https://www.tic.gal
+ * -------------------------------------------------------------------------
+ * LICENSE
+ * This file is part of the OneTimeSecret plugin.
+ * OneTimeSecret plugin is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * OneTimeSecret plugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with OneTimeSecret. If not, see
+ * <http: //www.gnu.org/licenses />.
+ * -------------------------------------------------------------------------
+ * @package OneTimeSecret
+ * @author the TICgal team
+ * @copyright Copyright (c) 2021-2024 TICgal team
+ * @license AGPL License 3.0 or (at your option) any later version
+ * http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ * @link https://www.tic.gal
+ * @since 2021
+ * -------------------------------------------------------------------------
+ */
 
-function plugin_onetimesecret_install()
+/**
+ * plugin_onetimesecret_install
+ *
+ * @return bool
+ */
+function plugin_onetimesecret_install(): bool
 {
     $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 
@@ -46,6 +51,7 @@ function plugin_onetimesecret_install()
             }
         }
     }
+
     $conf = Config::getConfigurationValues('core', ['notifications_push']);
     if (!isset($conf['notifications_push'])) {
         Config::setConfigurationValues('core', ['notifications_push' => 0]);
@@ -54,7 +60,12 @@ function plugin_onetimesecret_install()
     return true;
 }
 
-function plugin_onetimesecret_uninstall()
+/**
+ * plugin_onetimesecret_uninstall
+ *
+ * @return bool
+ */
+function plugin_onetimesecret_uninstall(): bool
 {
     $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 

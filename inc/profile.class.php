@@ -1,34 +1,34 @@
 <?php
 
-/*
--------------------------------------------------------------------------
-OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
-https://www.tic.gal
--------------------------------------------------------------------------
-LICENSE
-This file is part of the OneTimeSecret plugin.
-OneTimeSecret plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
-OneTimeSecret plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with OneTimeSecret. If not, see
-<http: //www.gnu.org/licenses />.
---------------------------------------------------------------------------
-@package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
-@license AGPL License 3.0 or (at your option) any later version
-http://www.gnu.org/licenses/agpl-3.0-standalone.html
-@link https://www.tic.gal
-@since 2021-2023
-----------------------------------------------------------------------
-*/
+/**
+ * -------------------------------------------------------------------------
+ * OneTimeSecret plugin for GLPI
+ * Copyright (C) 2021-2024 by the TICgal Team.
+ * https://www.tic.gal
+ * -------------------------------------------------------------------------
+ * LICENSE
+ * This file is part of the OneTimeSecret plugin.
+ * OneTimeSecret plugin is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * OneTimeSecret plugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with OneTimeSecret. If not, see
+ * <http: //www.gnu.org/licenses />.
+ * -------------------------------------------------------------------------
+ * @package OneTimeSecret
+ * @author the TICgal team
+ * @copyright Copyright (c) 2021-2024 TICgal team
+ * @license AGPL License 3.0 or (at your option) any later version
+ * http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ * @link https://www.tic.gal
+ * @since 2021
+ * -------------------------------------------------------------------------
+ */
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -36,18 +36,33 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginOnetimesecretProfile extends Profile
 {
-    public static $rightname = "config";
+    public static $rightname = "profile";
 
-    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    /**
+     * getTabNameForItem
+     *
+     * @param  mixed $item
+     * @param  mixed $withtemplate
+     * @return string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
         switch ($item->getType()) {
             case 'Profile':
                 return self::createTabEntry("One-Time Secret");
-                break;
         }
+        return '';
     }
 
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    /**
+     * displayTabContentForItem
+     *
+     * @param  mixed $item
+     * @param  mixed $tabnum
+     * @param  mixed $withtemplate
+     * @return bool
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
         switch ($item->getType()) {
             case 'Profile':
@@ -58,7 +73,15 @@ class PluginOnetimesecretProfile extends Profile
         return true;
     }
 
-    public function showForm($profiles_id = 0, $openform = true, $closeform = true)
+    /**
+     * showForm
+     *
+     * @param  mixed $profiles_id
+     * @param  mixed $openform
+     * @param  mixed $closeform
+     * @return bool
+     */
+    public function showForm($profiles_id = 0, $openform = true, $closeform = true): bool
     {
         $profile = new Profile();
         $profile->getFromDB($profiles_id);
@@ -89,14 +112,24 @@ class PluginOnetimesecretProfile extends Profile
         return true;
     }
 
-    public function getAllRights()
+    /**
+     * getAllRights
+     *
+     * @return array
+     */
+    public function getAllRights(): array
     {
         $a_rights = [];
         $a_rights = array_merge($a_rights, $this->getRightsGeneral());
         return $a_rights;
     }
 
-    public function getRightsGeneral()
+    /**
+     * getRightsGeneral
+     *
+     * @return array
+     */
+    public function getRightsGeneral(): array
     {
         $rights = [
             [
@@ -108,11 +141,23 @@ class PluginOnetimesecretProfile extends Profile
         return $rights;
     }
 
-    public static function addDefaultProfileInfos($profiles_id, $rights)
+    /**
+     * addDefaultProfileInfos
+     *
+     * @param  mixed $profiles_id
+     * @param  mixed $rights
+     * @return void
+     */
+    public static function addDefaultProfileInfos($profiles_id, $rights): void
     {
         $profileRight = new ProfileRight();
         foreach ($rights as $right => $value) {
-            if (!countElementsInTable('glpi_profilerights', ['profiles_id' => $profiles_id, 'name' => $right])) {
+            if (
+                !countElementsInTable(
+                    'glpi_profilerights',
+                    ['profiles_id' => $profiles_id, 'name' => $right]
+                )
+            ) {
                 $myright['profiles_id'] = $profiles_id;
                 $myright['name']        = $right;
                 $myright['rights']      = $value;
@@ -123,7 +168,13 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
-    public static function createFirstAccess($profiles_id)
+    /**
+     * createFirstAccess
+     *
+     * @param  mixed $profiles_id
+     * @return void
+     */
+    public static function createFirstAccess($profiles_id): void
     {
         $profile = new self();
         foreach ($profile->getAllRights() as $right) {
@@ -131,7 +182,12 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
-    public static function removeRightsFromSession()
+    /**
+     * removeRightsFromSession
+     *
+     * @return void
+     */
+    public static function removeRightsFromSession(): void
     {
         $profile = new self();
         foreach ($profile->getAllRights() as $right) {
@@ -142,7 +198,12 @@ class PluginOnetimesecretProfile extends Profile
         ProfileRight::deleteProfileRights([$right['field']]);
     }
 
-    public static function initProfile()
+    /**
+     * initProfile
+     *
+     * @return void
+     */
+    public static function initProfile(): void
     {
         $pfProfile = new self();
         $profile   = new Profile();
@@ -159,7 +220,11 @@ class PluginOnetimesecretProfile extends Profile
             $dataprofile['id'] = $_SESSION['glpiactiveprofile']['id'];
             $profile->getFromDB($_SESSION['glpiactiveprofile']['id']);
             foreach ($a_rights as $info) {
-                if (is_array($info) && ((!empty($info['itemtype'])) || (!empty($info['rights']))) && (!empty($info['label'])) && (!empty($info['field']))) {
+                if (
+                    is_array($info) &&
+                    ((!empty($info['itemtype'])) || (!empty($info['rights']))) &&
+                    (!empty($info['label'])) && (!empty($info['field']))
+                ) {
                     if (isset($info['rights'])) {
                         $rights = $info['rights'];
                     } else {
@@ -175,15 +240,29 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
-    public static function install(Migration $migration)
+    /**
+     * install
+     *
+     * @param  mixed $migration
+     * @return void
+     */
+    public static function install(Migration $migration): void
     {
+        $migration->displayMessage("Init profiles");
         self::initProfile();
     }
 
-    public static function uninstall()
+    /**
+     * uninstall
+     *
+     * @param  mixed $migration
+     * @return void
+     */
+    public static function uninstall(Migration $migration): void
     {
         $pfProfile = new self();
         $a_rights = $pfProfile->getAllRights();
+        $migration->displayMessage("Delete profiles");
         foreach ($a_rights as $data) {
             ProfileRight::deleteProfileRights([$data['field']]);
         }

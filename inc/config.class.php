@@ -1,34 +1,34 @@
 <?php
 
-/*
--------------------------------------------------------------------------
-OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
-https://www.tic.gal
--------------------------------------------------------------------------
-LICENSE
-This file is part of the OneTimeSecret plugin.
-OneTimeSecret plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
-OneTimeSecret plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with OneTimeSecret. If not, see
-<http: //www.gnu.org/licenses />.
---------------------------------------------------------------------------
-@package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
-@license AGPL License 3.0 or (at your option) any later version
-http://www.gnu.org/licenses/agpl-3.0-standalone.html
-@link https://www.tic.gal
-@since 2021-2023
-----------------------------------------------------------------------
-*/
+/**
+ * -------------------------------------------------------------------------
+ * OneTimeSecret plugin for GLPI
+ * Copyright (C) 2021-2024 by the TICgal Team.
+ * https://www.tic.gal
+ * -------------------------------------------------------------------------
+ * LICENSE
+ * This file is part of the OneTimeSecret plugin.
+ * OneTimeSecret plugin is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * OneTimeSecret plugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with OneTimeSecret. If not, see
+ * <http: //www.gnu.org/licenses />.
+ * -------------------------------------------------------------------------
+ * @package OneTimeSecret
+ * @author the TICgal team
+ * @copyright Copyright (c) 2021-2024 TICgal team
+ * @license AGPL License 3.0 or (at your option) any later version
+ * http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ * @link https://www.tic.gal
+ * @since 2021
+ * -------------------------------------------------------------------------
+ */
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -38,7 +38,9 @@ use Glpi\Application\View\TemplateRenderer;
 
 class PluginOnetimesecretConfig extends CommonDBTM
 {
-    private static $_instance = null;
+    private static $instance = null;
+
+    public static $rightname = 'config';
 
     public function __construct()
     {
@@ -48,43 +50,50 @@ class PluginOnetimesecretConfig extends CommonDBTM
         }
     }
 
-    public static function canCreate()
-    {
-        return Session::haveRight('config', UPDATE);
-    }
-
-    public static function canView()
-    {
-        return Session::haveRight('config', READ);
-    }
-
-    public static function canUpdate()
-    {
-        return Session::haveRight('config', UPDATE);
-    }
-
-    public static function getTypeName($nb = 0)
+    /**
+     * getTypeName
+     *
+     * @param  mixed $nb
+     * @return string
+     */
+    public static function getTypeName($nb = 0): string
     {
         return 'One-Time Secret';
     }
 
-    public static function getMenuName()
+    /**
+     * getMenuName
+     *
+     * @return string
+     */
+    public static function getMenuName(): string
     {
         return 'One-Time Secret';
     }
 
-    public static function getInstance()
+    /**
+     * getInstance
+     *
+     * @param  mixed $n
+     * @return mixed
+     */
+    public static function getInstance($n = 1): mixed
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new self();
-            if (!self::$_instance->getFromDB(1)) {
-                self::$_instance->getEmpty();
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+            if (!self::$instance->getFromDB($n)) {
+                self::$instance->getEmpty();
             }
         }
-        return self::$_instance;
+        return self::$instance;
     }
 
-    public static function getLifetimes()
+    /**
+     * getLifetimes
+     *
+     * @return array
+     */
+    public static function getLifetimes(): array
     {
         $one_day_in_sec = 86400;
         $one_hour_in_sec = 3600;
@@ -104,7 +113,12 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return $lifetimes;
     }
 
-    public static function showConfigForm()
+    /**
+     * showConfigForm
+     *
+     * @return bool
+     */
+    public static function showConfigForm(): bool
     {
         $config = self::getInstance();
 
@@ -113,14 +127,22 @@ class PluginOnetimesecretConfig extends CommonDBTM
         $template = "@onetimesecret/config.html.twig";
         $template_options = [
             'item'      => $config,
-            'lifetimes' => $lifetimes
+            'lifetimes' => $lifetimes,
+            'conn'      => PluginOnetimesecretSecret::authentication()
         ];
         TemplateRenderer::getInstance()->display($template, $template_options);
 
         return false;
     }
 
-    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    /**
+     * getTabNameForItem
+     *
+     * @param  mixed $item
+     * @param  mixed $withtemplate
+     * @return string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
         if ($item->getType() == 'Config') {
             return self::getTypeName();
@@ -128,7 +150,15 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return '';
     }
 
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    /**
+     * displayTabContentForItem
+     *
+     * @param  mixed $item
+     * @param  mixed $tabnum
+     * @param  mixed $withtemplate
+     * @return bool
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
         if ($item->getType() == 'Config') {
             self::showConfigForm($item);
@@ -136,7 +166,13 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return true;
     }
 
-    public function prepareInputForUpdate($input)
+    /**
+     * prepareInputForUpdate
+     *
+     * @param  mixed $input
+     * @return array
+     */
+    public function prepareInputForUpdate($input): array
     {
         if (isset($input['apikey'])) {
             if (!empty($input['apikey'])) {
@@ -148,10 +184,17 @@ class PluginOnetimesecretConfig extends CommonDBTM
         if (isset($input['_blank_apikey'])) {
             $input['apikey'] = '';
         }
+
         return $input;
     }
 
-    public static function install(Migration $migration)
+    /**
+     * install
+     *
+     * @param  mixed $migration
+     * @return void
+     */
+    public static function install(Migration $migration): void
     {
         global $DB;
 
@@ -172,7 +215,8 @@ class PluginOnetimesecretConfig extends CommonDBTM
 				`debug` tinyint(1) NOT NULL default '1',
 				`users_id` int {$default_key_sign} NOT NULL DEFAULT '0',
 				PRIMARY KEY (`id`)
-			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset}
+            COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->query($query) or die($DB->error());
 
