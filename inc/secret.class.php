@@ -1,34 +1,34 @@
 <?php
 
-/**
- * -------------------------------------------------------------------------
- * OneTimeSecret plugin for GLPI
- * Copyright (C) 2021-2024 by the TICgal Team.
- * https://www.tic.gal
- * -------------------------------------------------------------------------
- * LICENSE
- * This file is part of the OneTimeSecret plugin.
- * OneTimeSecret plugin is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- * OneTimeSecret plugin is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with OneTimeSecret. If not, see
- * <http: //www.gnu.org/licenses />.
- * -------------------------------------------------------------------------
- * @package OneTimeSecret
- * @author the TICgal team
- * @copyright Copyright (c) 2021-2024 TICgal team
- * @license AGPL License 3.0 or (at your option) any later version
- * http://www.gnu.org/licenses/agpl-3.0-standalone.html
- * @link https://www.tic.gal
- * @since 2021
- * -------------------------------------------------------------------------
- */
+/*
+-------------------------------------------------------------------------
+OneTimeSecret plugin for GLPI
+Copyright (C) 2021-2023 by the TICgal Team.
+https://www.tic.gal
+-------------------------------------------------------------------------
+LICENSE
+This file is part of the OneTimeSecret plugin.
+OneTimeSecret plugin is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+OneTimeSecret plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with OneTimeSecret. If not, see
+<http: //www.gnu.org/licenses />.
+--------------------------------------------------------------------------
+@package OneTimeSecret
+@author the TICgal team
+@copyright Copyright (c) 2021-2023 TICgal team
+@license AGPL License 3.0 or (at your option) any later version
+http://www.gnu.org/licenses/agpl-3.0-standalone.html
+@link https://www.tic.gal
+@since 2021-2023
+----------------------------------------------------------------------
+*/
 
 use Glpi\Toolbox\Sanitizer;
 
@@ -36,22 +36,17 @@ if (!defined("GLPI_ROOT")) {
     die("Sorry. You can't access directly to this file");
 }
 
+
 class PluginOnetimesecretSecret extends CommonDBTM
 {
-    /**
-     * authentication
-     *
-     * @return array
-     */
-    public static function authentication(): array
+    public static function authentication()
     {
         global $CFG_GLPI;
 
         $config = PluginOnetimesecretConfig::getInstance();
         $apikey = (new GLPIKey())->decrypt($config->fields["apikey"]);
         $curl = curl_init();
-        $server = "https://" . $config->fields["email"] . ":" . $apikey;
-        $server .= "@" . $config->fields["server"] . "/api";
+        $server = "https://" . $config->fields["email"] . ":" . $apikey . "@" . $config->fields["server"] . "/api";
 
         curl_setopt($curl, CURLOPT_URL, $server);
         if (!empty($CFG_GLPI["proxy_name"])) {
@@ -85,17 +80,9 @@ class PluginOnetimesecretSecret extends CommonDBTM
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
-
-        return [$httpcode, $result];
     }
 
-    /**
-     * createSecret
-     *
-     * @param  array $params
-     * @return bool|string
-     */
-    public static function createSecret(array $params = []): bool|string
+    public static function createSecret($params = [])
     {
         global $CFG_GLPI;
 
@@ -152,27 +139,14 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
     }
 
-    /**
-     * hoursToSeconds
-     *
-     * @param  int $hours
-     * @return int
-     */
-    public static function hoursToSeconds(int $hours): int
+    public static function hoursToSeconds($hours)
     {
         $minutes = $hours * 60;
         $seconds = $minutes * 60;
         return $seconds;
     }
 
-    /**
-     * addFollowup
-     *
-     * @param  array $params
-     * @param  string $text
-     * @return bool
-     */
-    public static function addFollowup(array $params, string $text = ''): bool
+    public static function addFollowup($params, $text = '')
     {
         global $DB, $CFG_GLPI;
 
