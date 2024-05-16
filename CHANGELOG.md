@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 2.1.3 - 2024-04-08
+### Bugfixes
+- Fix double encryption of apikey #22315
+
 ## 2.1.2 - 2024-04-08
 ### Bugfixes
 - Fix scaped characters in secret and passphrase #21465

@@ -42,7 +42,6 @@ Session::checkRight('config', UPDATE);
 $config = new PluginOnetimesecretConfig();
 if (isset($_POST["update"])) {
     $config->check($_POST['id'], UPDATE);
-    $_POST["apikey"] = (new GLPIKey())->encrypt($_POST["apikey"]);
     $config->update($_POST);
     Html::back();
 }
