@@ -48,17 +48,17 @@ class PluginOnetimesecretConfig extends CommonDBTM
         }
     }
 
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRight('config', UPDATE);
     }
 
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight('config', READ);
     }
 
-    public static function canUpdate()
+    public static function canUpdate(): bool
     {
         return Session::haveRight('config', UPDATE);
     }
@@ -164,22 +164,23 @@ class PluginOnetimesecretConfig extends CommonDBTM
         if (!$DB->tableExists($table)) {
             $migration->displayMessage("Installing $table");
             $query = "CREATE TABLE IF NOT EXISTS $table (
-				`id` int {$default_key_sign} NOT NULL auto_increment,
-				`server` VARCHAR(255) NOT NULL DEFAULT 'onetimesecret.com',
-				`email` VARCHAR(255) NOT NULL DEFAULT '',
-				`apikey` VARCHAR(255) NOT NULL DEFAULT '',
-				`lifetime` int(11) NOT NULL DEFAULT '24',
-				`debug` tinyint(1) NOT NULL default '1',
-				`users_id` int {$default_key_sign} NOT NULL DEFAULT '0',
-				PRIMARY KEY (`id`)
-			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+                `id` int {$default_key_sign} NOT NULL auto_increment,
+                `server` VARCHAR(255) NOT NULL DEFAULT 'onetimesecret.com',
+                `email` VARCHAR(255) NOT NULL DEFAULT '',
+                `apikey` VARCHAR(255) NOT NULL DEFAULT '',
+                `lifetime` int(11) NOT NULL DEFAULT '24',
+                `debug` tinyint(1) NOT NULL default '1',
+                `users_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                PRIMARY KEY (`id`)
+            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
-            $DB->query($query) or die($DB->error());
+            $migration->addPostQuery($query);
+            $migration->executeMigration();
 
             $users_id = 0;
             $user = new User();
             $a_users = $user->find(['name' => 'Plugin_Onetimesecret']);
-            if (count($a_users) == '0') {
+            if (count($a_users) == 0) {
                 $input = [
                     'name'      => 'Plugin_Onetimesecret',
                     'password'  => mt_rand(30, 39),
