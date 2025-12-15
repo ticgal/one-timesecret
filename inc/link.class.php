@@ -1,5 +1,5 @@
 <?php
-
+/*if (!defined('GLPI_ROOT')) { define('GLPI_ROOT', realpath(__DIR__ . '/../..')); }
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
@@ -124,25 +124,23 @@ CSS;
 
     public static function install(Migration $migration)
     {
-        global $DB;
         $default_charset = DBConnection::getDefaultCharset();
         $default_collation = DBConnection::getDefaultCollation();
         $default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
 
         $table = self::getTable();
 
-        if (!$DB->tableExists($table)) {
-            $migration->displayMessage("Installing $table");
-            $query = "CREATE TABLE IF NOT EXISTS $table (
-                `id` int {$default_key_sign} NOT NULL auto_increment,
-                `secret` VARCHAR(255) NOT NULL DEFAULT '',
-                `ttl` int(11) NOT NULL DEFAULT '24',
-                `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
-                PRIMARY KEY (`id`)
-            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset}
-            COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+        $migration->displayMessage("Installing $table");
+        $query = "CREATE TABLE IF NOT EXISTS $table (
+            `id` int {$default_key_sign} NOT NULL auto_increment,
+            `secret` VARCHAR(255) NOT NULL DEFAULT '',
+            `ttl` int(11) NOT NULL DEFAULT '24',
+            `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
+            PRIMARY KEY (`id`)
+        )ENGINE=InnoDB DEFAULT CHARSET={$default_charset}
+        COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
-            $DB->query($query) or die($DB->error());
-        }
+        $migration->addPostQuery($query);
+        $migration->executeMigration();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+if (!defined('GLPI_ROOT')) { define('GLPI_ROOT', realpath(__DIR__ . '/../..')); }
 
 /*
 -------------------------------------------------------------------------
@@ -33,8 +34,8 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 use Glpi\Plugin\Hooks;
 
 define('PLUGIN_ONETIMESECRET_VERSION', '2.1.3');
-define('PLUGIN_ONETIMESECRET_MIN_GLPI', '10.0.10');
-define('PLUGIN_ONETIMESECRET_MAX_GLPI', '11.0');
+define('PLUGIN_ONETIMESECRET_MIN_GLPI', '11.0.0');
+define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.0.0');
 
 /**
  * Init the hooks of the plugins - Needed
@@ -79,6 +80,9 @@ function plugin_version_onetimesecret()
             'glpi'  => [
                 'min' => PLUGIN_ONETIMESECRET_MIN_GLPI,
                 'max' => PLUGIN_ONETIMESECRET_MAX_GLPI,
+            ],
+            'php' => [
+                'min' => '8.4.0'
             ]
         ]
     ];
