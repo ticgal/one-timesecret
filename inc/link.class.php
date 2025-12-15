@@ -1,5 +1,5 @@
 <?php
-
+/*if (!defined('GLPI_ROOT')) { define('GLPI_ROOT', realpath(__DIR__ . '/../..')); }
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
