@@ -100,7 +100,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL             => 'https://' . $config->fields['server'] ?? '' . '/api/v1/share',
+            CURLOPT_URL             => 'https://' . ($config->fields['server'] ?? '') . '/api/v1/share',
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_ENCODING        => '',
             CURLOPT_MAXREDIRS       => 10,
