@@ -136,10 +136,9 @@ CSS;
                 `ttl` int(11) NOT NULL DEFAULT '24',
                 `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
                 PRIMARY KEY (`id`)
-            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset}
-            COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
-            $migration->addPreQuery($query, "Error creating $table");
+            $DB->doQuery($query);
         }
         return true;
     }

@@ -160,6 +160,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
         $default_key_sign   = DBConnection::getDefaultPrimaryKeySignOption();
 
         $table = self::getTable();
+        $config = new self();
         if (!$DB->tableExists($table)) {
             $migration->displayMessage("Installing $table");
             $query = "CREATE TABLE IF NOT EXISTS $table (
@@ -173,7 +174,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
 				PRIMARY KEY (`id`)
 			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
-            $migration->addPreQuery($query, "Error creating $table");
+            $DB->doQuery($query);
 
             $users_id = 0;
             $user = new User();
@@ -191,13 +192,10 @@ class PluginOnetimesecretConfig extends CommonDBTM
             }
 
             // Insert default config after table creation
-            $migration->addPostQuery(
-                $DB->buildInsert($table, [
-                    'id' => 1,
-                    'users_id' => $users_id
-                ]),
-                "Error inserting default config"
-            );
+            $config->add([
+                'id' => 1,
+                'users_id' => $users_id
+            ]);
         }
         return true;
     }

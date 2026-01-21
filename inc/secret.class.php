@@ -77,7 +77,6 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        curl_close($curl);
     }
 
     public static function createSecret($params = []): bool|string
@@ -123,8 +122,6 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
 
         $response = curl_exec($curl);
-
-        curl_close($curl);
 
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 

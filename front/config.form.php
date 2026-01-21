@@ -29,8 +29,7 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @since 2021
 ----------------------------------------------------------------------
 */
-
-include('../../../inc/includes.php');
+global $CFG_GLPI;
 
 $plugin = new Plugin();
 if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {

@@ -175,6 +175,11 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-user-check";
+    }
+
     public static function install(Migration $migration): void
     {
         self::initProfile();

@@ -4,8 +4,8 @@ A GLPI One-Time Secret integration
 <img src="https://raw.githubusercontent.com/ticgal/one-timesecret/multimedia/onetimesecret.png" alt="One-Time Secret for GLPI Logo" height="250px" width="250px" class="js-lazy-loaded">
 
 [![License](https://img.shields.io/badge/License-GNU%20AGPLv3-blue.svg)](https://github.com/ticgal/taskdrop/blob/master/LICENSE)
-[![Twitter](https://img.shields.io/badge/Twitter-TICgal-blue.svg)](https://twitter.com/ticgalcom)
-[![TICgal](https://img.shields.io/badge/Web-TICgal-blue.svg)](https://tic.gal/)
+[![Twitter](https://img.shields.io/badge/Twitter-TICGAL-blue.svg)](https://twitter.com/ticgalcom)
+[![TICGAL](https://img.shields.io/badge/Web-TICGAL-blue.svg)](https://tic.gal/)
 [![One-Time Secret for GLPI](https://img.shields.io/badge/Web-OneTimeSecret4GLPI-blue.svg)](https://tic.gal/en/project/onetimesecret/)
 [![One-Time Secret](https://img.shields.io/badge/Service-One--Time%20Secret-red)](https://onetimesecret.com)
 [![Localazy](https://img.shields.io/badge/Translate-Localazy-cyan)](https://localazy.com/p/one-time-secret-glpi#translations)

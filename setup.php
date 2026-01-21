@@ -81,33 +81,3 @@ function plugin_version_onetimesecret(): array
         ]
     ];
 }
-
-/**
- * Optional : check prerequisites before install : may print errors or add to message after redirect
- *
- * @return boolean
- */
-function plugin_onetimesecret_check_prerequisites(): bool
-{
-    return true;
-}
-
-/**
- * Check configuration process for plugin : need to return true if succeeded
- * Can display a message only if failure and $verbose is true
- *
- * @param boolean $verbose Enable verbosity. Default to false
- *
- * @return boolean
- */
-function plugin_onetimesecret_check_config($verbose = false): bool
-{
-    if (true) { // Your configuration check
-        return true;
-    }
-
-    if ($verbose) {
-        echo "Installed, but not configured";
-    }
-    return false;
-}
