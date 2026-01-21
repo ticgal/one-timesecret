@@ -3,7 +3,7 @@
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
+Copyright (C) 2021-2026 by the TICGAL Team.
 https://www.tic.gal
 -------------------------------------------------------------------------
 LICENSE
@@ -21,12 +21,12 @@ along with OneTimeSecret. If not, see
 <http: //www.gnu.org/licenses />.
 --------------------------------------------------------------------------
 @package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
+@author the TICGAL team
+@copyright Copyright (c) 2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
-@since 2021-2023
+@since 2021
 ----------------------------------------------------------------------
 */
 
@@ -34,16 +34,15 @@ include('../../../inc/includes.php');
 
 $plugin = new Plugin();
 if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
-    Html::displayNotFoundError();
+    Html::redirect($CFG_GLPI["root_doc"]);
 }
 
 if (!isset($_POST['password']) || $_POST['password'] == "") {
     Session::addMessageAfterRedirect(__("Secret is missing", "onetimesecret"));
 } else {
     PluginOnetimesecretSecret::authentication();
-    // remove slashes
-    $_POST['password'] = stripslashes($_POST['password']);
-    $_POST['passphrase'] = stripslashes($_POST['passphrase']);
+    $_POST['password'] = html_entity_decode($_POST['password'], ENT_QUOTES | ENT_HTML5);
+    $_POST['passphrase'] = html_entity_decode($_POST['passphrase'], ENT_QUOTES | ENT_HTML5);
     $link = PluginOnetimesecretSecret::createSecret($_POST);
     if ($link) {
         PluginOnetimesecretSecret::addFollowup($_POST, $link);
