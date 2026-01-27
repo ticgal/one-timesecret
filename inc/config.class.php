@@ -22,7 +22,7 @@ along with OneTimeSecret. If not, see
 --------------------------------------------------------------------------
 @package OneTimeSecret
 @author the TICGAL team
-@copyright Copyright (c) 2026 TICGAL team
+@copyright Copyright (C) 2021 - 2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
@@ -108,12 +108,17 @@ class PluginOnetimesecretConfig extends CommonDBTM
     {
         $config = self::getInstance();
 
+        $has_apikey = isset($config->fields['apikey']) && !empty($config->fields['apikey']);
+
+        $config->fields['apikey'] = '';
+
         $lifetimes = self::getLifetimes();
 
         $template = "@onetimesecret/config.html.twig";
         $template_options = [
             'item'      => $config,
-            'lifetimes' => $lifetimes
+            'lifetimes' => $lifetimes,
+            'has_apikey' => $has_apikey
         ];
         TemplateRenderer::getInstance()->display($template, $template_options);
 
@@ -170,31 +175,14 @@ class PluginOnetimesecretConfig extends CommonDBTM
 				`apikey` VARCHAR(255) NOT NULL DEFAULT '',
 				`lifetime` int(11) NOT NULL DEFAULT '24',
 				`debug` tinyint(1) NOT NULL default '1',
-				`users_id` int {$default_key_sign} NOT NULL DEFAULT '0',
 				PRIMARY KEY (`id`)
 			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
 
-            $users_id = 0;
-            $user = new User();
-            $a_users = $user->find(['name' => 'Plugin_Onetimesecret']);
-            if (count($a_users) == 0) {
-                $input = [
-                    'name'      => 'Plugin_Onetimesecret',
-                    'password'  => mt_rand(30, 39),
-                    'firstname' => 'Plugin_Onetimesecret'
-                ];
-                $users_id = $user->add($input);
-            } else {
-                $user = current($a_users);
-                $users_id = $user['id'];
-            }
-
             // Insert default config after table creation
             $config->add([
-                'id' => 1,
-                'users_id' => $users_id
+                'id' => 1
             ]);
         }
         return true;

@@ -74,7 +74,12 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
                         'apikey',
                         item.fields['apikey'],
                         __('API key', 'onetimesecret'),
-                        field_options
+                        field_options|merge({
+                            'additional_attributes': {
+                                'placeholder': has_apikey ? '******************' : '',
+                                'autocomplete': 'new-password'
+                            }
+                        })
                         ) }}
                         {% endif %}
 
