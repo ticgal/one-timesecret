@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 3.0.0 - 2026-01-27
+### Features
+- GLPI 11 support
+
 ## 2.1.3 - 2024-05-16
 ### Bugfixes
 - Fix double encryption of apikey #22315
