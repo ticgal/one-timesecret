@@ -30,6 +30,8 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
+global $CFG_GLPI;
+
 $plugin = new Plugin();
 if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
     Html::redirect($CFG_GLPI["root_doc"]);
