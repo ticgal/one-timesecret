@@ -3,7 +3,7 @@
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
+Copyright (C) 2021-2026 by the TICGAL Team.
 https://www.tic.gal
 -------------------------------------------------------------------------
 LICENSE
@@ -21,12 +21,12 @@ along with OneTimeSecret. If not, see
 <http: //www.gnu.org/licenses />.
 --------------------------------------------------------------------------
 @package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
+@author the TICGAL team
+@copyright Copyright (C) 2021 - 2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
-@since 2021-2023
+@since 2021
 ----------------------------------------------------------------------
 */
 
@@ -38,27 +38,27 @@ class PluginOnetimesecretProfile extends Profile
 {
     public static $rightname = "config";
 
-    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
         switch ($item->getType()) {
             case 'Profile':
                 return self::createTabEntry("One-Time Secret");
-                break;
         }
+        return '';
     }
 
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
         switch ($item->getType()) {
             case 'Profile':
                 $profile = new self();
-                $profile->showForm($item->getID());
+                $profile->showForm($item instanceof CommonDBTM ? $item->getID() : 0);
                 break;
         }
         return true;
     }
 
-    public function showForm($profiles_id = 0, $openform = true, $closeform = true)
+    public function showForm($profiles_id = 0, $openform = true, $closeform = true): bool
     {
         $profile = new Profile();
         $profile->getFromDB($profiles_id);
@@ -89,14 +89,14 @@ class PluginOnetimesecretProfile extends Profile
         return true;
     }
 
-    public function getAllRights()
+    public function getAllRights(): array
     {
         $a_rights = [];
         $a_rights = array_merge($a_rights, $this->getRightsGeneral());
         return $a_rights;
     }
 
-    public function getRightsGeneral()
+    public function getRightsGeneral(): array
     {
         $rights = [
             [
@@ -108,7 +108,7 @@ class PluginOnetimesecretProfile extends Profile
         return $rights;
     }
 
-    public static function addDefaultProfileInfos($profiles_id, $rights)
+    public static function addDefaultProfileInfos($profiles_id, $rights): void
     {
         $profileRight = new ProfileRight();
         foreach ($rights as $right => $value) {
@@ -123,7 +123,7 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
-    public static function createFirstAccess($profiles_id)
+    public static function createFirstAccess($profiles_id): void
     {
         $profile = new self();
         foreach ($profile->getAllRights() as $right) {
@@ -131,7 +131,7 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
-    public static function removeRightsFromSession()
+    public static function removeRightsFromSession(): void
     {
         $profile = new self();
         foreach ($profile->getAllRights() as $right) {
@@ -142,7 +142,7 @@ class PluginOnetimesecretProfile extends Profile
         ProfileRight::deleteProfileRights([$right['field']]);
     }
 
-    public static function initProfile()
+    public static function initProfile(): void
     {
         $pfProfile = new self();
         $profile   = new Profile();
@@ -175,12 +175,17 @@ class PluginOnetimesecretProfile extends Profile
         }
     }
 
-    public static function install(Migration $migration)
+    public static function getIcon()
+    {
+        return "ti ti-user-check";
+    }
+
+    public static function install(Migration $migration): void
     {
         self::initProfile();
     }
 
-    public static function uninstall()
+    public static function uninstall(): void
     {
         $pfProfile = new self();
         $a_rights = $pfProfile->getAllRights();

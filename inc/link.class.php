@@ -3,7 +3,7 @@
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
+Copyright (C) 2021-2026 by the TICGAL Team.
 https://www.tic.gal
 -------------------------------------------------------------------------
 LICENSE
@@ -21,12 +21,12 @@ along with OneTimeSecret. If not, see
 <http: //www.gnu.org/licenses />.
 --------------------------------------------------------------------------
 @package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
+@author the TICGAL team
+@copyright Copyright (C) 2021 - 2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
-@since 2021-2023
+@since 2021
 ----------------------------------------------------------------------
 */
 
@@ -40,33 +40,30 @@ class PluginOnetimesecretLink extends CommonDBTM
 {
     public static $rightname = 'followup';
 
-    public function getItilObjectItemType()
+    public function getItilObjectItemType(): string
     {
         return str_replace('One-Time Secret', '', $this->getType());
     }
 
-    public static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0): string
     {
         return __('One-Time Secret', 'onetimesecret');
     }
 
-    public static function timelineAction($params = [])
+    public static function timelineAction($params = []): mixed
     {
-        global $DB;
-
         $item = $params['item'];
         $config = PluginOnetimesecretConfig::getInstance();
 
         switch ($item::getType()) {
             case Ticket::getType():
-                $req = $DB->request(
-                    'glpi_profilerights',
-                    [
-                        'profiles_id'   => $_SESSION['glpiactiveprofile']["id"],
-                        'name'          => 'plugin_onetimesecret_send'
-                    ]
-                );
-                foreach ($req as $right) {
+                $profileRight = new ProfileRight();
+                $rights = $profileRight->find([
+                    'profiles_id'   => $_SESSION['glpiactiveprofile']["id"],
+                    'name'          => 'plugin_onetimesecret_send'
+                ]);
+                
+                foreach ($rights as $right) {
                     if ($item->getField('status') < Ticket::SOLVED && $right["rights"] == 1) {
                         $obj = new self();
                         $timeline["PluginOnetimesecretLink_" . 1] = [
@@ -95,7 +92,7 @@ CSS;
         return [];
     }
 
-    public function showForm($ID, array $params = [])
+    public function showForm($ID, array $params = []): void
     {
         $config = PluginOnetimesecretConfig::getInstance();
 
@@ -117,12 +114,12 @@ CSS;
         TemplateRenderer::getInstance()->display($template, $template_options);
     }
 
-    public function getEmpty()
+    public function getEmpty(): bool
     {
         return true;
     }
 
-    public static function install(Migration $migration)
+    public static function install(Migration $migration): bool
     {
         global $DB;
         $default_charset = DBConnection::getDefaultCharset();
@@ -139,10 +136,10 @@ CSS;
                 `ttl` int(11) NOT NULL DEFAULT '24',
                 `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
                 PRIMARY KEY (`id`)
-            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset}
-            COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
-            $DB->query($query) or die($DB->error());
+            $DB->doQuery($query);
         }
+        return true;
     }
 }

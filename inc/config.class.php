@@ -3,7 +3,7 @@
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
+Copyright (C) 2021-2026 by the TICGAL Team.
 https://www.tic.gal
 -------------------------------------------------------------------------
 LICENSE
@@ -21,12 +21,12 @@ along with OneTimeSecret. If not, see
 <http: //www.gnu.org/licenses />.
 --------------------------------------------------------------------------
 @package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
+@author the TICGAL team
+@copyright Copyright (C) 2021 - 2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
-@since 2021-2023
+@since 2021
 ----------------------------------------------------------------------
 */
 
@@ -48,32 +48,32 @@ class PluginOnetimesecretConfig extends CommonDBTM
         }
     }
 
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRight('config', UPDATE);
     }
 
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight('config', READ);
     }
 
-    public static function canUpdate()
+    public static function canUpdate(): bool
     {
         return Session::haveRight('config', UPDATE);
     }
 
-    public static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0): string
     {
         return 'One-Time Secret';
     }
 
-    public static function getMenuName()
+    public static function getMenuName(): string
     {
         return 'One-Time Secret';
     }
 
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (!isset(self::$_instance)) {
             self::$_instance = new self();
@@ -84,7 +84,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return self::$_instance;
     }
 
-    public static function getLifetimes()
+    public static function getLifetimes(): array
     {
         $one_day_in_sec = 86400;
         $one_hour_in_sec = 3600;
@@ -104,31 +104,36 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return $lifetimes;
     }
 
-    public static function showConfigForm()
+    public static function showConfigForm(): false
     {
         $config = self::getInstance();
+
+        $has_apikey = isset($config->fields['apikey']) && !empty($config->fields['apikey']);
+
+        $config->fields['apikey'] = '';
 
         $lifetimes = self::getLifetimes();
 
         $template = "@onetimesecret/config.html.twig";
         $template_options = [
             'item'      => $config,
-            'lifetimes' => $lifetimes
+            'lifetimes' => $lifetimes,
+            'has_apikey' => $has_apikey
         ];
         TemplateRenderer::getInstance()->display($template, $template_options);
 
         return false;
     }
 
-    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
         if ($item->getType() == 'Config') {
-            return self::getTypeName();
+            return self::createTabEntry("One-Time Secret", 0, null, 'ti ti-user-check');
         }
         return '';
     }
 
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
         if ($item->getType() == 'Config') {
             self::showConfigForm($item);
@@ -136,7 +141,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return true;
     }
 
-    public function prepareInputForUpdate($input)
+    public function prepareInputForUpdate($input): array
     {
         if (isset($input['apikey'])) {
             if (!empty($input['apikey'])) {
@@ -151,7 +156,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return $input;
     }
 
-    public static function install(Migration $migration)
+    public static function install(Migration $migration): bool
     {
         global $DB;
 
@@ -170,30 +175,16 @@ class PluginOnetimesecretConfig extends CommonDBTM
 				`apikey` VARCHAR(255) NOT NULL DEFAULT '',
 				`lifetime` int(11) NOT NULL DEFAULT '24',
 				`debug` tinyint(1) NOT NULL default '1',
-				`users_id` int {$default_key_sign} NOT NULL DEFAULT '0',
 				PRIMARY KEY (`id`)
 			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
-            $DB->query($query) or die($DB->error());
+            $DB->doQuery($query);
 
-            $users_id = 0;
-            $user = new User();
-            $a_users = $user->find(['name' => 'Plugin_Onetimesecret']);
-            if (count($a_users) == '0') {
-                $input = [
-                    'name'      => 'Plugin_Onetimesecret',
-                    'password'  => mt_rand(30, 39),
-                    'firstname' => 'Plugin_Onetimesecret'
-                ];
-                $users_id = $user->add($input);
-            } else {
-                $user = current($a_users);
-                $users_id = $user['id'];
-            }
+            // Insert default config after table creation
             $config->add([
-                'id'        => 1,
-                'users_id'  => $users_id
+                'id' => 1
             ]);
         }
+        return true;
     }
 }

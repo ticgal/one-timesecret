@@ -3,7 +3,7 @@
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
+Copyright (C) 2021-2026 by the TICGAL Team.
 https://www.tic.gal
 -------------------------------------------------------------------------
 LICENSE
@@ -21,16 +21,14 @@ along with OneTimeSecret. If not, see
 <http: //www.gnu.org/licenses />.
 --------------------------------------------------------------------------
 @package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
+@author the TICGAL team
+@copyright Copyright (C) 2021 - 2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
-@since 2021-2023
+@since 2021
 ----------------------------------------------------------------------
 */
-
-use Glpi\Toolbox\Sanitizer;
 
 if (!defined("GLPI_ROOT")) {
     die("Sorry. You can't access directly to this file");
@@ -39,7 +37,7 @@ if (!defined("GLPI_ROOT")) {
 
 class PluginOnetimesecretSecret extends CommonDBTM
 {
-    public static function authentication()
+    public static function authentication(): void
     {
         global $CFG_GLPI;
 
@@ -79,10 +77,9 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        curl_close($curl);
     }
 
-    public static function createSecret($params = [])
+    public static function createSecret($params = []): bool|string
     {
         global $CFG_GLPI;
 
@@ -91,12 +88,12 @@ class PluginOnetimesecretSecret extends CommonDBTM
         $curl = curl_init();
 
         $post_fields = [
-            'secret'    => Sanitizer::decodeHtmlSpecialChars($params["password"]),
+            'secret'    => html_entity_decode($params["password"], ENT_QUOTES | ENT_HTML5),
             'ttl'       => self::hoursToSeconds($params["lifetime"])
         ];
 
         if ($params["passphrase"] != "") {
-            $post_fields["passphrase"] = Sanitizer::decodeHtmlSpecialChars($params["passphrase"]);
+            $post_fields["passphrase"] = html_entity_decode($params["passphrase"], ENT_QUOTES | ENT_HTML5);
         }
 
         curl_setopt_array($curl, array(
@@ -126,8 +123,6 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
         $response = curl_exec($curl);
 
-        curl_close($curl);
-
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         $data = json_decode($response, true);
@@ -139,14 +134,14 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
     }
 
-    public static function hoursToSeconds($hours)
+    public static function hoursToSeconds($hours): int
     {
         $minutes = $hours * 60;
         $seconds = $minutes * 60;
         return $seconds;
     }
 
-    public static function addFollowup($params, $text = '')
+    public static function addFollowup($params, $text = ''): bool
     {
         global $DB, $CFG_GLPI;
 
@@ -159,6 +154,14 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
         foreach ($DB->request($query) as $ticket) {
             if ($ticket['status'] < Ticket::SOLVED) {
+                $link = new PluginOnetimesecretLink();
+                $link_input = [
+                    'secret'     => $text,
+                    'ttl'        => $params["lifetime"],
+                    'passphrase' => (isset($params["passphrase"]) ? $params["passphrase"] : '')
+                ];
+                $link->add($link_input);
+
                 $fup = new ITILFollowup();
 
                 $content = __('Hi,', 'onetimesecret') . "<br><br>" . __('As mentioned in our previous conversation, this message is meant to share sensitive information with you.', 'onetimesecret') . "<br><br>";
@@ -175,7 +178,6 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
                 //Switch to the desired language
                 $bak_language = $_SESSION["glpilanguage"];
-                $bak_dropdowntranslations = (isset($_SESSION['glpi_dropdowntranslations']) ? $_SESSION['glpi_dropdowntranslations'] : null);
 
                 $query = [
                     'FROM' => Ticket_User::getTable(),
@@ -211,21 +213,14 @@ class PluginOnetimesecretSecret extends CommonDBTM
                     }
                 }
 
-                $_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($lang);
                 Session::loadLanguage($lang);
                 $_SESSION["glpilanguage"] = $lang;
 
-                $input = Sanitizer::sanitize($input);
                 $fup->add($input);
 
                 // Restore default language
                 $_SESSION["glpilanguage"] = $bak_language;
                 Session::loadLanguage();
-                if ($bak_dropdowntranslations !== null) {
-                    $_SESSION['glpi_dropdowntranslations'] = $bak_dropdowntranslations;
-                } else {
-                    unset($_SESSION['glpi_dropdowntranslations']);
-                }
             }
         }
 
