@@ -1,126 +1,145 @@
 <?php
+
 /*
- -------------------------------------------------------------------------
- OneTimeSecret plugin for GLPI
- Copyright (C) 2021-2022 by the TICgal Team.
- https://www.tic.gal
- -------------------------------------------------------------------------
- LICENSE
- This file is part of the OneTimeSecret plugin.
- OneTimeSecret plugin is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
- OneTimeSecret plugin is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- You should have received a copy of the GNU General Public License
- along with OneTimeSecret. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
- @package   OneTimeSecret
- @author    the TICgal team
- @copyright Copyright (c) 2021-2022 TICgal team
- @license   AGPL License 3.0 or (at your option) any later version
-            http://www.gnu.org/licenses/agpl-3.0-standalone.html
- @link      https://www.tic.gal
- @since     2021-2022
- ----------------------------------------------------------------------
+-------------------------------------------------------------------------
+OneTimeSecret plugin for GLPI
+Copyright (C) 2021-2026 by the TICGAL Team.
+https://www.tic.gal
+-------------------------------------------------------------------------
+LICENSE
+This file is part of the OneTimeSecret plugin.
+OneTimeSecret plugin is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+OneTimeSecret plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with OneTimeSecret. If not, see
+<http: //www.gnu.org/licenses />.
+--------------------------------------------------------------------------
+@package OneTimeSecret
+@author the TICGAL team
+@copyright Copyright (C) 2021 - 2026 TICGAL team
+@license AGPL License 3.0 or (at your option) any later version
+http://www.gnu.org/licenses/agpl-3.0-standalone.html
+@link https://www.tic.gal
+@since 2021
+----------------------------------------------------------------------
 */
 
-if(!defined('GLPI_ROOT')) {
-	die("Sorry. You can't access directly to this file");
+if (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access directly to this file");
 }
 
-class PluginOnetimesecretLink extends CommonDBTM {
-	public static $rightname='followup';
+use Glpi\Application\View\TemplateRenderer;
 
-	static function getTypeName($nb=0) {
-		return __('One-Time Secret','onetimesecret');
-	}
+class PluginOnetimesecretLink extends CommonDBTM
+{
+    public static $rightname = 'followup';
 
-	static function timelineAction($params=[]) {
-		global $DB;
-		$item=$params['item'];
-		switch ($item::getType()) {
-			case Ticket::getType():
-				$req = $DB->request('glpi_profilerights',
-					['profiles_id' => $_SESSION['glpiactiveprofile']["id"],
-						'name' => 'plugin_onetimesecret_send'
-					]);
-				if ($right = $req->next()) {
-					if ($item->getField('status')<Ticket::SOLVED && $right["rights"] == 1) {
-						$rand=$params['rand'];
-						echo "<li class='document' style='background-color:#FFB8A7;' onclick='javascript:viewAddSubitem".$item->fields['id']."$rand(\"".self::getType()."\");'>"."<img style='margin-right:10px;vertical-align:bottom;' src='https://onetimesecret.com/img/favicon.png'/>".self::getTypeName()."</li>";
-					}
-				}
-				
-				
-				break;
-		}
-	}
+    public function getItilObjectItemType(): string
+    {
+        return str_replace('One-Time Secret', '', $this->getType());
+    }
 
-	static function showForm($ID, $params=[]) {
-		$config = new PluginOnetimesecretConfig();
-		$config->getFromDB(1);
-		$rand = mt_rand();
-		$item = $params['parent'];
-		$entity = $item->getEntityID();
-		
-		echo "<div class='firstbloc'>";
-		echo "<form name='documentitem_form".$rand."' id='documentitem_form".
-				$rand."' method='post' action='".Toolbox::getItemTypeFormURL(self::getType()).
-				"' enctype=\"multipart/form-data\">";
-		echo "<table class='tab_cadre_fixe'>";
-		echo "<tr class='tab_bg_2'><th colspan='5'>".__('Create a password','onetimesecret')."</th></tr>";
-		echo "<tr class='tab_bg_1'>";
-		
-		echo "<td colspan='2'>";
-		echo "<input type='hidden' name='entities_id' value='$entity'>";
-		echo "<input type='hidden' name='is_recursive' value='".$item->isRecursive()."'>";
-		echo "<input type='hidden' name='itemtype' value='".$item->getType()."'>";
-		echo "<input type='hidden' name='items_id' value='".$item->getID()."'>";
-		echo "<input type='hidden' name='tickets_id' value='".$item->getID()."'>";
-		echo "</td>";
+    public static function getTypeName($nb = 0): string
+    {
+        return __('One-Time Secret', 'onetimesecret');
+    }
 
-		echo "<tr class='tab_bg_1'>";
-		echo "<td width='25%'>".__("Password")."</td><td>";
-		echo "<input type='password' name='password' id='password' size='40' >";
-		echo "</td></tr>\n";
+    public static function timelineAction($params = []): mixed
+    {
+        $item = $params['item'];
+        $config = PluginOnetimesecretConfig::getInstance();
 
-		echo "<td>".__("Password lifetime (hours)","onetimesecret")."</td><td>";
-		Dropdown::showNumber('lifetime', ['min'   => 1,
-                                          'max'   => 24,
-                                          'value' => $config->fields["lifetime"]]);
+        switch ($item::getType()) {
+            case Ticket::getType():
+                $profileRight = new ProfileRight();
+                $rights = $profileRight->find([
+                    'profiles_id'   => $_SESSION['glpiactiveprofile']["id"],
+                    'name'          => 'plugin_onetimesecret_send'
+                ]);
+                
+                foreach ($rights as $right) {
+                    if ($item->getField('status') < Ticket::SOLVED && $right["rights"] == 1) {
+                        $obj = new self();
+                        $timeline["PluginOnetimesecretLink_" . 1] = [
+                            'type'      => PluginOnetimesecretLink::class,
+                            'item'      => $obj,
+                            'itiltype'  => 'PluginOnetimesecretLink',
+                            'icon'      => "fa-solid fa-s px-1",
+                            'label'     => self::getTypeName()
+                        ];
 
-		echo "</tr>";
+                        $color = 'DD4A22';
+                        $style = <<<CSS
+                            .action-PluginOnetimesecretLink_1, .action-PluginOnetimesecretLink_1:hover {
+                                background-color: #$color;
+                                color: white;
+                            }
+CSS;
 
-		echo "<tr><th colspan='4'>".__('Optional parameter','onetimesecret')."</th></tr>";
+                        echo "<style>$style</style>";
 
-		echo "<tr class='tab_bg_1'>";
-		echo "<td width='25%'>".__("Passphrase","onetimesecret")."</td><td>";
-		echo "<input type='text' name='passphrase' id='passphrase' size='40' >";
-		echo "</td></tr>\n";
-		echo "</tr>";
+                        return $timeline;
+                    }
+                }
+                break;
+        }
+        return [];
+    }
 
-		
+    public function showForm($ID, array $params = []): void
+    {
+        $config = PluginOnetimesecretConfig::getInstance();
 
-		echo "<tr class='tab_bg_1'>";
-		echo "<td colspan='2' class='center'>";
-		echo "<input type='submit' name='add' value=\""._sx('button', 'Send')."\"class='submit'>";
-		echo "</td>";
-		echo "</tr>";
+        $rand = mt_rand();
+        $item = $params['parent'];
+        $entity = $item->getEntityID();
 
-		
-		echo "</table>";
-		Html::closeForm();
-		echo "</div>";
+        $lifetimes = PluginOnetimesecretConfig::getLifetimes();
 
-	}
+        $template = "@onetimesecret/link.html.twig";
+        $template_options = [
+            'item'              => $item,
+            'entity'            => $entity,
+            'action'            => Toolbox::getItemTypeFormURL(self::getType()),
+            'rand'              => $rand,
+            'possible_values'   => $lifetimes,
+            'lifetime'          => $config->fields["lifetime"]
+        ];
+        TemplateRenderer::getInstance()->display($template, $template_options);
+    }
 
-	function getEmpty() {
-      return true;
-   }
+    public function getEmpty(): bool
+    {
+        return true;
+    }
 
+    public static function install(Migration $migration): bool
+    {
+        global $DB;
+        $default_charset = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
 
+        $table = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $migration->displayMessage("Installing $table");
+            $query = "CREATE TABLE IF NOT EXISTS $table (
+                `id` int {$default_key_sign} NOT NULL auto_increment,
+                `secret` VARCHAR(255) NOT NULL DEFAULT '',
+                `ttl` int(11) NOT NULL DEFAULT '24',
+                `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
+                PRIMARY KEY (`id`)
+            )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+        return true;
+    }
 }
