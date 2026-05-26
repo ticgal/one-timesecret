@@ -170,7 +170,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $migration->displayMessage("Installing $table");
             $query = "CREATE TABLE IF NOT EXISTS $table (
 				`id` int {$default_key_sign} NOT NULL auto_increment,
-				`server` VARCHAR(255) NOT NULL DEFAULT 'onetimesecret.com',
+				`server` VARCHAR(255) NOT NULL DEFAULT 'eu.onetimesecret.com',
 				`email` VARCHAR(255) NOT NULL DEFAULT '',
 				`apikey` VARCHAR(255) NOT NULL DEFAULT '',
 				`lifetime` int(11) NOT NULL DEFAULT '24',
@@ -184,7 +184,11 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $config->add([
                 'id' => 1
             ]);
+        } else {
+            $migration->changeField($table, 'server', 'server', 'VARCHAR(250)', ['value' => 'eu.onetimesecret.com']);
+            $migration->migrationOneTable($table);
         }
+        
         return true;
     }
 }
