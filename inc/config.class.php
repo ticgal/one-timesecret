@@ -187,4 +187,10 @@ class PluginOnetimesecretConfig extends CommonDBTM
         }
         return true;
     }
+
+    public static function uninstall(Migration $migration): bool
+    {
+        $migration->dropTable(self::getTable());
+        return true;
+    }
 }
