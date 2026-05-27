@@ -88,7 +88,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
         $body = [
             'secret' => [
                 'kind'   => 'conceal',
-                'secret' => htmlspecialchars($params["password"]),
+                'secret' => html_entity_decode($params["password"], ENT_QUOTES | ENT_HTML5),
                 'ttl'    => self::hoursToSeconds($params["lifetime"]),
             ]
         ];
@@ -98,7 +98,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
 
         if ($params["passphrase"] != "") {
-            $post_fields["passphrase"] = html_entity_decode($params["passphrase"], ENT_QUOTES | ENT_HTML5);
+            $body['secret']['passphrase'] = html_entity_decode($params["passphrase"], ENT_QUOTES | ENT_HTML5);
         }
 
         curl_setopt_array($curl, [
@@ -138,12 +138,12 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
     }
 
-    public static function hoursToSeconds($hours): int
+    public static function hoursToSeconds(int $hours): int
     {
         return min((int)$hours, 604800);
     }
 
-    public static function addFollowup($params, $text = ''): bool
+    public static function addFollowup(array $params, $text = ''): bool
     {
         global $DB, $CFG_GLPI;
 
@@ -155,7 +155,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
         ];
 
         foreach ($DB->request($query) as $ticket) {
-            if ($ticket['status'] < Ticket::SOLVED) {
+            if ($ticket['status'] < CommonITILObject::SOLVED) {
                 $link = new PluginOnetimesecretLink();
                 $link_input = [
                     'secret'     => $text,
@@ -202,7 +202,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
                             'items_id'  => $params["tickets_id"],
                             'itemtype'  => Ticket::getType(),
                             'content'   => $content,
-                            '_status'   => Ticket::ASSIGNED,
+                            '_status'   => CommonITILObject::ASSIGNED,
                             'users_id'  => Session::getLoginUserID()
                         ];
                     } else {

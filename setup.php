@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 
 use Glpi\Plugin\Hooks;
 
-define('PLUGIN_ONETIMESECRET_VERSION', '3.1.0-beta1');
+define('PLUGIN_ONETIMESECRET_VERSION', '3.1.0-beta2');
 define('PLUGIN_ONETIMESECRET_MIN_GLPI', '11.0');
 define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.0');
 
