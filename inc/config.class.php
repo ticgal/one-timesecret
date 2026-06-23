@@ -1,9 +1,8 @@
 <?php
-
 /*
 -------------------------------------------------------------------------
 OneTimeSecret plugin for GLPI
-Copyright (C) 2021-2023 by the TICgal Team.
+Copyright (C) 2021-2026 by the TICGAL Team.
 https://www.tic.gal
 -------------------------------------------------------------------------
 LICENSE
@@ -21,12 +20,12 @@ along with OneTimeSecret. If not, see
 <http: //www.gnu.org/licenses />.
 --------------------------------------------------------------------------
 @package OneTimeSecret
-@author the TICgal team
-@copyright Copyright (c) 2021-2023 TICgal team
+@author the TICGAL team
+@copyright Copyright (c) 2021-2026 TICGAL team
 @license AGPL License 3.0 or (at your option) any later version
 http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @link https://www.tic.gal
-@since 2021-2023
+@since 2021
 ----------------------------------------------------------------------
 */
 
@@ -165,7 +164,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $migration->displayMessage("Installing $table");
             $query = "CREATE TABLE IF NOT EXISTS $table (
 				`id` int {$default_key_sign} NOT NULL auto_increment,
-				`server` VARCHAR(255) NOT NULL DEFAULT 'onetimesecret.com',
+				`server` VARCHAR(255) NOT NULL DEFAULT 'eu.onetimesecret.com',
 				`email` VARCHAR(255) NOT NULL DEFAULT '',
 				`apikey` VARCHAR(255) NOT NULL DEFAULT '',
 				`lifetime` int(11) NOT NULL DEFAULT '24',
@@ -194,6 +193,9 @@ class PluginOnetimesecretConfig extends CommonDBTM
                 'id'        => 1,
                 'users_id'  => $users_id
             ]);
+        } else {
+            $migration->changeField($table, 'server', 'server', 'VARCHAR(250)', ['value' => 'eu.onetimesecret.com']);
+            $migration->migrationOneTable($table);
         }
     }
 }
