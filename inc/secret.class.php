@@ -34,7 +34,6 @@ if (!defined("GLPI_ROOT")) {
     die("Sorry. You can't access directly to this file");
 }
 
-
 class PluginOnetimesecretSecret extends CommonDBTM
 {
     public static function authentication(): void
@@ -52,8 +51,8 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
         if (!empty($CFG_GLPI["proxy_user"])) {
             $proxy_creds      = !empty($CFG_GLPI["proxy_user"])
-            ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
-            : "";
+                ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
+                : "";
             curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -76,7 +75,6 @@ class PluginOnetimesecretSecret extends CommonDBTM
         }
 
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
     }
 
     public static function createSecret($params = []): bool|string
@@ -87,61 +85,65 @@ class PluginOnetimesecretSecret extends CommonDBTM
         $apikey = (new GLPIKey())->decrypt($config->fields["apikey"]);
         $curl = curl_init();
 
-        $post_fields = [
-            'secret'    => html_entity_decode($params["password"], ENT_QUOTES | ENT_HTML5),
-            'ttl'       => self::hoursToSeconds($params["lifetime"])
+        $body = [
+            'secret' => [
+                'kind'   => 'conceal',
+                'secret' => html_entity_decode($params["password"], ENT_QUOTES | ENT_HTML5),
+                'ttl'    => self::hoursToSeconds($params["lifetime"]),
+            ]
         ];
 
-        if ($params["passphrase"] != "") {
-            $post_fields["passphrase"] = html_entity_decode($params["passphrase"], ENT_QUOTES | ENT_HTML5);
+        if ($config->fields['server'] !== 'onetimesecret.com') {
+            $body['secret']['share_domain'] = $config->fields['server'];
         }
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL             => 'https://' . $config->fields['server'] . '/api/v1/share',
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_ENCODING        => '',
-            CURLOPT_MAXREDIRS       => 10,
-            CURLOPT_TIMEOUT         => 0,
-            CURLOPT_FOLLOWLOCATION  => true,
-            CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST   => 'POST',
-            CURLOPT_POSTFIELDS      => $post_fields,
-            CURLOPT_HTTPHEADER      => array(
-                "Authorization: Basic " . base64_encode($config->fields["email"] . ":" . $apikey)
-            ),
-        ));
+        if ($params["passphrase"] != "") {
+            $body['secret']['passphrase'] = html_entity_decode($params["passphrase"], ENT_QUOTES | ENT_HTML5);
+        }
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL            => 'https://' . $config->fields['server'] . '/api/v2/secret/conceal',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_POSTFIELDS     => json_encode($body),
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Authorization: Basic ' . base64_encode($config->fields["email"] . ":" . $apikey)
+            ],
+        ]);
 
         if (!empty($CFG_GLPI["proxy_name"])) {
             curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
         }
         if (!empty($CFG_GLPI["proxy_user"])) {
             $proxy_creds      = !empty($CFG_GLPI["proxy_user"])
-            ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
-            : "";
+                ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
+                : "";
             curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
         }
 
         $response = curl_exec($curl);
-
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
         $data = json_decode($response, true);
 
-        if (isset($data["secret_key"]) && $data["secret_key"] != "") {
-            return "https://" . $config->fields["server"] . "/secret/" . $data["secret_key"];
+        if (isset($data["record"]["secret"]["identifier"]) && $data["record"]["secret"]["identifier"] != "") {
+            return "https://" . $config->fields['server'] . "/secret/" . $data["record"]["secret"]["identifier"];
         } else {
             return false;
         }
     }
 
-    public static function hoursToSeconds($hours): int
+    public static function hoursToSeconds(int $hours): int
     {
-        $minutes = $hours * 60;
-        $seconds = $minutes * 60;
-        return $seconds;
+        return min((int)$hours, 604800);
     }
 
-    public static function addFollowup($params, $text = ''): bool
+    public static function addFollowup(array $params, $text = ''): bool
     {
         global $DB, $CFG_GLPI;
 
@@ -153,7 +155,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
         ];
 
         foreach ($DB->request($query) as $ticket) {
-            if ($ticket['status'] < Ticket::SOLVED) {
+            if ($ticket['status'] < CommonITILObject::SOLVED) {
                 $link = new PluginOnetimesecretLink();
                 $link_input = [
                     'secret'     => $text,
@@ -200,7 +202,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
                             'items_id'  => $params["tickets_id"],
                             'itemtype'  => Ticket::getType(),
                             'content'   => $content,
-                            '_status'   => Ticket::ASSIGNED,
+                            '_status'   => CommonITILObject::ASSIGNED,
                             'users_id'  => Session::getLoginUserID()
                         ];
                     } else {

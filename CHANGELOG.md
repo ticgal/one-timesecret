@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 3.1.0 - 2026-05-26
+### Features
+- Compatibility with API V2
+
 ## 3.0.0 - 2026-01-27
 ### Features
 - GLPI 11 support

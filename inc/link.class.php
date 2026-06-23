@@ -64,7 +64,7 @@ class PluginOnetimesecretLink extends CommonDBTM
                 ]);
                 
                 foreach ($rights as $right) {
-                    if ($item->getField('status') < Ticket::SOLVED && $right["rights"] == 1) {
+                    if ($item->getField('status') < CommonITILObject::SOLVED && $right["rights"] == 1) {
                         $obj = new self();
                         $timeline["PluginOnetimesecretLink_" . 1] = [
                             'type'      => PluginOnetimesecretLink::class,
