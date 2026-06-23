@@ -62,7 +62,7 @@ class PluginOnetimesecretLink extends CommonDBTM
                     'profiles_id'   => $_SESSION['glpiactiveprofile']["id"],
                     'name'          => 'plugin_onetimesecret_send'
                 ]);
-                
+
                 foreach ($rights as $right) {
                     if ($item->getField('status') < CommonITILObject::SOLVED && $right["rights"] == 1) {
                         $obj = new self();
@@ -140,6 +140,12 @@ CSS;
 
             $DB->doQuery($query);
         }
+        return true;
+    }
+
+    public static function uninstall(Migration $migration): bool
+    {
+        $migration->dropTable(self::getTable());
         return true;
     }
 }

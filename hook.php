@@ -73,6 +73,8 @@ function plugin_onetimesecret_uninstall(): bool
         }
     }
 
+    $migration->executeMigration();
+
     $config = new Config();
     $config->deleteConfigurationValues(['core', 'notifications_push']);
 
