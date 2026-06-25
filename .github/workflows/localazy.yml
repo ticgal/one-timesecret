@@ -1,0 +1,84 @@
+name: Upload Localazy translations
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  check-configuration:
+    name: Check Localazy configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Check Localazy project
+        run: |
+          if [ ! -f ./locales/localazy.json ]; then
+            echo "Localazy configuration file not found"
+            exit 1
+          else
+            echo "Localazy configuration file found"
+          fi
+      - name: Check secrets
+        run: |
+          if [ -z "${{ secrets.LOCALAZY_READ_KEY }}" ]; then
+            echo "LOCALAZY_READ_KEY secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.LOCALAZY_WRITE_KEY }}" ]; then
+            echo "LOCALAZY_WRITE_KEY secret is missing"
+            exit 1
+          fi
+      - name: Generate locales
+        run: |
+          if [ -f ./tools/extract_template.sh ]; then
+            sudo apt-get update && sudo apt-get install -y gettext
+            chmod +x ./tools/extract_template.sh
+            bash ./tools/extract_template.sh
+          fi
+  update-translations:
+    name: Upload strings to Localazy
+    runs-on: ubuntu-latest
+    needs: check-configuration
+    steps:
+      - uses: actions/checkout@v1
+      - name: Upload to Localazy
+        uses: localazy/upload@v1
+        with:
+          workdir: ./locales
+          config_file: localazy.json
+          read_key: ${{ secrets.LOCALAZY_READ_KEY }}
+          write_key: ${{ secrets.LOCALAZY_WRITE_KEY }}
+  download-translations:
+    name: Download strings
+    runs-on: ubuntu-latest
+    needs: update-translations
+    steps:
+      - uses: actions/checkout@v1
+      - name: Download from Localazy
+        uses: localazy/download@v1
+        with:
+          workdir: ./locales
+          config_file: localazy.json
+          read_key: ${{ secrets.LOCALAZY_READ_KEY }}
+      - name: Commit changes
+        env:
+          BRANCH: ${{ github.ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f ./tools/extract_template.sh ]; then
+            sudo apt-get update && sudo apt-get install -y gettext
+            chmod +x ./tools/extract_template.sh
+            bash ./tools/extract_template.sh
+          fi
+          git config --local user.email "${{ github.event.pusher.email }}"
+          git config --local user.name "${{ github.event.pusher.name }}"
+          BRANCH_NAME=${BRANCH#refs/heads/}
+          git checkout -B $BRANCH_NAME
+          git add ./locales
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update translations from Localazy"
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git $BRANCH_NAME
+          fi
