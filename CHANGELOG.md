@@ -1,5 +1,11 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 3.2.0 - 2026-06-25
+### Features
+- Added translations workflow
+- Deletes tables upon uninstall #55
+- Add new expiration delay #58
+
 ## 3.1.0 - 2026-05-26
 ### Features
 - Compatibility with API V2

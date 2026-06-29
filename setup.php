@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 
 use Glpi\Plugin\Hooks;
 
-define('PLUGIN_ONETIMESECRET_VERSION', '3.1.0');
+define('PLUGIN_ONETIMESECRET_VERSION', '3.2.0');
 define('PLUGIN_ONETIMESECRET_MIN_GLPI', '11.0');
 define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.0');
 
@@ -54,7 +54,8 @@ function plugin_init_onetimesecret(): void
         $PLUGIN_HOOKS['config_page']['onetimesecret'] = 'front/config.form.php';
 
         $PLUGIN_HOOKS[Hooks::TIMELINE_ANSWER_ACTIONS]['onetimesecret'] = [
-            'PluginOnetimesecretLink','timelineAction'
+            'PluginOnetimesecretLink',
+            'timelineAction'
         ];
     }
 }

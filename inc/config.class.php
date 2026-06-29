@@ -92,6 +92,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
 
         $lifetimes = [];
 
+        $lifetimes[$one_day_in_sec * 30] = sprintf(_n('%d day', '%d days', 30), 30);
         $lifetimes[$one_day_in_sec * 7] = sprintf(_n('%d day', '%d days', 7), 7);
         $lifetimes[$one_day_in_sec * 3] = sprintf(_n('%d day', '%d days', 3), 3);
         $lifetimes[$one_day_in_sec] = sprintf(_n('%d day', '%d days', 1), 1);
@@ -188,7 +189,21 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $migration->changeField($table, 'server', 'server', 'VARCHAR(250)', ['value' => 'eu.onetimesecret.com']);
             $migration->migrationOneTable($table);
         }
-        
+
         return true;
+    }
+
+    public static function uninstall(Migration $migration): void
+    {
+        /** @var \DBmysql $DB */
+        global $DB;
+        $tableConfig = self::getTable();
+
+        if ($DB->tableExists($tableConfig)) {
+            $migration->displayMessage("Dropping table $tableConfig");
+            $DB->doQuery("DROP TABLE `$tableConfig`;");
+        }
+
+        Config::deleteConfigurationValues('plugin:OneTimeSecret');
     }
 }
