@@ -1,0 +1,98 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Localazy (https://localazy.com)\n"
+"Project-Id-Version: One-Time Secret-GLPI\n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: templates/config.html.twig:76
+msgid "API key"
+msgstr "Kunci API"
+
+#: inc/secret.class.php:163
+msgid "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient."
+msgstr "Tautan rahasia <b>hanya berfungsi sekali</b> dan <b>kemudian menghilang selamanya</b> . Jangan membukanya jika Anda bukan penerima yang dimaksud."
+
+#: inc/secret.class.php:170
+msgid "A secret link can only be opened once and will expire afterwards."
+msgstr "Tautan rahasia hanya bisa dibuka satu kali dan akan kedaluwarsa setelahnya."
+
+#: inc/secret.class.php:162
+msgid "As mentioned in our previous conversation, this message is meant to share sensitive information with you."
+msgstr "Seperti yang disebutkan dalam percakapan kita sebelumnya, pesan ini dimaksudkan untuk berbagi informasi sensitif dengan Anda."
+
+#: inc/secret.class.php:170
+msgid "Bear in mind:"
+msgstr "Ingatlah:"
+
+#: templates/link.html.twig:46
+msgid "Create a secret"
+msgstr "Buat sebuah rahasia"
+
+#: inc/profile.class.php:102
+msgid "Display OneTimeSecret button"
+msgstr "Tampilkan tombol OneTimeSecret"
+
+#: inc/secret.class.php:164
+msgid "Here you have"
+msgstr "Di sini Anda memiliki"
+
+#: inc/secret.class.php:162
+msgid "Hi,"
+msgstr "Hai,"
+
+#: inc/secret.class.php:168
+msgid "I will send you the required passphrase to open it using an alternative method for security reasons."
+msgstr "Saya akan mengirimi Anda frasa sandi yang diperlukan untuk membukanya dengan menggunakan metode alternatif demi alasan keamanan."
+
+#: templates/config.html.twig:83
+msgid "Lifetime"
+msgstr "Seumur hidup"
+
+#: inc/link.class.php:48
+msgid "One-Time Secret"
+msgstr "Rahasia Satu Kali"
+
+#: templates/link.html.twig:63
+msgid "Optional parameter"
+msgstr "Parameter opsional"
+
+#: templates/link.html.twig:68
+msgid "Passphrase"
+msgstr "Frasa sandi"
+
+#: front/link.form.php:49
+msgid "Please, check the configuration"
+msgstr "silakan periksa konfigurasinya"
+
+#: inc/secret.class.php:172
+msgid "Regards,"
+msgstr "Salam,"
+
+#: templates/link.html.twig:51
+msgid "Secret"
+msgstr "rahasia"
+
+#: front/link.form.php:39
+msgid "Secret is missing"
+msgstr "rahasia hilang"
+
+#: templates/link.html.twig:59 templates/config.html.twig:91
+msgid "Secret lifetime"
+msgstr "rahasia seumur hidup"
+
+#: front/link.form.php:46
+msgid "Something wrong happened"
+msgstr "Sesuatu yang salah terjadi"
+
+#: inc/secret.class.php:171
+#, php-format
+msgid "This secret link will expire %1$s after its generation."
+msgstr "Tautan rahasia ini akan kedaluwarsa %1$s setelah generasinya."
+
+#: inc/secret.class.php:165
+msgid "your secret link"
+msgstr "tautan rahasia Anda"

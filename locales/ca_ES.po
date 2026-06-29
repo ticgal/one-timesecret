@@ -1,0 +1,98 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Localazy (https://localazy.com)\n"
+"Project-Id-Version: One-Time Secret-GLPI\n"
+"Language: ca_ES\n"
+"Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
+
+#: templates/config.html.twig:76
+msgid "API key"
+msgstr "Clau API"
+
+#: inc/secret.class.php:163
+msgid "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient."
+msgstr "Un enllaç secret <b>només funciona una vegada</b> i <b>després desapareix per sempre </b>. No l'obriu si no sou el destinatari previst."
+
+#: inc/secret.class.php:170
+msgid "A secret link can only be opened once and will expire afterwards."
+msgstr "Un enllaç secret només es pot obrir una vegada i caducarà després."
+
+#: inc/secret.class.php:162
+msgid "As mentioned in our previous conversation, this message is meant to share sensitive information with you."
+msgstr "Com hem comentat a la nostra conversa anterior, aquest missatge està pensat per compartir informació confidencial amb tu."
+
+#: inc/secret.class.php:170
+msgid "Bear in mind:"
+msgstr "Tingues en compte el següent:"
+
+#: templates/link.html.twig:46
+msgid "Create a secret"
+msgstr "Crea un secret"
+
+#: inc/profile.class.php:102
+msgid "Display OneTimeSecret button"
+msgstr "Mostra el botó OneTimeSecret"
+
+#: inc/secret.class.php:164
+msgid "Here you have"
+msgstr "Aquí tens"
+
+#: inc/secret.class.php:162
+msgid "Hi,"
+msgstr "Hola!"
+
+#: inc/secret.class.php:168
+msgid "I will send you the required passphrase to open it using an alternative method for security reasons."
+msgstr "Us enviaré la frase de contrasenya necessària per obrir-la mitjançant un mètode alternatiu per motius de seguretat."
+
+#: templates/config.html.twig:83
+msgid "Lifetime"
+msgstr "Temps de vida"
+
+#: inc/link.class.php:48
+msgid "One-Time Secret"
+msgstr "One-Time Secret"
+
+#: templates/link.html.twig:63
+msgid "Optional parameter"
+msgstr "Paràmetre opcional"
+
+#: templates/link.html.twig:68
+msgid "Passphrase"
+msgstr "Frase de contrasenya"
+
+#: front/link.form.php:49
+msgid "Please, check the configuration"
+msgstr "Si us plau, comproveu la configuració"
+
+#: inc/secret.class.php:172
+msgid "Regards,"
+msgstr "Salutacions,"
+
+#: templates/link.html.twig:51
+msgid "Secret"
+msgstr "Secret"
+
+#: front/link.form.php:39
+msgid "Secret is missing"
+msgstr "Falta el secret"
+
+#: templates/link.html.twig:59 templates/config.html.twig:91
+msgid "Secret lifetime"
+msgstr "Temps de vida del secret"
+
+#: front/link.form.php:46
+msgid "Something wrong happened"
+msgstr "S’ha produït un error"
+
+#: inc/secret.class.php:171
+#, php-format
+msgid "This secret link will expire %1$s after its generation."
+msgstr "Aquest enllaç secret caducarà %1$s després de la seva generació."
+
+#: inc/secret.class.php:165
+msgid "your secret link"
+msgstr "el teu enllaç secret"
