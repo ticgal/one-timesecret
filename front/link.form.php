@@ -40,7 +40,6 @@ if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecr
 if (!isset($_POST['password']) || $_POST['password'] == "") {
     Session::addMessageAfterRedirect(__("Secret is missing", "onetimesecret"));
 } else {
-    PluginOnetimesecretSecret::authentication();
     $_POST['password'] = html_entity_decode($_POST['password'], ENT_QUOTES | ENT_HTML5);
     $_POST['passphrase'] = html_entity_decode($_POST['passphrase'], ENT_QUOTES | ENT_HTML5);
     $link = PluginOnetimesecretSecret::createSecret($_POST);

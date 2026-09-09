@@ -144,20 +144,6 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return true;
     }
 
-    // public function prepareInputForAdd($input)
-    // {
-    //     if (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
-    //         Session::addMessageAfterRedirect(
-    //             __('Email address is considered invalid.', 'onetimesecret'),
-    //             false,
-    //             ERROR,
-    //         );
-    //         return false;
-    //     }
-
-    //     return $input;
-    // }
-
     public function prepareInputForUpdate($input): array
     {
         if (isset($input['apikey'])) {
