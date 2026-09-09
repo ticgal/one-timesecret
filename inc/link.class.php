@@ -42,7 +42,7 @@ class PluginOnetimesecretLink extends CommonDBTM
 
     public function getItilObjectItemType(): string
     {
-        return str_replace('One-Time Secret', '', $this->getType());
+        return Ticket::getType();
     }
 
     public static function getTypeName($nb = 0): string
@@ -54,6 +54,10 @@ class PluginOnetimesecretLink extends CommonDBTM
     {
         $item = $params['item'];
         $config = PluginOnetimesecretConfig::getInstance();
+
+        if (empty($config->fields['apiuser']) || empty($config->fields['apikey'])) {
+            return [];
+        }
 
         switch ($item::getType()) {
             case Ticket::getType():
@@ -67,11 +71,13 @@ class PluginOnetimesecretLink extends CommonDBTM
                     if ($item->getField('status') < CommonITILObject::SOLVED && $right["rights"] == 1) {
                         $obj = new self();
                         $timeline["PluginOnetimesecretLink_" . 1] = [
-                            'type'      => PluginOnetimesecretLink::class,
-                            'item'      => $obj,
-                            'itiltype'  => 'PluginOnetimesecretLink',
-                            'icon'      => "fa-solid fa-s px-1",
-                            'label'     => self::getTypeName()
+                            'type'          => PluginOnetimesecretLink::class,
+                            'class'         => PluginOnetimesecretLink::class,
+                            'item'          => $obj,
+                            'itiltype'      => 'PluginOnetimesecretLink',
+                            'icon'          => "fa-solid fa-s px-1",
+                            'label'         => self::getTypeName(),
+                            'short_label'   => self::getTypeName()
                         ];
 
                         $color = 'DD4A22';

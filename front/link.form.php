@@ -49,7 +49,7 @@ if (!isset($_POST['password']) || $_POST['password'] == "") {
     } else {
         Session::addMessageAfterRedirect(__('Something wrong happened', 'onetimesecret'), false, ERROR);
         $config = PluginOnetimesecretConfig::getInstance();
-        if ($config->fields['email'] == '' || $config->fields['apikey'] == '') {
+        if ($config->fields['apiuser'] == '' || $config->fields['apikey'] == '') {
             $msg = __('Please, check the configuration', 'onetimesecret');
             $href = "/front/config.form.php?forcetab=PluginOnetimesecretConfig%241";
             Session::addMessageAfterRedirect('<a href="' . $href . '">' . $msg . '</a>', false, ERROR);

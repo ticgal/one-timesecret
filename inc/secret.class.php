@@ -31,7 +31,8 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 */
 
 if (!defined("GLPI_ROOT")) {
-    die("Sorry. You can't access directly to this file");
+    echo "Sorry. You can't access directly to this file";
+    return;
 }
 
 class PluginOnetimesecretSecret extends CommonDBTM
@@ -113,7 +114,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
             CURLOPT_POSTFIELDS     => json_encode($body),
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
-                'Authorization: Basic ' . base64_encode($config->fields["email"] . ":" . $apikey)
+                'Authorization: Basic ' . base64_encode($config->fields["apiuser"] . ":" . $apikey)
             ],
         ]);
 
@@ -140,7 +141,8 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
     public static function hoursToSeconds(int $hours): int
     {
-        return min((int)$hours, 604800);
+        // Cap must stay >= the largest option returned by PluginOnetimesecretConfig::getLifetimes()
+        return min((int)$hours, 2592000);
     }
 
     public static function addFollowup(array $params, $text = ''): bool
@@ -188,7 +190,16 @@ class PluginOnetimesecretSecret extends CommonDBTM
                         'type' => 1
                     ]
                 ];
-                $input = [];
+
+                // Defaults used when the ticket has no requester left (deleted/unassigned)
+                $lang = $CFG_GLPI["language"];
+                $input = [
+                    'items_id'  => $params["tickets_id"],
+                    'itemtype'  => Ticket::getType(),
+                    'content'   => $content,
+                    'users_id'  => Session::getLoginUserID()
+                ];
+
                 foreach ($DB->request($query) as $ticket_user) {
                     $user = new User();
                     $user->getFromDB($ticket_user["users_id"]);
@@ -198,20 +209,7 @@ class PluginOnetimesecretSecret extends CommonDBTM
                     }
 
                     if (Session::getLoginUserID() == $ticket_user["users_id"]) {
-                        $input = [
-                            'items_id'  => $params["tickets_id"],
-                            'itemtype'  => Ticket::getType(),
-                            'content'   => $content,
-                            '_status'   => CommonITILObject::ASSIGNED,
-                            'users_id'  => Session::getLoginUserID()
-                        ];
-                    } else {
-                        $input = [
-                            'items_id'  => $params["tickets_id"],
-                            'itemtype'  => Ticket::getType(),
-                            'content'   => $content,
-                            'users_id'  => Session::getLoginUserID()
-                        ];
+                        $input['_status'] = CommonITILObject::ASSIGNED;
                     }
                 }
 

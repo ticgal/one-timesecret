@@ -31,7 +31,8 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 */
 
 if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
+    echo "Sorry. You can't access directly to this file";
+    return;
 }
 
 use Glpi\Application\View\TemplateRenderer;
@@ -93,6 +94,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
         $lifetimes = [];
 
         $lifetimes[$one_day_in_sec * 30] = sprintf(_n('%d day', '%d days', 30), 30);
+        $lifetimes[$one_day_in_sec * 14] = sprintf(_n('%d day', '%d days', 14), 14);
         $lifetimes[$one_day_in_sec * 7] = sprintf(_n('%d day', '%d days', 7), 7);
         $lifetimes[$one_day_in_sec * 3] = sprintf(_n('%d day', '%d days', 3), 3);
         $lifetimes[$one_day_in_sec] = sprintf(_n('%d day', '%d days', 1), 1);
@@ -142,6 +144,20 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return true;
     }
 
+    // public function prepareInputForAdd($input)
+    // {
+    //     if (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
+    //         Session::addMessageAfterRedirect(
+    //             __('Email address is considered invalid.', 'onetimesecret'),
+    //             false,
+    //             ERROR,
+    //         );
+    //         return false;
+    //     }
+
+    //     return $input;
+    // }
+
     public function prepareInputForUpdate($input): array
     {
         if (isset($input['apikey'])) {
@@ -173,21 +189,34 @@ class PluginOnetimesecretConfig extends CommonDBTM
 				`id` int {$default_key_sign} NOT NULL auto_increment,
 				`server` VARCHAR(255) NOT NULL DEFAULT 'eu.onetimesecret.com',
 				`email` VARCHAR(255) NOT NULL DEFAULT '',
+                `apiuser` VARCHAR(255) NOT NULL DEFAULT '',
 				`apikey` VARCHAR(255) NOT NULL DEFAULT '',
-				`lifetime` int(11) NOT NULL DEFAULT '24',
+				`lifetime` int(11) NOT NULL DEFAULT '86400',
 				`debug` tinyint(1) NOT NULL default '1',
 				PRIMARY KEY (`id`)
 			)ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
 
-            // Insert default config after table creation
+            // Insert default config after table creation (lifetime expressed in seconds, API v2)
             $config->add([
-                'id' => 1
+                'id'       => 1,
+                'lifetime' => 86400
             ]);
         } else {
             $migration->changeField($table, 'server', 'server', 'VARCHAR(250)', ['value' => 'eu.onetimesecret.com']);
+            // Since 3.3.0
+            $migration->addField($table, 'apiuser', 'string');
             $migration->migrationOneTable($table);
+
+            // Prior to the API v2 rewrite, 'lifetime' was stored in hours. Since 3.1.0 it is
+            // used directly as seconds (see PluginOnetimesecretSecret::hoursToSeconds), so any
+            // leftover value still in the old hours scale must be converted once on upgrade.
+            $legacy_lifetime = (int) $config->fields['lifetime'];
+            if ($legacy_lifetime > 0 && $legacy_lifetime <= 744 && !in_array($legacy_lifetime, array_keys(self::getLifetimes()), true)) {
+                $migration->displayMessage("Converting legacy lifetime value ($legacy_lifetime hours) to seconds");
+                $DB->update($table, ['lifetime' => $legacy_lifetime * HOUR_TIMESTAMP], ['id' => 1]);
+            }
         }
 
         return true;
