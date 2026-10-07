@@ -12,7 +12,7 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "autoloader-suffix": "Onetimesecret",
+        "autoloader-suffix": "PluginOnetimesecret",
         "platform": {
             "php": "8.3.0"
         },
