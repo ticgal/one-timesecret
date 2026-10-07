@@ -1,5 +1,9 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 3.3.1 - Unreleased
+### Security
+- Sending a secret checks the plugin right, the ticket access and the right to add followups to the ticket (any user could add followups to any ticket before)
+
 ## 3.3.0 - 2026-09-09
 ### Changed
 - Changed auth: now uses API username instead of email

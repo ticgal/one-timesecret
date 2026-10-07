@@ -30,12 +30,37 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
+use Glpi\Exception\Http\NotFoundHttpException;
+
 global $CFG_GLPI;
 
 $plugin = new Plugin();
 if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
     Html::redirect($CFG_GLPI["root_doc"]);
 }
+
+Session::checkRight('plugin_onetimesecret_send', READ);
+
+if (!isset($_POST['tickets_id'])) {
+    throw new BadRequestHttpException();
+}
+
+$ticket = new Ticket();
+if (!$ticket->getFromDB((int) $_POST['tickets_id'])) {
+    throw new NotFoundHttpException();
+}
+// Same checks as adding a followup from the timeline (entity, ticket visibility, followup rights)
+$followup = new ITILFollowup();
+$followup_input = ['itemtype' => Ticket::class, 'items_id' => $ticket->getID()];
+if (
+    !$followup->can(-1, CREATE, $followup_input)
+    || $ticket->fields['status'] >= CommonITILObject::SOLVED
+) {
+    throw new AccessDeniedHttpException();
+}
+$_POST['tickets_id'] = $ticket->getID();
 
 if (!isset($_POST['password']) || $_POST['password'] == "") {
     Session::addMessageAfterRedirect(__("Secret is missing", "onetimesecret"));
