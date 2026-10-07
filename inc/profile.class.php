@@ -34,145 +34,28 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-class PluginOnetimesecretProfile extends Profile
+class PluginOnetimesecretProfile extends CommonGLPI
 {
-    public static $rightname = "config";
+    public static $rightname = 'profile';
+
+    /** Right needed to see the One-Time Secret answer action in tickets */
+    public const RIGHT_SEND = 'plugin_onetimesecret_send';
+
+    /**
+     * Only a tab of the profiles: there is no list of this itemtype
+     * (GLPI would route /plugins/onetimesecret/front/profile.php to its generic list)
+     */
+    public static function canView(): bool
+    {
+        return false;
+    }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
-        switch ($item->getType()) {
-            case 'Profile':
-                return self::createTabEntry("One-Time Secret");
+        if ($item instanceof Profile) {
+            return self::createTabEntry("One-Time Secret");
         }
         return '';
-    }
-
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
-    {
-        switch ($item->getType()) {
-            case 'Profile':
-                $profile = new self();
-                $profile->showForm($item instanceof CommonDBTM ? $item->getID() : 0);
-                break;
-        }
-        return true;
-    }
-
-    public function showForm($profiles_id = 0, $openform = true, $closeform = true): bool
-    {
-        $profile = new Profile();
-        $profile->getFromDB($profiles_id);
-        echo "<div class='firstbloc'>";
-        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE])) && $openform) {
-            echo "<form method='post' action='" . $profile->getFormURL() . "'>";
-        }
-
-        $rights = $this->getRightsGeneral();
-        $profile->displayRightsChoiceMatrix(
-            $rights,
-            [
-                'canedit'       => $canedit,
-                'default_class' => 'tab_bg_2',
-                'title'         => __('General'),
-            ]
-        );
-        if ($canedit && $closeform) {
-            echo "<div class='center'>";
-            echo Html::hidden('id', ['value' => $profiles_id]);
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
-            echo "</div>";
-            Html::closeForm();
-        }
-        echo "</div>";
-
-        $this->showLegend();
-        return true;
-    }
-
-    public function getAllRights(): array
-    {
-        $a_rights = [];
-        $a_rights = array_merge($a_rights, $this->getRightsGeneral());
-        return $a_rights;
-    }
-
-    public function getRightsGeneral(): array
-    {
-        $rights = [
-            [
-                'rights'    => [READ => __('Read')],
-                'label'     => __('Display OneTimeSecret button', 'onetimesecret'),
-                'field'     => 'plugin_onetimesecret_send'
-            ]
-        ];
-        return $rights;
-    }
-
-    public static function addDefaultProfileInfos($profiles_id, $rights): void
-    {
-        $profileRight = new ProfileRight();
-        foreach ($rights as $right => $value) {
-            if (!countElementsInTable('glpi_profilerights', ['profiles_id' => $profiles_id, 'name' => $right])) {
-                $myright['profiles_id'] = $profiles_id;
-                $myright['name']        = $right;
-                $myright['rights']      = $value;
-                $profileRight->add($myright);
-
-                $_SESSION['glpiactiveprofile'][$right] = $value;
-            }
-        }
-    }
-
-    public static function createFirstAccess($profiles_id): void
-    {
-        $profile = new self();
-        foreach ($profile->getAllRights() as $right) {
-            self::addDefaultProfileInfos($profiles_id, [$right['field'] => ALLSTANDARDRIGHT]);
-        }
-    }
-
-    public static function removeRightsFromSession(): void
-    {
-        $profile = new self();
-        foreach ($profile->getAllRights() as $right) {
-            if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
-                unset($_SESSION['glpiactiveprofile'][$right['field']]);
-            }
-        }
-        ProfileRight::deleteProfileRights([$right['field']]);
-    }
-
-    public static function initProfile(): void
-    {
-        $pfProfile = new self();
-        $profile   = new Profile();
-        $a_rights  = $pfProfile->getAllRights();
-        foreach ($a_rights as $data) {
-            if (countElementsInTable("glpi_profilerights", ['name' => $data['field']]) == 0) {
-                ProfileRight::addProfileRights([$data['field']]);
-                $_SESSION['glpiactiveprofile'][$data['field']] = 0;
-            }
-        }
-
-        if (isset($_SESSION['glpiactiveprofile'])) {
-            $dataprofile       = [];
-            $dataprofile['id'] = $_SESSION['glpiactiveprofile']['id'];
-            $profile->getFromDB($_SESSION['glpiactiveprofile']['id']);
-            foreach ($a_rights as $info) {
-                if (is_array($info) && ((!empty($info['itemtype'])) || (!empty($info['rights']))) && (!empty($info['label'])) && (!empty($info['field']))) {
-                    if (isset($info['rights'])) {
-                        $rights = $info['rights'];
-                    } else {
-                        $rights = $profile->getRightsFor($info['itemtype']);
-                    }
-                    foreach ($rights as $right => $label) {
-                        $dataprofile['_' . $info['field']][$right] = 1;
-                        $_SESSION['glpiactiveprofile'][$data['field']] = $right;
-                    }
-                }
-            }
-            $profile->update($dataprofile);
-        }
     }
 
     public static function getIcon()
@@ -180,17 +63,82 @@ class PluginOnetimesecretProfile extends Profile
         return "ti ti-user-check";
     }
 
-    public static function install(Migration $migration): void
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
-        self::initProfile();
+        if ($item instanceof Profile) {
+            return (new self())->displayProfileForm($item);
+        }
+        return false;
     }
 
-    public static function uninstall(): void
+    public function displayProfileForm(Profile $profile): bool
     {
-        $pfProfile = new self();
-        $a_rights = $pfProfile->getAllRights();
-        foreach ($a_rights as $data) {
-            ProfileRight::deleteProfileRights([$data['field']]);
+        if (!Session::haveRight(self::$rightname, READ)) {
+            return false;
+        }
+
+        // Same right as the core profile form the rights are saved through
+        $can_edit = Session::haveRight(self::$rightname, UPDATE);
+
+        echo "<div class='firstbloc'>";
+        if ($can_edit) {
+            echo "<form method='post' action='" . htmlescape($profile::getFormURL()) . "'>";
+        }
+
+        $profile->displayRightsChoiceMatrix(self::getGeneralRights(), [
+            'canedit'       => $can_edit,
+            'default_class' => 'tab_bg_2',
+            'title'         => __('General'),
+        ]);
+
+        if ($can_edit) {
+            echo "<div class='center'>";
+            echo Html::hidden('id', ['value' => $profile->getID()]);
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+            echo "</div>";
+            Html::closeForm();
+        }
+        echo "</div>";
+
+        return true;
+    }
+
+    public static function getGeneralRights(): array
+    {
+        return [
+            [
+                'rights'    => [READ => __('Read')],
+                'label'     => __('Display OneTimeSecret button', 'onetimesecret'),
+                'field'     => self::RIGHT_SEND,
+            ],
+        ];
+    }
+
+    /**
+     * Create the plugin rights (without access) for every profile and grant them to the active profile
+     */
+    public static function install(Migration $migration): void
+    {
+        foreach (self::getGeneralRights() as $right) {
+            if (countElementsInTable(ProfileRight::getTable(), ['name' => $right['field']]) === 0) {
+                $migration->displayMessage("Adding profile right " . $right['field']);
+                ProfileRight::addProfileRights([$right['field']]);
+
+                if (isset($_SESSION['glpiactiveprofile']['id'])) {
+                    $value = array_sum(array_keys($right['rights']));
+                    ProfileRight::updateProfileRights($_SESSION['glpiactiveprofile']['id'], [$right['field'] => $value]);
+                    $_SESSION['glpiactiveprofile'][$right['field']] = $value;
+                }
+            }
+        }
+    }
+
+    public static function uninstall(Migration $migration): void
+    {
+        foreach (self::getGeneralRights() as $right) {
+            $migration->displayMessage("Deleting profile right " . $right['field']);
+            ProfileRight::deleteProfileRights([$right['field']]);
+            unset($_SESSION['glpiactiveprofile'][$right['field']]);
         }
     }
 }

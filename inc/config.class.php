@@ -41,6 +41,9 @@ class PluginOnetimesecretConfig extends CommonDBTM
 {
     private static $_instance = null;
 
+    /** Never returned by the REST API, even encrypted */
+    public static $undisclosedFields = ['apikey'];
+
     public function __construct()
     {
         global $DB;
@@ -107,6 +110,19 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return $lifetimes;
     }
 
+    public static function isValidLifetime(mixed $lifetime): bool
+    {
+        return is_numeric($lifetime) && array_key_exists((int) $lifetime, self::getLifetimes());
+    }
+
+    /**
+     * Host name of a One-Time Secret server, with an optional port (no scheme, no path)
+     */
+    public static function isValidServer(string $server): bool
+    {
+        return preg_match('/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*(:\d{1,5})?$/i', $server) === 1;
+    }
+
     public static function showConfigForm(): false
     {
         $config = self::getInstance();
@@ -139,13 +155,32 @@ class PluginOnetimesecretConfig extends CommonDBTM
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
         if ($item->getType() == 'Config') {
-            self::showConfigForm($item);
+            self::showConfigForm();
         }
         return true;
     }
 
-    public function prepareInputForUpdate($input): array
+    public function prepareInputForAdd($input): array|false
     {
+        return $this->prepareInputForUpdate($input);
+    }
+
+    public function prepareInputForUpdate($input): array|false
+    {
+        if (isset($input['server'])) {
+            $input['server'] = trim($input['server']);
+            if (!self::isValidServer($input['server'])) {
+                Session::addMessageAfterRedirect(
+                    htmlescape(__('Invalid server: use a host name like eu.onetimesecret.com', 'onetimesecret')),
+                    false,
+                    ERROR
+                );
+                return false;
+            }
+        }
+        if (isset($input['lifetime']) && !self::isValidLifetime($input['lifetime'])) {
+            unset($input['lifetime']);
+        }
         if (isset($input['apikey'])) {
             if (!empty($input['apikey'])) {
                 $input['apikey'] = (new GLPIKey())->encrypt($input["apikey"]);
@@ -195,6 +230,15 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $migration->addField($table, 'apiuser', 'string');
             $migration->migrationOneTable($table);
 
+            // Since 3.3.1 the server must be a bare host name: drop a scheme or a trailing slash
+            // saved by older versions (both used to work once concatenated into the API URL)
+            $server = (string) ($config->fields['server'] ?? '');
+            $normalized = rtrim(preg_replace('~^https?://~i', '', trim($server)), '/');
+            if ($normalized !== $server && self::isValidServer($normalized)) {
+                $migration->displayMessage("Normalizing server '$server' to '$normalized'");
+                $DB->update($table, ['server' => $normalized], ['id' => 1]);
+            }
+
             // Prior to the API v2 rewrite, 'lifetime' was stored in hours. Since 3.1.0 it is
             // used directly as seconds (see PluginOnetimesecretSecret::hoursToSeconds), so any
             // leftover value still in the old hours scale must be converted once on upgrade.
@@ -218,7 +262,5 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $migration->displayMessage("Dropping table $tableConfig");
             $DB->doQuery("DROP TABLE `$tableConfig`;");
         }
-
-        Config::deleteConfigurationValues('plugin:OneTimeSecret');
     }
 }

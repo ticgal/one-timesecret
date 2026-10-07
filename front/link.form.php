@@ -41,9 +41,9 @@ if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecr
     Html::redirect($CFG_GLPI["root_doc"]);
 }
 
-Session::checkRight('plugin_onetimesecret_send', READ);
+Session::checkRight(PluginOnetimesecretProfile::RIGHT_SEND, READ);
 
-if (!isset($_POST['tickets_id'])) {
+if (!isset($_POST['add'], $_POST['tickets_id'])) {
     throw new BadRequestHttpException();
 }
 
@@ -56,27 +56,34 @@ $followup = new ITILFollowup();
 $followup_input = ['itemtype' => Ticket::class, 'items_id' => $ticket->getID()];
 if (
     !$followup->can(-1, CREATE, $followup_input)
-    || $ticket->fields['status'] >= CommonITILObject::SOLVED
+    || !PluginOnetimesecretLink::canSendTo($ticket)
 ) {
     throw new AccessDeniedHttpException();
 }
-$_POST['tickets_id'] = $ticket->getID();
 
-if (!isset($_POST['password']) || $_POST['password'] == "") {
-    Session::addMessageAfterRedirect(__("Secret is missing", "onetimesecret"));
+// GLPI 11 no longer encodes the input: the values are used as typed
+$secret     = (string) ($_POST['password'] ?? '');
+$passphrase = (string) ($_POST['passphrase'] ?? '');
+$lifetime   = $_POST['lifetime'] ?? PluginOnetimesecretConfig::getInstance()->fields['lifetime'];
+
+if ($secret === '') {
+    Session::addMessageAfterRedirect(htmlescape(__("Secret is missing", "onetimesecret")), false, ERROR);
+} elseif (!PluginOnetimesecretConfig::isValidLifetime($lifetime)) {
+    throw new BadRequestHttpException();
 } else {
-    $_POST['password'] = html_entity_decode($_POST['password'], ENT_QUOTES | ENT_HTML5);
-    $_POST['passphrase'] = html_entity_decode($_POST['passphrase'], ENT_QUOTES | ENT_HTML5);
-    $link = PluginOnetimesecretSecret::createSecret($_POST);
-    if ($link) {
-        PluginOnetimesecretSecret::addFollowup($_POST, $link);
+    $link = PluginOnetimesecretSecret::createSecret($secret, (int) $lifetime, $passphrase);
+    if ($link !== false) {
+        PluginOnetimesecretSecret::addFollowup($ticket, $link, (int) $lifetime, $passphrase);
     } else {
-        Session::addMessageAfterRedirect(__('Something wrong happened', 'onetimesecret'), false, ERROR);
+        Session::addMessageAfterRedirect(htmlescape(__('Something wrong happened', 'onetimesecret')), false, ERROR);
         $config = PluginOnetimesecretConfig::getInstance();
         if ($config->fields['apiuser'] == '' || $config->fields['apikey'] == '') {
-            $msg = __('Please, check the configuration', 'onetimesecret');
-            $href = "/front/config.form.php?forcetab=PluginOnetimesecretConfig%241";
-            Session::addMessageAfterRedirect('<a href="' . $href . '">' . $msg . '</a>', false, ERROR);
+            $href = $CFG_GLPI['root_doc'] . '/front/config.form.php?forcetab=' . urlencode(PluginOnetimesecretConfig::class . '$1');
+            Session::addMessageAfterRedirect(
+                '<a href="' . htmlescape($href) . '">' . htmlescape(__('Please, check the configuration', 'onetimesecret')) . '</a>',
+                false,
+                ERROR
+            );
         }
     }
 }

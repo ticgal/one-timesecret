@@ -46,11 +46,6 @@ function plugin_onetimesecret_install(): bool
             }
         }
     }
-    $conf = Config::getConfigurationValues('core', ['notifications_push']);
-    if (!isset($conf['notifications_push'])) {
-        Config::setConfigurationValues('core', ['notifications_push' => 0]);
-    }
-
     $migration->executeMigration();
 
     return true;
@@ -73,8 +68,7 @@ function plugin_onetimesecret_uninstall(): bool
         }
     }
 
-    $config = new Config();
-    $config->deleteConfigurationValues(['core', 'notifications_push']);
+    $migration->executeMigration();
 
     return true;
 }

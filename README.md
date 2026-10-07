@@ -33,15 +33,19 @@ Read about the project here: https://onetimesecret.com/about
   - Setup
     1. Install and activate the plugin in your GLPI
     2. Setup > General > One-Time Secret
-    3. Add your server URL (defaults to public one)
+    3. Add your server host name, without `https://` (defaults to `eu.onetimesecret.com`)
     4. Add your API Username
-    4. Add your API Key
-    5. Choose a default expiration (in hours) for the secret links
+    5. Add your API Key
+    6. Choose a default expiration for the secret links
  - Permissions
     1. Review your existing profiles we are adding this feature GLPI wide because passwords can be sent both ways
     2. Enable or disable profile-based as you like 
 
 ## How to use it
 You will have a new button on your processing view.
+
+The secret link is added to the ticket as a **public followup**: every actor of the ticket and every notification
+recipient gets it, and whoever opens it first consumes it. For sensitive secrets, set a **passphrase** and send it to
+the requester by another channel (phone, SMS...). The plugin does not store the passphrase.
 
 More info: https://tic.gal/project/onetimesecret

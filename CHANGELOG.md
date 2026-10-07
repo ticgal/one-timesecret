@@ -3,6 +3,22 @@
 ## 3.3.1 - Unreleased
 ### Security
 - Sending a secret checks the plugin right, the ticket access and the right to add followups to the ticket (any user could add followups to any ticket before)
+- The sent links are no longer reachable through the REST API or the generic GLPI pages (any user allowed to see followups could read, add and delete them)
+- The passphrase is no longer stored
+- The server must be a host name (with an optional port), and redirects of the One-Time Secret server are no longer followed
+- The server response and the translated texts are escaped in the followup and in the messages
+- Sending a secret as a requester no longer forces the ticket to "Processing (assigned)"
+- The API key is never returned by the REST API, even encrypted
+### Fixed
+- Sending a secret with an invalid lifetime or without passphrase field raised an error
+- Secrets containing HTML entities (`&amp;`...) were altered
+- The followup was not written in the requester language
+- The proxy port of the GLPI configuration was ignored
+- The One-Time Secret button was shown to users who cannot add followups to the ticket
+- Error page on `/plugins/onetimesecret/front/profile.php`
+- The profile tab used the `config` right instead of the `profile` one
+- The "check the configuration" link ignored the GLPI root URL
+- Installation no longer creates the `notifications_push` core setting
 
 ## 3.3.0 - 2026-09-09
 ### Changed

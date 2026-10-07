@@ -35,41 +35,61 @@ if (!defined("GLPI_ROOT")) {
     return;
 }
 
-class PluginOnetimesecretSecret extends CommonDBTM
+class PluginOnetimesecretSecret
 {
-    public static function createSecret($params = []): bool|string
+    /** The One-Time Secret API answers with a small JSON document */
+    private const MAX_RESPONSE_SIZE = 1048576;
+
+    /**
+     * Create the secret on the One-Time Secret server
+     *
+     * @param string $secret
+     * @param int $lifetime Lifetime in seconds
+     * @param string $passphrase
+     *
+     * @return string|false URL of the secret link, false on error
+     */
+    public static function createSecret(string $secret, int $lifetime, string $passphrase = ''): string|false
     {
         global $CFG_GLPI;
 
         $config = PluginOnetimesecretConfig::getInstance();
-        $apikey = (new GLPIKey())->decrypt($config->fields["apikey"]);
-        $curl = curl_init();
+        $server = (string) $config->fields['server'];
+        if (!PluginOnetimesecretConfig::isValidServer($server)) {
+            Toolbox::logInFile('onetimesecret', sprintf("Invalid server '%s'\n", $server));
+            return false;
+        }
+        $apikey = (string) (new GLPIKey())->decrypt($config->fields["apikey"]);
 
         $body = [
             'secret' => [
                 'kind'   => 'conceal',
-                'secret' => html_entity_decode($params["password"], ENT_QUOTES | ENT_HTML5),
-                'ttl'    => self::hoursToSeconds($params["lifetime"]),
+                'secret' => $secret,
+                'ttl'    => self::hoursToSeconds($lifetime),
             ]
         ];
 
-        if ($config->fields['server'] !== 'onetimesecret.com') {
-            $body['secret']['share_domain'] = $config->fields['server'];
+        if ($server !== 'onetimesecret.com') {
+            $body['secret']['share_domain'] = $server;
         }
 
-        if ($params["passphrase"] != "") {
-            $body['secret']['passphrase'] = html_entity_decode($params["passphrase"], ENT_QUOTES | ENT_HTML5);
+        if ($passphrase !== '') {
+            $body['secret']['passphrase'] = $passphrase;
         }
 
+        $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL            => 'https://' . $config->fields['server'] . '/api/v2/secret/conceal',
+            CURLOPT_URL            => 'https://' . $server . '/api/v2/secret/conceal',
+            CURLOPT_PROTOCOLS      => CURLPROTO_HTTPS,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT        => 30,
-            CURLOPT_FOLLOWLOCATION => true,
+            // No redirects: a 307/308 would send the secret again to another host
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXFILESIZE    => self::MAX_RESPONSE_SIZE,
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode($body),
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
@@ -79,110 +99,120 @@ class PluginOnetimesecretSecret extends CommonDBTM
 
         if (!empty($CFG_GLPI["proxy_name"])) {
             curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
+            curl_setopt($curl, CURLOPT_PROXYPORT, (int) $CFG_GLPI["proxy_port"]);
         }
         if (!empty($CFG_GLPI["proxy_user"])) {
-            $proxy_creds      = !empty($CFG_GLPI["proxy_user"])
-                ? $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"])
-                : "";
+            $proxy_creds = $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"]);
             curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
         }
 
         $response = curl_exec($curl);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $data = json_decode($response, true);
+        $error = curl_error($curl);
+        curl_close($curl);
 
-        if (isset($data["record"]["secret"]["identifier"]) && $data["record"]["secret"]["identifier"] != "") {
-            return "https://" . $config->fields['server'] . "/secret/" . $data["record"]["secret"]["identifier"];
-        } else {
+        if (!is_string($response) || $httpcode !== 200 || strlen($response) > self::MAX_RESPONSE_SIZE) {
+            Toolbox::logInFile(
+                'onetimesecret',
+                sprintf("Unable to create the secret on %s: HTTP %d %s\n", $server, $httpcode, $error)
+            );
             return false;
         }
+
+        $data = json_decode($response, true);
+        $identifier = $data['record']['secret']['identifier'] ?? '';
+        if (!is_string($identifier) || preg_match('/^[a-z0-9]+$/i', $identifier) !== 1) {
+            Toolbox::logInFile('onetimesecret', sprintf("Unexpected response from %s\n", $server));
+            return false;
+        }
+
+        return 'https://' . $server . '/secret/' . $identifier;
     }
 
     public static function hoursToSeconds(int $hours): int
     {
         // Cap must stay >= the largest option returned by PluginOnetimesecretConfig::getLifetimes()
-        return min((int)$hours, 2592000);
+        return min($hours, 2592000);
     }
 
-    public static function addFollowup(array $params, $text = ''): bool
+    /**
+     * Add the followup with the secret link to the ticket, in the language of its requester
+     *
+     * @param Ticket $ticket
+     * @param string $link URL of the secret link
+     * @param int $lifetime Lifetime in seconds
+     * @param string $passphrase
+     *
+     * @return bool
+     */
+    public static function addFollowup(Ticket $ticket, string $link, int $lifetime, string $passphrase = ''): bool
     {
-        global $DB, $CFG_GLPI;
+        global $CFG_GLPI;
 
-        $query = [
-            'FROM' => Ticket::getTable(),
-            'WHERE' => [
-                'id' => $params["tickets_id"]
-            ]
+        if ($ticket->fields['status'] >= CommonITILObject::SOLVED) {
+            return false;
+        }
+
+        // The passphrase is not stored: it must be sent to the requester by another channel
+        (new PluginOnetimesecretLink())->add([
+            'secret' => $link,
+            'ttl'    => $lifetime,
+        ]);
+
+        // The ticket status is left to core (reopen rules of ITILFollowup)
+        $input = [
+            'items_id'  => $ticket->getID(),
+            'itemtype'  => Ticket::getType(),
+            'users_id'  => Session::getLoginUserID(),
         ];
 
-        foreach ($DB->request($query) as $ticket) {
-            if ($ticket['status'] < CommonITILObject::SOLVED) {
-                $link = new PluginOnetimesecretLink();
-                $link_input = [
-                    'secret'     => $text,
-                    'ttl'        => $params["lifetime"],
-                    'passphrase' => (isset($params["passphrase"]) ? $params["passphrase"] : '')
-                ];
-                $link->add($link_input);
-
-                $fup = new ITILFollowup();
-
-                $content = __('Hi,', 'onetimesecret') . "<br><br>" . __('As mentioned in our previous conversation, this message is meant to share sensitive information with you.', 'onetimesecret') . "<br><br>";
-                $content .= __('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret') . "<br><br><br><br>";
-                $content .= __('Here you have', 'onetimesecret') . " ";
-                $content .= "<a href='" . $text . "' target='_blank'>" . __('your secret link', 'onetimesecret') . "</a>." . "<br><br><br><br>";
-
-                if ($params["passphrase"] != "") {
-                    $content .= __('I will send you the required passphrase to open it using an alternative method for security reasons.', 'onetimesecret') . "<br><br>";
-                }
-                $content .= __('Bear in mind:', 'onetimesecret') . "<br><ul><li>" . __("A secret link can only be opened once and will expire afterwards.", 'onetimesecret') . "</li>";
-                $content .= "<li>" . sprintf(__('This secret link will expire %1$s after its generation.', 'onetimesecret'), Html::timestampToString($params["lifetime"], false)) . "</li></ul>";
-                $content .= "<br>" . __("Regards,", 'onetimesecret');
-
-                //Switch to the desired language
-                $bak_language = $_SESSION["glpilanguage"];
-
-                $query = [
-                    'FROM' => Ticket_User::getTable(),
-                    'WHERE' => [
-                        'tickets_id' => $params["tickets_id"],
-                        'type' => 1
-                    ]
-                ];
-
-                // Defaults used when the ticket has no requester left (deleted/unassigned)
-                $lang = $CFG_GLPI["language"];
-                $input = [
-                    'items_id'  => $params["tickets_id"],
-                    'itemtype'  => Ticket::getType(),
-                    'content'   => $content,
-                    'users_id'  => Session::getLoginUserID()
-                ];
-
-                foreach ($DB->request($query) as $ticket_user) {
-                    $user = new User();
-                    $user->getFromDB($ticket_user["users_id"]);
-                    $lang = $user->fields["language"];
-                    if ($lang == null) {
-                        $lang = $CFG_GLPI["language"];
-                    }
-
-                    if (Session::getLoginUserID() == $ticket_user["users_id"]) {
-                        $input['_status'] = CommonITILObject::ASSIGNED;
-                    }
-                }
-
-                Session::loadLanguage($lang);
-                $_SESSION["glpilanguage"] = $lang;
-
-                $fup->add($input);
-
-                // Restore default language
-                $_SESSION["glpilanguage"] = $bak_language;
-                Session::loadLanguage();
+        // Defaults used when the ticket has no requester left (deleted/unassigned)
+        $lang = $CFG_GLPI["language"];
+        $ticket_users = (new Ticket_User())->find([
+            'tickets_id' => $ticket->getID(),
+            'type'       => CommonITILActor::REQUESTER,
+        ]);
+        foreach ($ticket_users as $ticket_user) {
+            $user = new User();
+            if ($user->getFromDB($ticket_user["users_id"]) && !empty($user->fields["language"])) {
+                $lang = $user->fields["language"];
             }
         }
 
-        return true;
+        // Switch to the requester language to write the followup
+        $bak_language = $_SESSION["glpilanguage"];
+        $_SESSION["glpilanguage"] = $lang;
+        Session::loadLanguage($lang);
+
+        try {
+            $input['content'] = self::getFollowupContent($link, $lifetime, $passphrase !== '');
+        } finally {
+            // Restore the user language
+            $_SESSION["glpilanguage"] = $bak_language;
+            Session::loadLanguage();
+        }
+
+        return (new ITILFollowup())->add($input) !== false;
+    }
+
+    private static function getFollowupContent(string $link, int $lifetime, bool $has_passphrase): string
+    {
+        // Translations are escaped; the only markup kept from a translation is a bare <b>
+        $bold = static fn(string $text): string => str_replace(['&lt;b&gt;', '&lt;/b&gt;'], ['<b>', '</b>'], htmlescape($text));
+
+        $content = htmlescape(__('Hi,', 'onetimesecret')) . "<br><br>";
+        $content .= htmlescape(__('As mentioned in our previous conversation, this message is meant to share sensitive information with you.', 'onetimesecret')) . "<br><br>";
+        $content .= $bold(__('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret')) . "<br><br><br><br>";
+        $content .= htmlescape(__('Here you have', 'onetimesecret')) . " ";
+        $content .= "<a href='" . htmlescape($link) . "' target='_blank'>" . htmlescape(__('your secret link', 'onetimesecret')) . "</a>." . "<br><br><br><br>";
+
+        if ($has_passphrase) {
+            $content .= htmlescape(__('I will send you the required passphrase to open it using an alternative method for security reasons.', 'onetimesecret')) . "<br><br>";
+        }
+        $content .= htmlescape(__('Bear in mind:', 'onetimesecret')) . "<br><ul><li>" . htmlescape(__("A secret link can only be opened once and will expire afterwards.", 'onetimesecret')) . "</li>";
+        $content .= "<li>" . htmlescape(sprintf(__('This secret link will expire %1$s after its generation.', 'onetimesecret'), Html::timestampToString($lifetime, false))) . "</li></ul>";
+        $content .= "<br>" . htmlescape(__("Regards,", 'onetimesecret'));
+
+        return $content;
     }
 }
