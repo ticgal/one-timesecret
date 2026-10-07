@@ -30,28 +30,63 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
-global $CFG_GLPI;
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
+use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Onetimesecret\Config;
+use GlpiPlugin\Onetimesecret\Link;
+use GlpiPlugin\Onetimesecret\Profile;
+use GlpiPlugin\Onetimesecret\Secret;
 
-$plugin = new Plugin();
-if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
-    Html::redirect($CFG_GLPI["root_doc"]);
+if (!Plugin::isPluginActive('onetimesecret')) {
+    throw new NotFoundHttpException();
 }
 
-if (!isset($_POST['password']) || $_POST['password'] == "") {
-    Session::addMessageAfterRedirect(__("Secret is missing", "onetimesecret"));
+Session::checkRight(Profile::RIGHT_SEND, READ);
+
+if (!isset($_POST['add'], $_POST['tickets_id'])) {
+    throw new BadRequestHttpException();
+}
+
+$ticket = new Ticket();
+if (!$ticket->getFromDB((int) $_POST['tickets_id'])) {
+    throw new NotFoundHttpException();
+}
+// Same checks as adding a followup from the timeline (entity, ticket visibility, followup rights)
+$followup = new ITILFollowup();
+$followup_input = ['itemtype' => Ticket::class, 'items_id' => $ticket->getID()];
+if (
+    !$followup->can(-1, CREATE, $followup_input)
+    || !Link::canSendTo($ticket)
+) {
+    throw new AccessDeniedHttpException();
+}
+
+$secret     = (string) ($_POST['password'] ?? '');
+$passphrase = (string) ($_POST['passphrase'] ?? '');
+$lifetime   = $_POST['lifetime'] ?? Config::getInstance()->fields['lifetime'];
+
+if ($secret === '') {
+    Session::addMessageAfterRedirect(htmlescape(__("Secret is missing", "onetimesecret")), false, ERROR);
+} elseif (!Config::isValidLifetime($lifetime)) {
+    throw new BadRequestHttpException();
 } else {
-    $_POST['password'] = html_entity_decode($_POST['password'], ENT_QUOTES | ENT_HTML5);
-    $_POST['passphrase'] = html_entity_decode($_POST['passphrase'], ENT_QUOTES | ENT_HTML5);
-    $link = PluginOnetimesecretSecret::createSecret($_POST);
-    if ($link) {
-        PluginOnetimesecretSecret::addFollowup($_POST, $link);
+    $link = Secret::createSecret($secret, (int) $lifetime, $passphrase);
+    if ($link !== false) {
+        Secret::addFollowup($ticket, $link, (int) $lifetime, $passphrase);
     } else {
-        Session::addMessageAfterRedirect(__('Something wrong happened', 'onetimesecret'), false, ERROR);
-        $config = PluginOnetimesecretConfig::getInstance();
+        Session::addMessageAfterRedirect(htmlescape(__('Something wrong happened', 'onetimesecret')), false, ERROR);
+        $config = Config::getInstance();
         if ($config->fields['apiuser'] == '' || $config->fields['apikey'] == '') {
-            $msg = __('Please, check the configuration', 'onetimesecret');
-            $href = "/front/config.form.php?forcetab=PluginOnetimesecretConfig%241";
-            Session::addMessageAfterRedirect('<a href="' . $href . '">' . $msg . '</a>', false, ERROR);
+            /** @var array $CFG_GLPI */
+            global $CFG_GLPI;
+
+            $href = $CFG_GLPI['root_doc'] . '/front/config.form.php?forcetab=' . urlencode(Config::class . '$1');
+            Session::addMessageAfterRedirect(
+                '<a href="' . htmlescape($href) . '">' . htmlescape(__('Please, check the configuration', 'onetimesecret')) . '</a>',
+                false,
+                ERROR,
+            );
         }
     }
 }

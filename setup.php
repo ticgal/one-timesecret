@@ -31,10 +31,13 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 */
 
 use Glpi\Plugin\Hooks;
+use GlpiPlugin\Onetimesecret\Config;
+use GlpiPlugin\Onetimesecret\Link;
+use GlpiPlugin\Onetimesecret\Profile;
 
-define('PLUGIN_ONETIMESECRET_VERSION', '3.3.0');
-define('PLUGIN_ONETIMESECRET_MIN_GLPI', '11.0');
-define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.0');
+define('PLUGIN_ONETIMESECRET_VERSION', '4.0.0-beta.1');
+define('PLUGIN_ONETIMESECRET_MIN_GLPI', '12.0.0');
+define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.1.0');
 
 /**
  * Init the hooks of the plugins - Needed
@@ -43,20 +46,17 @@ define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.0');
  */
 function plugin_init_onetimesecret(): void
 {
+    /** @var array $PLUGIN_HOOKS */
     global $PLUGIN_HOOKS;
 
-    $plugin = new Plugin();
-    if ($plugin->isActivated('onetimesecret')) {
-        Plugin::registerClass(PluginOnetimesecretConfig::class, ['addtabon' => 'Config']);
+    if (Plugin::isPluginActive('onetimesecret')) {
+        Plugin::registerClass(Config::class, ['addtabon' => \Config::class]);
 
-        Plugin::registerClass(PluginOnetimesecretProfile::class, ['addtabon' => 'Profile']);
+        Plugin::registerClass(Profile::class, ['addtabon' => \Profile::class]);
 
         $PLUGIN_HOOKS['config_page']['onetimesecret'] = 'front/config.form.php';
 
-        $PLUGIN_HOOKS[Hooks::TIMELINE_ANSWER_ACTIONS]['onetimesecret'] = [
-            'PluginOnetimesecretLink',
-            'timelineAction'
-        ];
+        $PLUGIN_HOOKS[Hooks::TIMELINE_ANSWER_ACTIONS]['onetimesecret'] = [Link::class, 'timelineAction'];
     }
 }
 
@@ -73,12 +73,11 @@ function plugin_version_onetimesecret(): array
         'author'    => '<a href="https://tic.gal">TICGAL</a>',
         'homepage'  => 'https://tic.gal',
         'license'   => 'GPLv3+',
-        'minGlpiVersion' => PLUGIN_ONETIMESECRET_MIN_GLPI,
         'requirements' => [
             'glpi'  => [
                 'min' => PLUGIN_ONETIMESECRET_MIN_GLPI,
                 'max' => PLUGIN_ONETIMESECRET_MAX_GLPI,
-            ]
-        ]
+            ],
+        ],
     ];
 }

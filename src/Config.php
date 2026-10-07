@@ -30,19 +30,25 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
-if (!defined('GLPI_ROOT')) {
-    echo "Sorry. You can't access directly to this file";
-    return;
-}
+namespace GlpiPlugin\Onetimesecret;
 
+use CommonDBTM;
+use CommonGLPI;
+use DBConnection;
 use Glpi\Application\View\TemplateRenderer;
+use GLPIKey;
+use Migration;
+use Session;
 
-class PluginOnetimesecretConfig extends CommonDBTM
+class Config extends CommonDBTM
 {
-    private static $_instance = null;
+    public static string $rightname = 'config';
+
+    private static ?self $_instance = null;
 
     public function __construct()
     {
+        /** @var \DBmysql $DB */
         global $DB;
         if ($DB->tableExists($this->getTable())) {
             $this->getFromDB(1);
@@ -51,17 +57,32 @@ class PluginOnetimesecretConfig extends CommonDBTM
 
     public static function canCreate(): bool
     {
-        return Session::haveRight('config', UPDATE);
+        return Session::haveRight(self::$rightname, UPDATE);
     }
 
     public static function canView(): bool
     {
-        return Session::haveRight('config', READ);
+        return Session::haveRight(self::$rightname, READ);
     }
 
     public static function canUpdate(): bool
     {
-        return Session::haveRight('config', UPDATE);
+        return Session::haveRight(self::$rightname, UPDATE);
+    }
+
+    public static function canDelete(): bool
+    {
+        return false;
+    }
+
+    public static function canPurge(): bool
+    {
+        return false;
+    }
+
+    protected static function itemTypeRequiresReauthentication(): bool
+    {
+        return true;
     }
 
     public static function getTypeName($nb = 0): string
@@ -72,6 +93,11 @@ class PluginOnetimesecretConfig extends CommonDBTM
     public static function getMenuName(): string
     {
         return 'One-Time Secret';
+    }
+
+    public static function getIcon(): string
+    {
+        return 'ti ti-lock';
     }
 
     public static function getInstance(): self
@@ -107,45 +133,69 @@ class PluginOnetimesecretConfig extends CommonDBTM
         return $lifetimes;
     }
 
-    public static function showConfigForm(): false
+    public static function isValidLifetime(mixed $lifetime): bool
+    {
+        return is_numeric($lifetime) && array_key_exists((int) $lifetime, self::getLifetimes());
+    }
+
+    /**
+     * Host name of a One-Time Secret server, with an optional port (no scheme, no path)
+     */
+    public static function isValidServer(string $server): bool
+    {
+        return preg_match('/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*(:\d{1,5})?$/i', $server) === 1;
+    }
+
+    public static function showConfigForm(): bool
     {
         $config = self::getInstance();
 
-        $has_apikey = isset($config->fields['apikey']) && !empty($config->fields['apikey']);
+        $has_apikey = !empty($config->fields['apikey']);
 
         $config->fields['apikey'] = '';
 
-        $lifetimes = self::getLifetimes();
+        TemplateRenderer::getInstance()->display('@onetimesecret/config.html.twig', [
+            'item'       => $config,
+            'params'     => ['candel' => false],
+            'lifetimes'  => self::getLifetimes(),
+            'has_apikey' => $has_apikey,
+        ]);
 
-        $template = "@onetimesecret/config.html.twig";
-        $template_options = [
-            'item'      => $config,
-            'lifetimes' => $lifetimes,
-            'has_apikey' => $has_apikey
-        ];
-        TemplateRenderer::getInstance()->display($template, $template_options);
-
-        return false;
+        return true;
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
-        if ($item->getType() == 'Config') {
-            return self::createTabEntry("One-Time Secret", 0, null, 'ti ti-user-check');
+        if ($item instanceof \Config) {
+            return self::createTabEntry(self::getTypeName());
         }
         return '';
     }
 
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
-        if ($item->getType() == 'Config') {
-            self::showConfigForm($item);
+        if ($item instanceof \Config) {
+            return self::showConfigForm();
         }
-        return true;
+        return false;
     }
 
-    public function prepareInputForUpdate($input): array
+    public function prepareInputForUpdate($input): array|false
     {
+        if (isset($input['server'])) {
+            $input['server'] = trim($input['server']);
+            if (!self::isValidServer($input['server'])) {
+                Session::addMessageAfterRedirect(
+                    htmlescape(__('Invalid server: use a host name like eu.onetimesecret.com', 'onetimesecret')),
+                    false,
+                    ERROR,
+                );
+                return false;
+            }
+        }
+        if (isset($input['lifetime']) && !self::isValidLifetime($input['lifetime'])) {
+            unset($input['lifetime']);
+        }
         if (isset($input['apikey'])) {
             if (!empty($input['apikey'])) {
                 $input['apikey'] = (new GLPIKey())->encrypt($input["apikey"]);
@@ -161,6 +211,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
 
     public static function install(Migration $migration): bool
     {
+        /** @var \DBmysql $DB */
         global $DB;
 
         $default_charset    = DBConnection::getDefaultCharset();
@@ -187,7 +238,7 @@ class PluginOnetimesecretConfig extends CommonDBTM
             // Insert default config after table creation (lifetime expressed in seconds, API v2)
             $config->add([
                 'id'       => 1,
-                'lifetime' => 86400
+                'lifetime' => 86400,
             ]);
         } else {
             $migration->changeField($table, 'server', 'server', 'VARCHAR(250)', ['value' => 'eu.onetimesecret.com']);
@@ -196,10 +247,10 @@ class PluginOnetimesecretConfig extends CommonDBTM
             $migration->migrationOneTable($table);
 
             // Prior to the API v2 rewrite, 'lifetime' was stored in hours. Since 3.1.0 it is
-            // used directly as seconds (see PluginOnetimesecretSecret::hoursToSeconds), so any
-            // leftover value still in the old hours scale must be converted once on upgrade.
-            $legacy_lifetime = (int) $config->fields['lifetime'];
-            if ($legacy_lifetime > 0 && $legacy_lifetime <= 744 && !in_array($legacy_lifetime, array_keys(self::getLifetimes()), true)) {
+            // used directly as seconds (see Secret::hoursToSeconds), so any leftover value
+            // still in the old hours scale must be converted once on upgrade.
+            $legacy_lifetime = (int) ($config->fields['lifetime'] ?? 0);
+            if ($legacy_lifetime > 0 && $legacy_lifetime <= 744 && !self::isValidLifetime($legacy_lifetime)) {
                 $migration->displayMessage("Converting legacy lifetime value ($legacy_lifetime hours) to seconds");
                 $DB->update($table, ['lifetime' => $legacy_lifetime * HOUR_TIMESTAMP], ['id' => 1]);
             }
@@ -212,13 +263,11 @@ class PluginOnetimesecretConfig extends CommonDBTM
     {
         /** @var \DBmysql $DB */
         global $DB;
-        $tableConfig = self::getTable();
+        $table = self::getTable();
 
-        if ($DB->tableExists($tableConfig)) {
-            $migration->displayMessage("Dropping table $tableConfig");
-            $DB->doQuery("DROP TABLE `$tableConfig`;");
+        if ($DB->tableExists($table)) {
+            $migration->displayMessage("Dropping table $table");
+            $migration->dropTable($table);
         }
-
-        Config::deleteConfigurationValues('plugin:OneTimeSecret');
     }
 }

@@ -1,5 +1,26 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 4.0.0-beta.1 - Unreleased
+### Features
+- GLPI 12 support (GLPI 11 is no longer supported by this branch)
+- Classes moved to `src/` with the `GlpiPlugin\Onetimesecret` namespace
+- One-Time Secret configuration requires re-authentication, like the GLPI configuration
+- Requests to the One-Time Secret server use the GLPI HTTP client. A self-hosted server in a private network must be allowed with `GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS` (see README)
+
+### Security
+- Sending a secret checks the plugin right, the ticket access and the right to add followups to the ticket (any user could add followups to any ticket before)
+- The passphrase is no longer stored in the database
+- Plugin tables can no longer be read through the generic GLPI pages
+- The server must be a host name, and the secret link returned by the server is validated
+- Redirects from the One-Time Secret server are not followed (they could send the secret to another host)
+- Sending a secret as a requester no longer forces the ticket status to "Processing (assigned)"
+
+### Bugfixes
+- Secrets and passphrases containing HTML entities (like `&amp;`) were altered
+- The followup is written in the requester language
+- The One-Time Secret button is only shown to users who can add followups to the ticket
+- The plugin no longer creates the `notifications_push` setting in the GLPI configuration
+
 ## 3.3.0 - 2026-09-09
 ### Changed
 - Changed auth: now uses API username instead of email

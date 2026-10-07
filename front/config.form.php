@@ -29,19 +29,25 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 @since 2021
 ----------------------------------------------------------------------
 */
-global $CFG_GLPI;
 
-$plugin = new Plugin();
-if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
-    Html::redirect($CFG_GLPI["root_doc"]);
+use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Onetimesecret\Config;
+
+if (!Plugin::isPluginActive('onetimesecret')) {
+    throw new NotFoundHttpException();
 }
 
-Session::checkRight('config', UPDATE);
+Session::checkRight(Config::$rightname, UPDATE);
+Config::checkReAuthenticationOrRedirect();
 
-$config = new PluginOnetimesecretConfig();
+$config = new Config();
 if (isset($_POST["update"])) {
-    $config->check($_POST['id'], UPDATE);
+    $config->check((int) $_POST['id'], UPDATE);
     $config->update($_POST);
     Html::back();
 }
-Html::redirect($CFG_GLPI["root_doc"] . "/front/config.form.php?forcetab=" . urlencode('PluginOnetimesecretConfig$1'));
+
+/** @var array $CFG_GLPI */
+global $CFG_GLPI;
+
+Html::redirect($CFG_GLPI["root_doc"] . "/front/config.form.php?forcetab=" . urlencode(Config::class . '$1'));

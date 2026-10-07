@@ -1,47 +1,43 @@
-# English translations for PACKAGE package.
+# English translations for  12.0.0-rc3 package.
 # Copyright (C) 2026 TICGAL
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the  12.0.0-rc3 package.
 # Automatically generated, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version:  12.0.0-rc3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 12:48+0000\n"
-"PO-Revision-Date: 2026-06-29 12:48+0000\n"
+"POT-Creation-Date: 2026-10-07 10:51+0200\n"
+"PO-Revision-Date: 2026-10-07 10:51+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: front/link.form.php:41
+#: front/link.form.php:70
 msgid "Secret is missing"
 msgstr "Secret is missing"
 
-#: front/link.form.php:50
+#: front/link.form.php:78
 msgid "Something wrong happened"
 msgstr "Something wrong happened"
 
-#: front/link.form.php:53
+#: front/link.form.php:86
 msgid "Please, check the configuration"
 msgstr "Please, check the configuration"
 
-#: inc/profile.class.php:104
-msgid "Display OneTimeSecret button"
-msgstr "Display OneTimeSecret button"
-
-#: inc/link.class.php:50
+#: src/Link.php:57
 msgid "One-Time Secret"
 msgstr "One-Time Secret"
 
-#: inc/secret.class.php:169
+#: src/Secret.php:182
 msgid "Hi,"
 msgstr "Hi,"
 
-#: inc/secret.class.php:169
+#: src/Secret.php:183
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -49,7 +45,7 @@ msgstr ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
 
-#: inc/secret.class.php:170
+#: src/Secret.php:184
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -57,15 +53,15 @@ msgstr ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
 
-#: inc/secret.class.php:171
+#: src/Secret.php:185
 msgid "Here you have"
 msgstr "Here you have"
 
-#: inc/secret.class.php:172
+#: src/Secret.php:186
 msgid "your secret link"
 msgstr "your secret link"
 
-#: inc/secret.class.php:175
+#: src/Secret.php:189
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -73,47 +69,59 @@ msgstr ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
 
-#: inc/secret.class.php:177
+#: src/Secret.php:191
 msgid "Bear in mind:"
 msgstr "Bear in mind:"
 
-#: inc/secret.class.php:177
+#: src/Secret.php:191
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "A secret link can only be opened once and will expire afterwards."
 
-#: inc/secret.class.php:178
+#: src/Secret.php:192
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "This secret link will expire %1$s after its generation."
 
-#: inc/secret.class.php:179
+#: src/Secret.php:193
 msgid "Regards,"
 msgstr "Regards,"
 
-#: templates/config.html.twig:76
-msgid "API key"
-msgstr "API key"
+#: src/Config.php:189
+msgid "Invalid server: use a host name like eu.onetimesecret.com"
+msgstr "Invalid server: use a host name like eu.onetimesecret.com"
 
-#: templates/config.html.twig:88
-msgid "Lifetime"
-msgstr "Lifetime"
+#: src/Profile.php:113
+msgid "Display OneTimeSecret button"
+msgstr "Display OneTimeSecret button"
 
-#: templates/config.html.twig:96 templates/link.html.twig:58
-msgid "Secret lifetime"
-msgstr "Secret lifetime"
-
-#: templates/link.html.twig:45
+#: templates/link.html.twig:40
 msgid "Create a secret"
 msgstr "Create a secret"
 
-#: templates/link.html.twig:50
+#: templates/link.html.twig:45
 msgid "Secret"
 msgstr "Secret"
 
-#: templates/link.html.twig:62
+#: templates/link.html.twig:53 templates/config.html.twig:93
+msgid "Secret lifetime"
+msgstr "Secret lifetime"
+
+#: templates/link.html.twig:57
 msgid "Optional parameter"
 msgstr "Optional parameter"
 
-#: templates/link.html.twig:67
+#: templates/link.html.twig:62
 msgid "Passphrase"
 msgstr "Passphrase"
+
+#: templates/config.html.twig:64
+msgid "API username"
+msgstr "API username"
+
+#: templates/config.html.twig:73
+msgid "API key"
+msgstr "API key"
+
+#: templates/config.html.twig:85
+msgid "Lifetime"
+msgstr "Lifetime"

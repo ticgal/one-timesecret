@@ -33,25 +33,20 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 'field_class': 'col-12'
 } %}
 
-<form name="documentitem_form{{rand}}" id="documentitem_form{{rand}}" method="post" action="{{action}}" enctype="multipart/form-data" class="d-flex flex-column">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
-    <input type='hidden' name='entities_id' value="{{entity}}" />
-    {#<input type='hidden' name='is_recursive' value="{{item.isRecursive()}}" />#}
-    <input type='hidden' name='itemtype' value="{{item.getType()}}" />
-    <input type='hidden' name='items_id' value="{{item.getID()}}" />
-    <input type='hidden' name='tickets_id' value="{{item.getID()}}" />
+<form name="onetimesecret_form{{ rand }}" id="onetimesecret_form{{ rand }}" method="post" action="{{ action }}" class="d-flex flex-column" data-submit-once>
+    <input type="hidden" name="tickets_id" value="{{ item.getID() }}" />
 
     <div class="mb-3">
         <label class="col-form-label">{{ __('Create a secret', 'onetimesecret') }}</label>
 
-        {{fields.passwordField(
+        {{ fields.passwordField(
         'password',
         '',
         __("Secret", "onetimesecret"),
         field_options|merge({'clearable': false})
         ) }}
 
-        {{fields.dropdownArrayField(
+        {{ fields.dropdownArrayField(
         'lifetime',
         lifetime,
         possible_values,
@@ -65,14 +60,14 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
         'passphrase',
         '',
         __("Passphrase", "onetimesecret"),
-        field_options
+        field_options|merge({'additional_attributes': {'autocomplete': 'off'}})
         ) }}
     </div>
 
     <div class="d-flex justify-content-center card-footer mx-n3 mb-n3">
         <div class="input-group">
-            <button type="submit" name='add' class="btn"
-                style="background-color:#DD4A22;color:white;">{{__('Send')}}</button>
+            <button type="submit" name="add" class="btn"
+                style="background-color:#DD4A22;color:white;">{{ __('Send') }}</button>
         </div>
     </div>
 </form>
