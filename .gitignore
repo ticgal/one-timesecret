@@ -1,1 +1,3 @@
 docs/findings/
+composer.lock
+vendor/
