@@ -113,6 +113,7 @@ rm -rf RoboFile.php
 rm -rf tools
 rm -rf phpunit
 rm -rf tests
+rm -rf docs
 rm -rf .gitignore
 rm -rf .travis.yml
 rm -rf .coveralls.yml
