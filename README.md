@@ -23,17 +23,18 @@ Read about the project here: https://onetimesecret.com/about
 - Integrate documents generated with 3rd party plugins
 
 ## Supported versions
-- GLPI 9.5.x
+- GLPI 11.0.x
 
 ## How to configure it
 - On the **One-Time Secret server**. (You need an account to use the API): [One-Time Secret](https://onetimesecret.com/) 
   1. Login > Account > API Key
-  2. Copy the key 
+  2. Copy the API Key and the API Username
 - On your **GLPI instance**
   - Setup
     1. Install and activate the plugin in your GLPI
     2. Setup > General > One-Time Secret
     3. Add your server URL (defaults to public one)
+    4. Add your API Username
     4. Add your API Key
     5. Choose a default expiration (in hours) for the secret links
  - Permissions

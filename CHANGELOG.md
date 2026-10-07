@@ -1,5 +1,12 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
+## 3.3.0 - 2026-09-09
+### Changed
+- Changed auth: now uses API username instead of email
+### Fixed
+- Issue when creating new secrets
+- Expiring delays beyond 7 days not working
+
 ## 3.2.0 - 2026-06-25
 ### Features
 - Added translations workflow
