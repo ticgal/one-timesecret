@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 12:48+0000\n"
+"POT-Creation-Date: 2026-10-07 08:37+0000\n"
 "Language: gl_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -14,27 +14,19 @@ msgstr ""
 msgid "Secret is missing"
 msgstr "Falta o segredo"
 
-#: front/link.form.php:50
+#: front/link.form.php:49
 msgid "Something wrong happened"
 msgstr "Algo mal sucedeu"
 
-#: front/link.form.php:53
+#: front/link.form.php:52
 msgid "Please, check the configuration"
 msgstr "Comprobe a configuración"
 
-#: inc/profile.class.php:104
-msgid "Display OneTimeSecret button"
-msgstr "Mostra o botón One-Time Secret"
-
-#: inc/link.class.php:50
-msgid "One-Time Secret"
-msgstr "One-Time Secret"
-
-#: inc/secret.class.php:169
+#: inc/secret.class.php:130
 msgid "Hi,"
 msgstr "Ola!"
 
-#: inc/secret.class.php:169
+#: inc/secret.class.php:130
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -42,7 +34,7 @@ msgstr ""
 "Como mencionamos na nosa conversa anterior, esta mensaxe está destinada a "
 "compartir información confidencial contigo."
 
-#: inc/secret.class.php:170
+#: inc/secret.class.php:131
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -51,15 +43,15 @@ msgstr ""
 "desaparece para sempre.</strong>. Por favor, non a abras se non és o "
 "destinatario."
 
-#: inc/secret.class.php:171
+#: inc/secret.class.php:132
 msgid "Here you have"
 msgstr "Aquí tes"
 
-#: inc/secret.class.php:172
+#: inc/secret.class.php:133
 msgid "your secret link"
 msgstr "a túa ligazón segreda"
 
-#: inc/secret.class.php:175
+#: inc/secret.class.php:136
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -67,34 +59,30 @@ msgstr ""
 "Enviareiche a frase de acceso necesaria para abrila mediante un método "
 "alternativo por motivos de seguridade."
 
-#: inc/secret.class.php:177
+#: inc/secret.class.php:138
 msgid "Bear in mind:"
 msgstr "Ten en conta:"
 
-#: inc/secret.class.php:177
+#: inc/secret.class.php:138
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "Unha ligazón secreta só se pode abrir unha vez e caducará despois."
 
-#: inc/secret.class.php:178
+#: inc/secret.class.php:139
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "Esta ligazón secreta caducará %1$s despois da súa xeración."
 
-#: inc/secret.class.php:179
+#: inc/secret.class.php:140
 msgid "Regards,"
 msgstr "Saúdos,"
 
-#: templates/config.html.twig:76
-msgid "API key"
-msgstr "API key"
+#: inc/link.class.php:50
+msgid "One-Time Secret"
+msgstr "One-Time Secret"
 
-#: templates/config.html.twig:88
-msgid "Lifetime"
-msgstr "Vida útil"
-
-#: templates/config.html.twig:96 templates/link.html.twig:58
-msgid "Secret lifetime"
-msgstr "Vida útil do segredo"
+#: inc/profile.class.php:104
+msgid "Display OneTimeSecret button"
+msgstr "Mostra o botón One-Time Secret"
 
 #: templates/link.html.twig:45
 msgid "Create a secret"
@@ -104,6 +92,10 @@ msgstr "Crea un segredo"
 msgid "Secret"
 msgstr "Segredo"
 
+#: templates/link.html.twig:58 templates/config.html.twig:96
+msgid "Secret lifetime"
+msgstr "Vida útil do segredo"
+
 #: templates/link.html.twig:62
 msgid "Optional parameter"
 msgstr "Parámetro opcional"
@@ -111,3 +103,11 @@ msgstr "Parámetro opcional"
 #: templates/link.html.twig:67
 msgid "Passphrase"
 msgstr "Frase de contrasinal"
+
+#: templates/config.html.twig:76
+msgid "API key"
+msgstr "API key"
+
+#: templates/config.html.twig:88
+msgid "Lifetime"
+msgstr "Vida útil"
