@@ -115,6 +115,7 @@ rm -rf phpunit
 rm -rf tests
 rm -rf docs
 rm -rf .gitignore
+rm -rf .github
 rm -rf .travis.yml
 rm -rf .coveralls.yml
 rm -rf phpunit.xml.dist

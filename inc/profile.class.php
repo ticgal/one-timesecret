@@ -52,6 +52,8 @@ class PluginOnetimesecretProfile extends CommonGLPI
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
+        // Audit 2026-10-21 SEV-02, accepted: the tab is also shown on simplified-interface profiles. The right is not in
+        // Profile::$helpdesk_rights, so core strips it from their session: self-service users cannot send secrets.
         if ($item instanceof Profile) {
             return self::createTabEntry("One-Time Secret");
         }

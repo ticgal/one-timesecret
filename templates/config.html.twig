@@ -60,6 +60,15 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
                         ) }}
 						{% endif %}
 
+						{% if item.isfield('allow_internal') %}
+							{{ fields.sliderField(
+                        'allow_internal',
+                        item.fields['allow_internal'],
+                        __('Server on an internal network', 'onetimesecret'),
+                        field_options|merge({'helper': __('Allow a server with a private address or an internal name. Leave off for a public server', 'onetimesecret')})
+                        ) }}
+						{% endif %}
+
 						{% if item.isfield('apiuser') %}
 							{{ fields.textField(
                         'apiuser',

@@ -68,6 +68,15 @@ $lifetime   = $_POST['lifetime'] ?? PluginOnetimesecretConfig::getInstance()->fi
 
 if ($secret === '') {
     Session::addMessageAfterRedirect(htmlescape(__("Secret is missing", "onetimesecret")), false, ERROR);
+} elseif ($passphrase !== '' && mb_strlen($passphrase) < PluginOnetimesecretSecret::MIN_PASSPHRASE_LENGTH) {
+    Session::addMessageAfterRedirect(
+        htmlescape(sprintf(
+            __('The passphrase must have at least %d characters', 'onetimesecret'),
+            PluginOnetimesecretSecret::MIN_PASSPHRASE_LENGTH
+        )),
+        false,
+        ERROR
+    );
 } elseif (!PluginOnetimesecretConfig::isValidLifetime($lifetime)) {
     throw new BadRequestHttpException();
 } else {

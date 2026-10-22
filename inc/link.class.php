@@ -49,11 +49,6 @@ class PluginOnetimesecretLink extends CommonDBTM
     /** Key of the answer action in the ticket timeline (also used in the action CSS class) */
     private const TIMELINE_ACTION = 'PluginOnetimesecretLink_1';
 
-    public function getItilObjectItemType(): string
-    {
-        return Ticket::getType();
-    }
-
     public static function getTypeName($nb = 0): string
     {
         return __('One-Time Secret', 'onetimesecret');
@@ -106,7 +101,7 @@ class PluginOnetimesecretLink extends CommonDBTM
         }
 
         $config = PluginOnetimesecretConfig::getInstance();
-        if (empty($config->fields['apiuser']) || empty($config->fields['apikey'])) {
+        if (empty($config->fields['apiuser']) || !PluginOnetimesecretConfig::hasApiKey()) {
             return [];
         }
 
@@ -167,12 +162,16 @@ class PluginOnetimesecretLink extends CommonDBTM
             $query = "CREATE TABLE IF NOT EXISTS $table (
                 `id` int {$default_key_sign} NOT NULL auto_increment,
                 `secret` VARCHAR(255) NOT NULL DEFAULT '',
-                `ttl` int(11) NOT NULL DEFAULT '24',
-                `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
+                `ttl` int(11) NOT NULL DEFAULT '86400',
                 PRIMARY KEY (`id`)
             )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
+        } elseif ($DB->fieldExists($table, 'passphrase')) {
+            // Since 3.3.1 the passphrase is no longer stored: drop what earlier versions kept in clear text
+            $migration->displayMessage("Dropping the stored passphrases of $table");
+            $migration->dropField($table, 'passphrase');
+            $migration->migrationOneTable($table);
         }
         return true;
     }

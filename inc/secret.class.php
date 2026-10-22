@@ -40,6 +40,9 @@ class PluginOnetimesecretSecret
     /** The One-Time Secret API answers with a small JSON document */
     private const MAX_RESPONSE_SIZE = 1048576;
 
+    /** Default minimum of a One-Time Secret server (a self-hosted one can raise it) */
+    public const MIN_PASSPHRASE_LENGTH = 4;
+
     /**
      * Create the secret on the One-Time Secret server
      *
@@ -53,9 +56,14 @@ class PluginOnetimesecretSecret
     {
         global $CFG_GLPI;
 
+        // This method must not rely on its caller (front/link.form.php) for the right check
+        if (!Session::haveRight(PluginOnetimesecretProfile::RIGHT_SEND, READ) || !PluginOnetimesecretConfig::hasApiKey()) {
+            return false;
+        }
+
         $config = PluginOnetimesecretConfig::getInstance();
         $server = (string) $config->fields['server'];
-        if (!PluginOnetimesecretConfig::isValidServer($server)) {
+        if (!PluginOnetimesecretConfig::isValidServer($server, (bool) $config->fields['allow_internal'])) {
             Toolbox::logInFile('onetimesecret', sprintf("Invalid server '%s'\n", $server));
             return false;
         }
@@ -65,7 +73,7 @@ class PluginOnetimesecretSecret
             'secret' => [
                 'kind'   => 'conceal',
                 'secret' => $secret,
-                'ttl'    => self::hoursToSeconds($lifetime),
+                'ttl'    => self::capLifetime($lifetime),
             ]
         ];
 
@@ -75,6 +83,22 @@ class PluginOnetimesecretSecret
 
         if ($passphrase !== '') {
             $body['secret']['passphrase'] = $passphrase;
+        }
+
+        $use_proxy = !empty($CFG_GLPI["proxy_name"]);
+        $pinned = [];
+        if (!$use_proxy && !$config->fields['allow_internal']) {
+            // Resolve once and pin the answer: a public name must not point to an internal address
+            [$host, $port] = array_pad(explode(':', $server, 2), 2, '443');
+            $ips = PluginOnetimesecretConfig::resolvePublicIps($host);
+            if ($ips === []) {
+                Toolbox::logInFile('onetimesecret', sprintf("Server '%s' does not resolve to a public address\n", $server));
+                return false;
+            }
+            $pinned = [$host . ':' . (int) $port . ':' . implode(',', array_map(
+                static fn(string $ip): string => str_contains($ip, ':') ? '[' . $ip . ']' : $ip,
+                $ips
+            ))];
         }
 
         $curl = curl_init();
@@ -97,7 +121,13 @@ class PluginOnetimesecretSecret
             ],
         ]);
 
-        if (!empty($CFG_GLPI["proxy_name"])) {
+        if ($pinned !== []) {
+            curl_setopt($curl, CURLOPT_RESOLVE, $pinned);
+        }
+        if (!$use_proxy) {
+            // An https_proxy variable of the PHP environment must not bypass the pinned address
+            curl_setopt($curl, CURLOPT_PROXY, '');
+        } else {
             curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
             curl_setopt($curl, CURLOPT_PROXYPORT, (int) $CFG_GLPI["proxy_port"]);
         }
@@ -112,9 +142,11 @@ class PluginOnetimesecretSecret
         curl_close($curl);
 
         if (!is_string($response) || $httpcode !== 200 || strlen($response) > self::MAX_RESPONSE_SIZE) {
+            // Only the answer of the server is logged (never the request body, which holds the secret)
+            $reason = is_string($response) ? ' ' . substr((string) preg_replace('/\s+/', ' ', $response), 0, 300) : '';
             Toolbox::logInFile(
                 'onetimesecret',
-                sprintf("Unable to create the secret on %s: HTTP %d %s\n", $server, $httpcode, $error)
+                sprintf("Unable to create the secret on %s: HTTP %d %s%s\n", $server, $httpcode, $error, $reason)
             );
             return false;
         }
@@ -129,10 +161,10 @@ class PluginOnetimesecretSecret
         return 'https://' . $server . '/secret/' . $identifier;
     }
 
-    public static function hoursToSeconds(int $hours): int
+    public static function capLifetime(int $seconds): int
     {
         // Cap must stay >= the largest option returned by PluginOnetimesecretConfig::getLifetimes()
-        return min($hours, 2592000);
+        return min($seconds, 2592000);
     }
 
     /**
@@ -153,6 +185,15 @@ class PluginOnetimesecretSecret
             return false;
         }
 
+        // Same check as the caller (front/link.form.php): this method must not rely on it
+        $followup_input = ['itemtype' => Ticket::class, 'items_id' => $ticket->getID()];
+        if (
+            !PluginOnetimesecretLink::canSendTo($ticket)
+            || !(new ITILFollowup())->can(-1, CREATE, $followup_input)
+        ) {
+            return false;
+        }
+
         // The passphrase is not stored: it must be sent to the requester by another channel
         (new PluginOnetimesecretLink())->add([
             'secret' => $link,
@@ -164,6 +205,7 @@ class PluginOnetimesecretSecret
             'items_id'  => $ticket->getID(),
             'itemtype'  => Ticket::getType(),
             'users_id'  => Session::getLoginUserID(),
+            'is_private' => 0,
         ];
 
         // Defaults used when the ticket has no requester left (deleted/unassigned)

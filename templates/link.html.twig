@@ -57,11 +57,11 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 
         <label class="col-form-label">{{ __('Optional parameter', 'onetimesecret') }}</label>
 
-        {{ fields.textField(
+        {{ fields.passwordField(
         'passphrase',
         '',
         __("Passphrase", "onetimesecret"),
-        field_options|merge({'additional_attributes': {'autocomplete': 'off'}})
+        field_options|merge({'clearable': false, 'additional_attributes': {'autocomplete': 'new-password', 'minlength': 4}})
         ) }}
     </div>
 
