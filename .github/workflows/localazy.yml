@@ -10,7 +10,7 @@ jobs:
     name: Check Localazy configuration
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Check Localazy project
         run: |
           if [ ! -f ./locales/localazy.json ]; then
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-configuration
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Upload to Localazy
         uses: localazy/upload@v1
         with:
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-translations
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Download from Localazy
         uses: localazy/download@v1
         with:
@@ -65,14 +65,16 @@ jobs:
         env:
           BRANCH: ${{ github.ref }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUSHER_EMAIL: ${{ github.event.pusher.email }}
+          PUSHER_NAME: ${{ github.event.pusher.name }}
         run: |
           if [ -f ./tools/extract_template.sh ]; then
             sudo apt-get update && sudo apt-get install -y gettext
             chmod +x ./tools/extract_template.sh
             bash ./tools/extract_template.sh
           fi
-          git config --local user.email "${{ github.event.pusher.email }}"
-          git config --local user.name "${{ github.event.pusher.name }}"
+          git config --local user.email "$PUSHER_EMAIL"
+          git config --local user.name "$PUSHER_NAME"
           BRANCH_NAME=${BRANCH#refs/heads/}
           git checkout -B $BRANCH_NAME
           git add ./locales

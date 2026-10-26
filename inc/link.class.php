@@ -36,88 +36,111 @@ if (!defined('GLPI_ROOT')) {
 
 use Glpi\Application\View\TemplateRenderer;
 
+/**
+ * Secret links sent to tickets.
+ *
+ * Only written by the plugin: the table is not reachable through the REST API, the generic
+ * GLPI list and form pages, or massive actions.
+ */
 class PluginOnetimesecretLink extends CommonDBTM
 {
     public static $rightname = 'followup';
 
-    public function getItilObjectItemType(): string
-    {
-        return Ticket::getType();
-    }
+    /** Key of the answer action in the ticket timeline (also used in the action CSS class) */
+    private const TIMELINE_ACTION = 'PluginOnetimesecretLink_1';
 
     public static function getTypeName($nb = 0): string
     {
         return __('One-Time Secret', 'onetimesecret');
     }
 
-    public static function timelineAction($params = []): mixed
+    public static function canView(): bool
     {
-        $item = $params['item'];
-        $config = PluginOnetimesecretConfig::getInstance();
+        return false;
+    }
 
-        if (empty($config->fields['apiuser']) || empty($config->fields['apikey'])) {
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canUpdate(): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(): bool
+    {
+        return false;
+    }
+
+    public static function canPurge(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Can the current user send a secret link to this ticket?
+     */
+    public static function canSendTo(Ticket $ticket): bool
+    {
+        return Session::haveRight(PluginOnetimesecretProfile::RIGHT_SEND, READ)
+            && !$ticket->isNewItem()
+            && $ticket->fields['status'] < CommonITILObject::SOLVED
+            && $ticket->canAddFollowups();
+    }
+
+    /**
+     * Hooks::TIMELINE_ANSWER_ACTIONS
+     */
+    public static function timelineAction($params = []): array
+    {
+        $item = $params['item'] ?? null;
+        if (!$item instanceof Ticket || !self::canSendTo($item)) {
             return [];
         }
 
-        switch ($item::getType()) {
-            case Ticket::getType():
-                $profileRight = new ProfileRight();
-                $rights = $profileRight->find([
-                    'profiles_id'   => $_SESSION['glpiactiveprofile']["id"],
-                    'name'          => 'plugin_onetimesecret_send'
-                ]);
-
-                foreach ($rights as $right) {
-                    if ($item->getField('status') < CommonITILObject::SOLVED && $right["rights"] == 1) {
-                        $obj = new self();
-                        $timeline["PluginOnetimesecretLink_" . 1] = [
-                            'type'          => PluginOnetimesecretLink::class,
-                            'class'         => PluginOnetimesecretLink::class,
-                            'item'          => $obj,
-                            'itiltype'      => 'PluginOnetimesecretLink',
-                            'icon'          => "fa-solid fa-s px-1",
-                            'label'         => self::getTypeName(),
-                            'short_label'   => self::getTypeName()
-                        ];
-
-                        $color = 'DD4A22';
-                        $style = <<<CSS
-                            .action-PluginOnetimesecretLink_1, .action-PluginOnetimesecretLink_1:hover {
-                                background-color: #$color;
-                                color: white;
-                            }
-CSS;
-
-                        echo "<style>$style</style>";
-
-                        return $timeline;
-                    }
-                }
-                break;
+        $config = PluginOnetimesecretConfig::getInstance();
+        if (empty($config->fields['apiuser']) || !PluginOnetimesecretConfig::hasApiKey()) {
+            return [];
         }
-        return [];
+
+        echo "<style>
+            .action-" . self::TIMELINE_ACTION . ", .action-" . self::TIMELINE_ACTION . ":hover {
+                background-color: #DD4A22;
+                color: white;
+            }
+        </style>";
+
+        return [
+            self::TIMELINE_ACTION => [
+                'type'          => self::class,
+                'class'         => self::class,
+                'item'          => new self(),
+                'itiltype'      => self::class,
+                'icon'          => "fa-solid fa-s px-1",
+                'label'         => self::getTypeName(),
+                'short_label'   => self::getTypeName(),
+            ],
+        ];
     }
 
-    public function showForm($ID, array $params = []): void
+    public function showForm($ID, array $params = []): bool
     {
-        $config = PluginOnetimesecretConfig::getInstance();
+        $item = $params['parent'] ?? null;
+        if (!$item instanceof Ticket) {
+            return false;
+        }
 
-        $rand = mt_rand();
-        $item = $params['parent'];
-        $entity = $item->getEntityID();
+        TemplateRenderer::getInstance()->display('@onetimesecret/link.html.twig', [
+            'item'            => $item,
+            'action'          => Toolbox::getItemTypeFormURL(self::getType()),
+            'rand'            => mt_rand(),
+            'possible_values' => PluginOnetimesecretConfig::getLifetimes(),
+            'lifetime'        => PluginOnetimesecretConfig::getInstance()->fields["lifetime"],
+        ]);
 
-        $lifetimes = PluginOnetimesecretConfig::getLifetimes();
-
-        $template = "@onetimesecret/link.html.twig";
-        $template_options = [
-            'item'              => $item,
-            'entity'            => $entity,
-            'action'            => Toolbox::getItemTypeFormURL(self::getType()),
-            'rand'              => $rand,
-            'possible_values'   => $lifetimes,
-            'lifetime'          => $config->fields["lifetime"]
-        ];
-        TemplateRenderer::getInstance()->display($template, $template_options);
+        return true;
     }
 
     public function getEmpty(): bool
@@ -139,12 +162,16 @@ CSS;
             $query = "CREATE TABLE IF NOT EXISTS $table (
                 `id` int {$default_key_sign} NOT NULL auto_increment,
                 `secret` VARCHAR(255) NOT NULL DEFAULT '',
-                `ttl` int(11) NOT NULL DEFAULT '24',
-                `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
+                `ttl` int(11) NOT NULL DEFAULT '86400',
                 PRIMARY KEY (`id`)
             )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
+        } elseif ($DB->fieldExists($table, 'passphrase')) {
+            // Since 3.3.1 the passphrase is no longer stored: drop what earlier versions kept in clear text
+            $migration->displayMessage("Dropping the stored passphrases of $table");
+            $migration->dropField($table, 'passphrase');
+            $migration->migrationOneTable($table);
         }
         return true;
     }

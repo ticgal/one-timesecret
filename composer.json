@@ -1,0 +1,16 @@
+{
+    "name": "ticgal/onetimesecret",
+    "description": "One-Time Secret plugin for GLPI",
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": ">=8.2"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "autoloader-suffix": "PluginOnetimesecret",
+        "platform": {
+            "php": "8.2.0"
+        },
+        "sort-packages": true
+    }
+}

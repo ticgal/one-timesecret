@@ -1,4 +1,33 @@
 # One-Time Secret GLPI Plugin CHANGELOG
+<!-- changelog-format: 1 -->
+
+## 3.3.1
+### Features
+- A server saved with `https://` or a trailing slash is corrected automatically when upgrading.
+- New option "Server on an internal network" for self-hosted servers with a private address or an internal name.
+### Bugs
+- Any user could add a followup to any ticket of any entity by sending a secret.
+- Users allowed to see followups could read, add and delete the sent secret links through the API.
+- The passphrase of each secret was stored in the database; the ones stored by earlier versions are deleted on upgrade.
+- The plugin followed redirects of the One-Time Secret server, which could send the secret to another site.
+- The server setting accepted values other than a host name.
+- Texts received from the One-Time Secret server or from translations were not escaped.
+- Sending a secret as a requester moved the ticket to "Processing (assigned)".
+- The API returned the encrypted API key.
+- An invalid expiration or a missing passphrase field caused an error.
+- Secrets containing text such as `&amp;` were altered before being sent.
+- The followup was not written in the requester's language.
+- The proxy port configured in GLPI was ignored.
+- The One-Time Secret button was shown to users who cannot add followups to the ticket.
+- The plugin profile list showed an error page.
+- The profile tab could be edited with the configuration right instead of the profile right.
+- The "check the configuration" link did not work when GLPI is installed in a subfolder.
+- Installing the plugin created an unrelated GLPI setting.
+- The passphrase was shown in clear text while typing it.
+- A passphrase shorter than 4 characters was rejected by the server with a generic error.
+- The release package included the `.github` folder.
+- The server setting accepted local and private addresses, and changing it sent the saved API key to the new server.
+- The API key was not re-encrypted when the GLPI encryption key is rotated.
 
 ## 3.3.0 - 2026-09-09
 ### Changed
