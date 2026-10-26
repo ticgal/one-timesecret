@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-07 08:37+0000\n"
+"POT-Creation-Date: 2026-10-26 12:20+0000\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -10,23 +10,44 @@ msgstr ""
 "X-Generator: Localazy (https://localazy.com)\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
-#: front/link.form.php:41
+#: front/link.form.php:70
 msgid "Secret is missing"
 msgstr "Es fehlt ein Geheimnis"
 
-#: front/link.form.php:49
+#: front/link.form.php:74
+#, php-format
+msgid "The passphrase must have at least %d characters"
+msgstr ""
+
+#: front/link.form.php:87
 msgid "Something wrong happened"
 msgstr "Irgendetwas ist falsch gelaufen"
 
-#: front/link.form.php:52
+#: front/link.form.php:92
 msgid "Please, check the configuration"
 msgstr "Bitte prüfen Sie die Konfiguration"
 
-#: inc/secret.class.php:130
+#: inc/link.class.php:54
+msgid "One-Time Secret"
+msgstr "Einmaliges Geheimnis"
+
+#: inc/config.class.php:292
+msgid "Invalid server: use a host name like eu.onetimesecret.com"
+msgstr ""
+
+#: inc/config.class.php:308
+msgid "The server changed: enter the API key again"
+msgstr ""
+
+#: inc/profile.class.php:113
+msgid "Display OneTimeSecret button"
+msgstr "OneTimeSecret-Schaltfläche anzeigen"
+
+#: inc/secret.class.php:245
 msgid "Hi,"
 msgstr "Hallo"
 
-#: inc/secret.class.php:130
+#: inc/secret.class.php:246
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -34,7 +55,7 @@ msgstr ""
 "Wie in unserem vorherigen Gespräch erwähnt, soll diese Nachricht "
 "vertrauliche Informationen mit Ihnen teilen."
 
-#: inc/secret.class.php:131
+#: inc/secret.class.php:247
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -43,15 +64,15 @@ msgstr ""
 "für immer</b>. Öffnen Sie ihn nicht, wenn Sie nicht der beabsichtigte "
 "Empfänger sind."
 
-#: inc/secret.class.php:132
+#: inc/secret.class.php:248
 msgid "Here you have"
 msgstr "Hier haben Sie"
 
-#: inc/secret.class.php:133
+#: inc/secret.class.php:249
 msgid "your secret link"
 msgstr "Ihr geheimer Link"
 
-#: inc/secret.class.php:136
+#: inc/secret.class.php:252
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -59,55 +80,57 @@ msgstr ""
 "Ich werde Ihnen die erforderliche Passphrase zusenden, damit Sie sie aus "
 "Sicherheitsgründen mit einer alternativen Methode öffnen können."
 
-#: inc/secret.class.php:138
+#: inc/secret.class.php:254
 msgid "Bear in mind:"
 msgstr "Denken Sie daran:"
 
-#: inc/secret.class.php:138
+#: inc/secret.class.php:254
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "Ein geheimer Link kann nur einmal geöffnet werden und verfällt danach."
 
-#: inc/secret.class.php:139
+#: inc/secret.class.php:255
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "Dieser geheime Link läuft %1$s nach seiner Generierung ab."
 
-#: inc/secret.class.php:140
+#: inc/secret.class.php:256
 msgid "Regards,"
 msgstr "Grüße"
 
-#: inc/link.class.php:50
-msgid "One-Time Secret"
-msgstr "Einmaliges Geheimnis"
-
-#: inc/profile.class.php:104
-msgid "Display OneTimeSecret button"
-msgstr "OneTimeSecret-Schaltfläche anzeigen"
-
-#: templates/link.html.twig:45
+#: ⁨standard input⁩:41
 msgid "Create a secret"
 msgstr "Erstelle ein Geheimniss"
 
-#: templates/link.html.twig:50
+#: ⁨standard input⁩:46
 msgid "Secret"
 msgstr "Geheimniss"
 
-#: templates/link.html.twig:58 templates/config.html.twig:96
+#: ⁨standard input⁩:54 ⁨standard input⁩:105
 msgid "Secret lifetime"
 msgstr "Geheimnis Lebenszeit"
 
-#: templates/link.html.twig:62
+#: ⁨standard input⁩:58
 msgid "Optional parameter"
 msgstr "Optionaler Parameter"
 
-#: templates/link.html.twig:67
+#: ⁨standard input⁩:63
 msgid "Passphrase"
 msgstr "Passphrase"
 
-#: templates/config.html.twig:76
+#: ⁨standard input⁩:67
+msgid "Server on an internal network"
+msgstr ""
+
+#: ⁨standard input⁩:68
+msgid ""
+"Allow a server with a private address or an internal name. Leave off for a "
+"public server"
+msgstr ""
+
+#: ⁨standard input⁩:85
 msgid "API key"
 msgstr "API-Schlüssel"
 
-#: templates/config.html.twig:88
+#: ⁨standard input⁩:97
 msgid "Lifetime"
 msgstr "Lebenszeit"
