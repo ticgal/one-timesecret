@@ -139,6 +139,24 @@ class Config extends CommonDBTM
     }
 
     /**
+     * Whether an API key is configured and can still be decrypted
+     * (a GLPI key rotation can leave a stored key undecryptable)
+     */
+    public static function hasApiKey(): bool
+    {
+        $apikey = self::getInstance()->fields['apikey'] ?? '';
+        if (empty($apikey)) {
+            return false;
+        }
+
+        try {
+            return !empty((new GLPIKey())->decrypt($apikey));
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
      * Host name of a One-Time Secret server, with an optional port (no scheme, no path)
      */
     public static function isValidServer(string $server): bool
@@ -148,7 +166,7 @@ class Config extends CommonDBTM
 
     public static function showConfigForm(): bool
     {
-        $config = self::getInstance();
+        $config = clone self::getInstance();
 
         $has_apikey = !empty($config->fields['apikey']);
 
@@ -243,8 +261,20 @@ class Config extends CommonDBTM
         } else {
             $migration->changeField($table, 'server', 'server', 'VARCHAR(250)', ['value' => 'eu.onetimesecret.com']);
             // Since 3.3.0
+            $had_apiuser = $DB->fieldExists($table, 'apiuser');
             $migration->addField($table, 'apiuser', 'string');
             $migration->migrationOneTable($table);
+
+            // The former 'email' column used to be the API identity sent to the server.
+            // Carry it over to the new 'apiuser' column so the answer action does not
+            // silently disappear until an administrator re-enters it.
+            if (!$had_apiuser && $DB->fieldExists($table, 'email')) {
+                $former_email = (string) ($config->fields['email'] ?? '');
+                if ($former_email !== '') {
+                    $migration->displayMessage("Copying former 'email' value into 'apiuser'");
+                    $DB->update($table, ['apiuser' => $former_email], ['id' => 1, 'apiuser' => '']);
+                }
+            }
 
             // Prior to the API v2 rewrite, 'lifetime' was stored in hours. Since 3.1.0 it is
             // used directly as seconds (see Secret::hoursToSeconds), so any leftover value

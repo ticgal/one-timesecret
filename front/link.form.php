@@ -77,7 +77,7 @@ if ($secret === '') {
     } else {
         Session::addMessageAfterRedirect(htmlescape(__('Something wrong happened', 'onetimesecret')), false, ERROR);
         $config = Config::getInstance();
-        if ($config->fields['apiuser'] == '' || $config->fields['apikey'] == '') {
+        if (empty($config->fields['apiuser']) || !Config::hasApiKey()) {
             /** @var array $CFG_GLPI */
             global $CFG_GLPI;
 

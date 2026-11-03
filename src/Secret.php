@@ -133,12 +133,6 @@ class Secret
             return false;
         }
 
-        // The passphrase is not stored: it must be sent to the requester by another channel
-        (new Link())->add([
-            'secret' => $link,
-            'ttl'    => $lifetime,
-        ]);
-
         $input = [
             'items_id'  => $ticket->getID(),
             'itemtype'  => Ticket::class,
@@ -171,7 +165,17 @@ class Secret
             Session::loadLanguage();
         }
 
-        return (new ITILFollowup())->add($input) !== false;
+        if ((new ITILFollowup())->add($input) === false) {
+            return false;
+        }
+
+        // The passphrase is not stored: it must be sent to the requester by another channel
+        (new Link())->add([
+            'secret' => $link,
+            'ttl'    => $lifetime,
+        ]);
+
+        return true;
     }
 
     private static function getFollowupContent(string $link, int $lifetime, bool $has_passphrase): string

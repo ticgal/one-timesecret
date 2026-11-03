@@ -109,7 +109,7 @@ class Link extends CommonDBTM
         }
 
         $config = Config::getInstance();
-        if (empty($config->fields['apiuser']) || empty($config->fields['apikey'])) {
+        if (empty($config->fields['apiuser']) || !Config::hasApiKey()) {
             return [];
         }
 
