@@ -1,6 +1,6 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 
-## 4.0.0-beta.1 - Unreleased
+## 4.0.0
 ### Features
 - GLPI 12 support (GLPI 11 is no longer supported by this branch)
 - Classes moved to `src/` with the `GlpiPlugin\Onetimesecret` namespace
