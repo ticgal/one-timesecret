@@ -44,6 +44,8 @@ class Config extends CommonDBTM
 {
     public static string $rightname = 'config';
 
+    public static $undisclosedFields = ['apikey'];
+
     private static ?self $_instance = null;
 
     public function __construct()
@@ -210,6 +212,17 @@ class Config extends CommonDBTM
                 );
                 return false;
             }
+
+            $current_server = (string) self::getInstance()->fields['server'];
+            if ($input['server'] !== $current_server && empty($input['apikey'])) {
+                // The stored key must not be silently sent to a different, possibly untrusted, host
+                $input['_blank_apikey'] = true;
+                Session::addMessageAfterRedirect(
+                    htmlescape(__('The server has changed: please re-enter the API key.', 'onetimesecret')),
+                    false,
+                    WARNING,
+                );
+            }
         }
         if (isset($input['lifetime']) && !self::isValidLifetime($input['lifetime'])) {
             unset($input['lifetime']);
@@ -277,7 +290,7 @@ class Config extends CommonDBTM
             }
 
             // Prior to the API v2 rewrite, 'lifetime' was stored in hours. Since 3.1.0 it is
-            // used directly as seconds (see Secret::hoursToSeconds), so any leftover value
+            // used directly as seconds (see Secret::capLifetime), so any leftover value
             // still in the old hours scale must be converted once on upgrade.
             $legacy_lifetime = (int) ($config->fields['lifetime'] ?? 0);
             if ($legacy_lifetime > 0 && $legacy_lifetime <= 744 && !self::isValidLifetime($legacy_lifetime)) {
