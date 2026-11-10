@@ -35,7 +35,7 @@ use GlpiPlugin\Onetimesecret\Config;
 use GlpiPlugin\Onetimesecret\Link;
 use GlpiPlugin\Onetimesecret\Profile;
 
-define('PLUGIN_ONETIMESECRET_VERSION', '4.0.1-beta.2');
+define('PLUGIN_ONETIMESECRET_VERSION', '4.0.1');
 define('PLUGIN_ONETIMESECRET_MIN_GLPI', '12.0.0');
 define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.1.0');
 
