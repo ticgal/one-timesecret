@@ -1,4 +1,13 @@
 # One-Time Secret GLPI Plugin CHANGELOG
+<!-- changelog-format: 2 -->
+
+## [4.0.1]
+### Bugs
+- Fixed a configuration page error that prevented the plugin from loading
+- The API key is no longer exposed through the legacy REST API
+- Fixed the passphrase still being stored in the database, despite this being announced as fixed in 4.0.0
+- Secret creation no longer buffers an unbounded response from the One-Time Secret server in memory
+- Changing the server without re-entering the API key no longer silently reuses the old key
 
 ## 4.0.0
 ### Features

@@ -47,6 +47,9 @@ use User;
 
 class Secret
 {
+    /** Hard limit on the size of the server's response body, to bound memory use */
+    private const MAX_RESPONSE_SIZE = 65536;
+
     /**
      * Create the secret on the One-Time Secret server
      *
@@ -69,7 +72,7 @@ class Secret
             'secret' => [
                 'kind'   => 'conceal',
                 'secret' => $secret,
-                'ttl'    => self::hoursToSeconds($lifetime),
+                'ttl'    => self::capLifetime($lifetime),
             ],
         ];
 
@@ -93,7 +96,17 @@ class Secret
                     (string) (new GLPIKey())->decrypt($config->fields['apikey']),
                 ],
             ]);
-            $data = $response->toArray();
+
+            $content = '';
+            foreach ($client->stream($response) as $chunk) {
+                $content .= $chunk->getContent();
+                if (strlen($content) > self::MAX_RESPONSE_SIZE) {
+                    $response->cancel();
+                    Toolbox::logInFile('onetimesecret', sprintf("Response from %s exceeds the maximum allowed size\n", $server));
+                    return false;
+                }
+            }
+            $data = json_decode($content, true);
         } catch (ExceptionInterface $e) {
             Toolbox::logInFile('onetimesecret', sprintf("Unable to create the secret on %s: %s\n", $server, $e->getMessage()));
             return false;
@@ -108,10 +121,10 @@ class Secret
         return 'https://' . $server . '/secret/' . $identifier;
     }
 
-    public static function hoursToSeconds(int $hours): int
+    public static function capLifetime(int $lifetime_in_seconds): int
     {
         // Cap must stay >= the largest option returned by Config::getLifetimes()
-        return min($hours, 2592000);
+        return min($lifetime_in_seconds, 2592000);
     }
 
     /**
@@ -182,7 +195,11 @@ class Secret
     {
         $content = htmlescape(__('Hi,', 'onetimesecret')) . "<br><br>";
         $content .= htmlescape(__('As mentioned in our previous conversation, this message is meant to share sensitive information with you.', 'onetimesecret')) . "<br><br>";
-        $content .= __('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret') . "<br><br><br><br>";
+        $content .= str_replace(
+            ['&lt;b&gt;', '&lt;/b&gt;'],
+            ['<b>', '</b>'],
+            htmlescape(__('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret')),
+        ) . "<br><br><br><br>";
         $content .= htmlescape(__('Here you have', 'onetimesecret')) . " ";
         $content .= "<a href='" . htmlescape($link) . "' target='_blank'>" . htmlescape(__('your secret link', 'onetimesecret')) . "</a>." . "<br><br><br><br>";
 

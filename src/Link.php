@@ -166,11 +166,15 @@ class Link extends CommonDBTM
                 `id` int {$default_key_sign} NOT NULL auto_increment,
                 `secret` VARCHAR(255) NOT NULL DEFAULT '',
                 `ttl` int(11) NOT NULL DEFAULT '24',
-                `passphrase` VARCHAR(255) NOT NULL DEFAULT '',
                 PRIMARY KEY (`id`)
             )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
+        } elseif ($DB->fieldExists($table, 'passphrase')) {
+            // Since 3.3.1 the passphrase is no longer stored: drop what earlier versions kept in clear text
+            $migration->displayMessage("Dropping the stored passphrases of $table");
+            $migration->dropField($table, 'passphrase');
+            $migration->migrationOneTable($table);
         }
         return true;
     }
