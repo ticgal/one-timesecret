@@ -44,7 +44,7 @@ class Config extends CommonDBTM
 {
     public static string $rightname = 'config';
 
-    public static $undisclosedFields = ['apikey'];
+    public static array $undisclosedFields = ['apikey'];
 
     private static ?self $_instance = null;
 
