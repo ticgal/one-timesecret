@@ -35,7 +35,6 @@ namespace GlpiPlugin\Onetimesecret;
 use CommonDBTM;
 use CommonITILObject;
 use DBConnection;
-use Glpi\Application\View\TemplateRenderer;
 use Migration;
 use Session;
 use Ticket;
@@ -125,6 +124,7 @@ class Link extends CommonDBTM
                 'type'          => self::class,
                 'class'         => self::class,
                 'item'          => new self(),
+                'template'      => '@onetimesecret/link.html.twig',
                 'icon'          => self::getIcon(),
                 'label'         => self::getTypeName(),
                 'short_label'   => self::getTypeName(),
@@ -132,20 +132,22 @@ class Link extends CommonDBTM
         ];
     }
 
-    public function showForm($ID, array $options = []): void
+    /**
+     * Lifetimes offered by the "Send secret" form (used by templates/link.html.twig)
+     *
+     * @return array<int, string>
+     */
+    public function getLifetimeChoices(): array
     {
-        $item = $options['parent'] ?? null;
-        if (!$item instanceof Ticket) {
-            return;
-        }
+        return Config::getLifetimes();
+    }
 
-        TemplateRenderer::getInstance()->display('@onetimesecret/link.html.twig', [
-            'item'            => $item,
-            'action'          => self::getFormURL(),
-            'rand'            => mt_rand(),
-            'possible_values' => Config::getLifetimes(),
-            'lifetime'        => Config::getInstance()->fields['lifetime'],
-        ]);
+    /**
+     * Lifetime preselected in the "Send secret" form (used by templates/link.html.twig)
+     */
+    public function getDefaultLifetime(): mixed
+    {
+        return Config::getInstance()->fields['lifetime'];
     }
 
     public static function install(Migration $migration): bool
