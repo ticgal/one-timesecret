@@ -132,11 +132,11 @@ class Link extends CommonDBTM
         ];
     }
 
-    public function showForm($ID, array $options = []): bool
+    public function showForm($ID, array $options = []): void
     {
         $item = $options['parent'] ?? null;
         if (!$item instanceof Ticket) {
-            return false;
+            return;
         }
 
         TemplateRenderer::getInstance()->display('@onetimesecret/link.html.twig', [
@@ -146,8 +146,6 @@ class Link extends CommonDBTM
             'possible_values' => Config::getLifetimes(),
             'lifetime'        => Config::getInstance()->fields['lifetime'],
         ]);
-
-        return true;
     }
 
     public static function install(Migration $migration): bool
