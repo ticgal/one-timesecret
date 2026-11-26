@@ -1,7 +1,7 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 <!-- changelog-format: 2 -->
 
-## [4.0.2-beta.1]
+## [4.0.2]
 ### Bugs
 - Fixed a stray "1" shown below the Send button in the "Send secret" form of the ticket answer area
 
