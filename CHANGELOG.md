@@ -1,7 +1,7 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 <!-- changelog-format: 2 -->
 
-## [4.0.3-beta.1]
+## [4.0.3]
 ### Bugs
 - A passphrase shorter than 4 characters is rejected with a clear message instead of a generic server error
 - The passphrase field is no longer filled in by the browser and requires at least 4 characters
