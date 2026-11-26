@@ -289,6 +289,15 @@ class Config extends CommonDBTM
                 }
             }
 
+            // The server must be a bare host name: drop a scheme or a trailing slash saved by older versions
+            // (both used to work once concatenated into the API URL)
+            $server     = (string) ($config->fields['server'] ?? '');
+            $normalized = rtrim((string) preg_replace('~^https?://~i', '', trim($server)), '/');
+            if ($normalized !== $server && self::isValidServer($normalized)) {
+                $migration->displayMessage("Normalizing server '$server' to '$normalized'");
+                $DB->update($table, ['server' => $normalized], ['id' => 1]);
+            }
+
             // Prior to the API v2 rewrite, 'lifetime' was stored in hours. Since 3.1.0 it is
             // used directly as seconds (see Secret::capLifetime), so any leftover value
             // still in the old hours scale must be converted once on upgrade.

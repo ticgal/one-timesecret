@@ -35,7 +35,7 @@ use GlpiPlugin\Onetimesecret\Config;
 use GlpiPlugin\Onetimesecret\Link;
 use GlpiPlugin\Onetimesecret\Profile;
 
-define('PLUGIN_ONETIMESECRET_VERSION', '4.0.2');
+define('PLUGIN_ONETIMESECRET_VERSION', '4.0.3-beta.1');
 define('PLUGIN_ONETIMESECRET_MIN_GLPI', '12.0.0');
 define('PLUGIN_ONETIMESECRET_MAX_GLPI', '12.1.0');
 
@@ -55,6 +55,9 @@ function plugin_init_onetimesecret(): void
         Plugin::registerClass(Profile::class, ['addtabon' => \Profile::class]);
 
         $PLUGIN_HOOKS['config_page']['onetimesecret'] = 'front/config.form.php';
+
+        // Re-encrypted by core when the GLPI encryption key is rotated
+        $PLUGIN_HOOKS[Hooks::SECURED_FIELDS]['onetimesecret'] = ['glpi_plugin_onetimesecret_configs.apikey'];
 
         $PLUGIN_HOOKS[Hooks::TIMELINE_ANSWER_ACTIONS]['onetimesecret'] = [Link::class, 'timelineAction'];
     }
