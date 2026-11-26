@@ -30,15 +30,25 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
-if (!defined("GLPI_ROOT")) {
-    echo "Sorry. You can't access directly to this file";
-    return;
-}
+namespace GlpiPlugin\Onetimesecret;
 
-class PluginOnetimesecretSecret
+use CommonITILActor;
+use CommonITILObject;
+use Glpi\Toolbox\HttpClient;
+use GLPIKey;
+use Html;
+use ITILFollowup;
+use Session;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Ticket;
+use Ticket_User;
+use Toolbox;
+use User;
+
+class Secret
 {
-    /** The One-Time Secret API answers with a small JSON document */
-    private const MAX_RESPONSE_SIZE = 1048576;
+    /** Hard limit on the size of the server's response body, to bound memory use */
+    private const MAX_RESPONSE_SIZE = 65536;
 
     /** Default minimum of a One-Time Secret server (a self-hosted one can raise it) */
     public const MIN_PASSPHRASE_LENGTH = 4;
@@ -54,27 +64,19 @@ class PluginOnetimesecretSecret
      */
     public static function createSecret(string $secret, int $lifetime, string $passphrase = ''): string|false
     {
-        global $CFG_GLPI;
-
-        // This method must not rely on its caller (front/link.form.php) for the right check
-        if (!Session::haveRight(PluginOnetimesecretProfile::RIGHT_SEND, READ) || !PluginOnetimesecretConfig::hasApiKey()) {
-            return false;
-        }
-
-        $config = PluginOnetimesecretConfig::getInstance();
+        $config = Config::getInstance();
         $server = (string) $config->fields['server'];
-        if (!PluginOnetimesecretConfig::isValidServer($server, (bool) $config->fields['allow_internal'])) {
+        if (!Config::isValidServer($server)) {
             Toolbox::logInFile('onetimesecret', sprintf("Invalid server '%s'\n", $server));
             return false;
         }
-        $apikey = (string) (new GLPIKey())->decrypt($config->fields["apikey"]);
 
         $body = [
             'secret' => [
                 'kind'   => 'conceal',
                 'secret' => $secret,
                 'ttl'    => self::capLifetime($lifetime),
-            ]
+            ],
         ];
 
         if ($server !== 'onetimesecret.com') {
@@ -85,73 +87,34 @@ class PluginOnetimesecretSecret
             $body['secret']['passphrase'] = $passphrase;
         }
 
-        $use_proxy = !empty($CFG_GLPI["proxy_name"]);
-        $pinned = [];
-        if (!$use_proxy && !$config->fields['allow_internal']) {
-            // Resolve once and pin the answer: a public name must not point to an internal address
-            [$host, $port] = array_pad(explode(':', $server, 2), 2, '443');
-            $ips = PluginOnetimesecretConfig::resolvePublicIps($host);
-            if ($ips === []) {
-                Toolbox::logInFile('onetimesecret', sprintf("Server '%s' does not resolve to a public address\n", $server));
-                return false;
-            }
-            $pinned = [$host . ':' . (int) $port . ':' . implode(',', array_map(
-                static fn(string $ip): string => str_contains($ip, ':') ? '[' . $ip . ']' : $ip,
-                $ips
-            ))];
-        }
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL            => 'https://' . $server . '/api/v2/secret/conceal',
-            CURLOPT_PROTOCOLS      => CURLPROTO_HTTPS,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT        => 30,
+        try {
+            // Using the configuration class as context allows a self-hosted server in a private network
+            // (GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS) and excluding it from the proxy.
             // No redirects: a 307/308 would send the secret again to another host
-            CURLOPT_FOLLOWLOCATION => false,
-            CURLOPT_MAXFILESIZE    => self::MAX_RESPONSE_SIZE,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode($body),
-            CURLOPT_HTTPHEADER     => [
-                'Content-Type: application/json',
-                'Authorization: Basic ' . base64_encode($config->fields["apiuser"] . ":" . $apikey)
-            ],
-        ]);
+            $client = new HttpClient(Config::class, ['timeout' => 30, 'max_redirects' => 0]);
+            $response = $client->request('POST', 'https://' . $server . '/api/v2/secret/conceal', [
+                'json'       => $body,
+                'auth_basic' => [
+                    (string) $config->fields['apiuser'],
+                    (string) (new GLPIKey())->decrypt($config->fields['apikey']),
+                ],
+            ]);
 
-        if ($pinned !== []) {
-            curl_setopt($curl, CURLOPT_RESOLVE, $pinned);
-        }
-        if (!$use_proxy) {
-            // An https_proxy variable of the PHP environment must not bypass the pinned address
-            curl_setopt($curl, CURLOPT_PROXY, '');
-        } else {
-            curl_setopt($curl, CURLOPT_PROXY, $CFG_GLPI["proxy_name"]);
-            curl_setopt($curl, CURLOPT_PROXYPORT, (int) $CFG_GLPI["proxy_port"]);
-        }
-        if (!empty($CFG_GLPI["proxy_user"])) {
-            $proxy_creds = $CFG_GLPI["proxy_user"] . ":" . (new GLPIKey())->decrypt($CFG_GLPI["proxy_passwd"]);
-            curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxy_creds);
-        }
-
-        $response = curl_exec($curl);
-        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $error = curl_error($curl);
-        curl_close($curl);
-
-        if (!is_string($response) || $httpcode !== 200 || strlen($response) > self::MAX_RESPONSE_SIZE) {
-            // Only the answer of the server is logged (never the request body, which holds the secret)
-            $reason = is_string($response) ? ' ' . substr((string) preg_replace('/\s+/', ' ', $response), 0, 300) : '';
-            Toolbox::logInFile(
-                'onetimesecret',
-                sprintf("Unable to create the secret on %s: HTTP %d %s%s\n", $server, $httpcode, $error, $reason)
-            );
+            $content = '';
+            foreach ($client->stream($response) as $chunk) {
+                $content .= $chunk->getContent();
+                if (strlen($content) > self::MAX_RESPONSE_SIZE) {
+                    $response->cancel();
+                    Toolbox::logInFile('onetimesecret', sprintf("Response from %s exceeds the maximum allowed size\n", $server));
+                    return false;
+                }
+            }
+            $data = json_decode($content, true);
+        } catch (ExceptionInterface $e) {
+            Toolbox::logInFile('onetimesecret', sprintf("Unable to create the secret on %s: %s\n", $server, $e->getMessage()));
             return false;
         }
 
-        $data = json_decode($response, true);
         $identifier = $data['record']['secret']['identifier'] ?? '';
         if (!is_string($identifier) || preg_match('/^[a-z0-9]+$/i', $identifier) !== 1) {
             Toolbox::logInFile('onetimesecret', sprintf("Unexpected response from %s\n", $server));
@@ -161,10 +124,10 @@ class PluginOnetimesecretSecret
         return 'https://' . $server . '/secret/' . $identifier;
     }
 
-    public static function capLifetime(int $seconds): int
+    public static function capLifetime(int $lifetime_in_seconds): int
     {
-        // Cap must stay >= the largest option returned by PluginOnetimesecretConfig::getLifetimes()
-        return min($seconds, 2592000);
+        // Cap must stay >= the largest option returned by Config::getLifetimes()
+        return min($lifetime_in_seconds, 2592000);
     }
 
     /**
@@ -179,33 +142,17 @@ class PluginOnetimesecretSecret
      */
     public static function addFollowup(Ticket $ticket, string $link, int $lifetime, string $passphrase = ''): bool
     {
+        /** @var array $CFG_GLPI */
         global $CFG_GLPI;
 
         if ($ticket->fields['status'] >= CommonITILObject::SOLVED) {
             return false;
         }
 
-        // Same check as the caller (front/link.form.php): this method must not rely on it
-        $followup_input = ['itemtype' => Ticket::class, 'items_id' => $ticket->getID()];
-        if (
-            !PluginOnetimesecretLink::canSendTo($ticket)
-            || !(new ITILFollowup())->can(-1, CREATE, $followup_input)
-        ) {
-            return false;
-        }
-
-        // The passphrase is not stored: it must be sent to the requester by another channel
-        (new PluginOnetimesecretLink())->add([
-            'secret' => $link,
-            'ttl'    => $lifetime,
-        ]);
-
-        // The ticket status is left to core (reopen rules of ITILFollowup)
         $input = [
             'items_id'  => $ticket->getID(),
-            'itemtype'  => Ticket::getType(),
+            'itemtype'  => Ticket::class,
             'users_id'  => Session::getLoginUserID(),
-            'is_private' => 0,
         ];
 
         // Defaults used when the ticket has no requester left (deleted/unassigned)
@@ -234,17 +181,28 @@ class PluginOnetimesecretSecret
             Session::loadLanguage();
         }
 
-        return (new ITILFollowup())->add($input) !== false;
+        if ((new ITILFollowup())->add($input) === false) {
+            return false;
+        }
+
+        // The passphrase is not stored: it must be sent to the requester by another channel
+        (new Link())->add([
+            'secret' => $link,
+            'ttl'    => $lifetime,
+        ]);
+
+        return true;
     }
 
     private static function getFollowupContent(string $link, int $lifetime, bool $has_passphrase): string
     {
-        // Translations are escaped; the only markup kept from a translation is a bare <b>
-        $bold = static fn(string $text): string => str_replace(['&lt;b&gt;', '&lt;/b&gt;'], ['<b>', '</b>'], htmlescape($text));
-
         $content = htmlescape(__('Hi,', 'onetimesecret')) . "<br><br>";
         $content .= htmlescape(__('As mentioned in our previous conversation, this message is meant to share sensitive information with you.', 'onetimesecret')) . "<br><br>";
-        $content .= $bold(__('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret')) . "<br><br><br><br>";
+        $content .= str_replace(
+            ['&lt;b&gt;', '&lt;/b&gt;'],
+            ['<b>', '</b>'],
+            htmlescape(__('A secret link <b>only works once</b> and <b>then disappears forever</b>. Do not open it if you are not the intended recipient.', 'onetimesecret')),
+        ) . "<br><br><br><br>";
         $content .= htmlescape(__('Here you have', 'onetimesecret')) . " ";
         $content .= "<a href='" . htmlescape($link) . "' target='_blank'>" . htmlescape(__('your secret link', 'onetimesecret')) . "</a>." . "<br><br><br><br>";
 

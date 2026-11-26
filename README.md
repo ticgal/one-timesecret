@@ -23,7 +23,8 @@ Read about the project here: https://onetimesecret.com/about
 - Integrate documents generated with 3rd party plugins
 
 ## Supported versions
-- GLPI 11.0.x
+- GLPI 12.0.x (4.x)
+- GLPI 11.0.x (3.x)
 
 ## How to configure it
 - On the **One-Time Secret server**. (You need an account to use the API): [One-Time Secret](https://onetimesecret.com/) 
@@ -33,7 +34,7 @@ Read about the project here: https://onetimesecret.com/about
   - Setup
     1. Install and activate the plugin in your GLPI
     2. Setup > General > One-Time Secret
-    3. Add your server host name, without `https://` (defaults to `eu.onetimesecret.com`). Only public servers are accepted; for a self-hosted server on an internal network, enable "Server on an internal network". If GLPI uses a proxy, the proxy resolves the server name and the plugin cannot check where it points: block internal networks at the proxy
+    3. Add your server host name, without `https://` (defaults to `eu.onetimesecret.com`)
     4. Add your API Username
     5. Add your API Key
     6. Choose a default expiration for the secret links
@@ -42,6 +43,15 @@ Read about the project here: https://onetimesecret.com/about
        that can add followups. Self-service (simplified interface) users cannot send secrets: GLPI removes this right
        from their session, even if it is ticked on their profile
     2. Enable or disable profile-based as you like 
+
+### Self-hosted One-Time Secret server in a private network
+GLPI 12 blocks outgoing requests to private networks. If your server is in your intranet, allow it in `config/local_define.php`:
+
+```php
+define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', ['GlpiPlugin\\Onetimesecret\\Config']);
+```
+
+The plugin uses the GLPI proxy settings. Add `GlpiPlugin\Onetimesecret\Config` to the proxy exclusions to reach the server directly.
 
 ## How to use it
 You will have a new button on your processing view.

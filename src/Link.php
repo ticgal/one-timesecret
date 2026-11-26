@@ -30,21 +30,23 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+namespace GlpiPlugin\Onetimesecret;
 
-use Glpi\Application\View\TemplateRenderer;
+use CommonDBTM;
+use CommonITILObject;
+use DBConnection;
+use Migration;
+use Session;
+use Ticket;
 
 /**
  * Secret links sent to tickets.
  *
- * Only written by the plugin: the table is not reachable through the REST API, the generic
- * GLPI list and form pages, or massive actions.
+ * Only written by the plugin: the table is not reachable through the generic GLPI list and form pages.
  */
-class PluginOnetimesecretLink extends CommonDBTM
+class Link extends CommonDBTM
 {
-    public static $rightname = 'followup';
+    public static string $rightname = 'followup';
 
     /** Key of the answer action in the ticket timeline (also used in the action CSS class) */
     private const TIMELINE_ACTION = 'PluginOnetimesecretLink_1';
@@ -52,6 +54,11 @@ class PluginOnetimesecretLink extends CommonDBTM
     public static function getTypeName($nb = 0): string
     {
         return __('One-Time Secret', 'onetimesecret');
+    }
+
+    public static function getIcon(): string
+    {
+        return 'ti ti-lock';
     }
 
     public static function canView(): bool
@@ -84,24 +91,24 @@ class PluginOnetimesecretLink extends CommonDBTM
      */
     public static function canSendTo(Ticket $ticket): bool
     {
-        return Session::haveRight(PluginOnetimesecretProfile::RIGHT_SEND, READ)
+        return Session::haveRight(Profile::RIGHT_SEND, READ)
             && !$ticket->isNewItem()
             && $ticket->fields['status'] < CommonITILObject::SOLVED
             && $ticket->canAddFollowups();
     }
 
     /**
-     * Hooks::TIMELINE_ANSWER_ACTIONS
+     * Hook::TIMELINE_ANSWER_ACTIONS
      */
-    public static function timelineAction($params = []): array
+    public static function timelineAction(array $params = []): array
     {
         $item = $params['item'] ?? null;
         if (!$item instanceof Ticket || !self::canSendTo($item)) {
             return [];
         }
 
-        $config = PluginOnetimesecretConfig::getInstance();
-        if (empty($config->fields['apiuser']) || !PluginOnetimesecretConfig::hasApiKey()) {
+        $config = Config::getInstance();
+        if (empty($config->fields['apiuser']) || !Config::hasApiKey()) {
             return [];
         }
 
@@ -117,39 +124,35 @@ class PluginOnetimesecretLink extends CommonDBTM
                 'type'          => self::class,
                 'class'         => self::class,
                 'item'          => new self(),
-                'itiltype'      => self::class,
-                'icon'          => "fa-solid fa-s px-1",
+                'template'      => '@onetimesecret/link.html.twig',
+                'icon'          => self::getIcon(),
                 'label'         => self::getTypeName(),
                 'short_label'   => self::getTypeName(),
             ],
         ];
     }
 
-    public function showForm($ID, array $params = []): bool
+    /**
+     * Lifetimes offered by the "Send secret" form (used by templates/link.html.twig)
+     *
+     * @return array<int, string>
+     */
+    public function getLifetimeChoices(): array
     {
-        $item = $params['parent'] ?? null;
-        if (!$item instanceof Ticket) {
-            return false;
-        }
-
-        TemplateRenderer::getInstance()->display('@onetimesecret/link.html.twig', [
-            'item'            => $item,
-            'action'          => Toolbox::getItemTypeFormURL(self::getType()),
-            'rand'            => mt_rand(),
-            'possible_values' => PluginOnetimesecretConfig::getLifetimes(),
-            'lifetime'        => PluginOnetimesecretConfig::getInstance()->fields["lifetime"],
-        ]);
-
-        return true;
+        return Config::getLifetimes();
     }
 
-    public function getEmpty(): bool
+    /**
+     * Lifetime preselected in the "Send secret" form (used by templates/link.html.twig)
+     */
+    public function getDefaultLifetime(): mixed
     {
-        return true;
+        return Config::getInstance()->fields['lifetime'];
     }
 
     public static function install(Migration $migration): bool
     {
+        /** @var \DBmysql $DB */
         global $DB;
         $default_charset = DBConnection::getDefaultCharset();
         $default_collation = DBConnection::getDefaultCollation();
@@ -162,7 +165,7 @@ class PluginOnetimesecretLink extends CommonDBTM
             $query = "CREATE TABLE IF NOT EXISTS $table (
                 `id` int {$default_key_sign} NOT NULL auto_increment,
                 `secret` VARCHAR(255) NOT NULL DEFAULT '',
-                `ttl` int(11) NOT NULL DEFAULT '86400',
+                `ttl` int(11) NOT NULL DEFAULT '24',
                 PRIMARY KEY (`id`)
             )ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
@@ -176,12 +179,6 @@ class PluginOnetimesecretLink extends CommonDBTM
         return true;
     }
 
-    /**
-     * uninstall
-     *
-     * @param  Migration $migration
-     * @return void
-     */
     public static function uninstall(Migration $migration): void
     {
         $table = self::getTable();

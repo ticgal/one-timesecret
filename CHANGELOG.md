@@ -1,5 +1,45 @@
 # One-Time Secret GLPI Plugin CHANGELOG
-<!-- changelog-format: 1 -->
+<!-- changelog-format: 2 -->
+
+## [4.0.3]
+### Bugs
+- A passphrase shorter than 4 characters is rejected with a clear message instead of a generic server error
+- The passphrase field is no longer filled in by the browser and requires at least 4 characters
+- The API key is re-encrypted when the GLPI encryption key is rotated
+- A server saved with `https://` or a trailing slash is corrected automatically when upgrading
+
+## [4.0.2]
+### Bugs
+- Fixed a stray "1" shown below the Send button in the "Send secret" form of the ticket answer area
+
+## [4.0.1]
+### Bugs
+- Fixed a configuration page error that prevented the plugin from loading
+- The API key is no longer exposed through the legacy REST API
+- Fixed the passphrase still being stored in the database, despite this being announced as fixed in 4.0.0
+- Secret creation no longer buffers an unbounded response from the One-Time Secret server in memory
+- Changing the server without re-entering the API key no longer silently reuses the old key
+
+## 4.0.0
+### Features
+- GLPI 12 support (GLPI 11 is no longer supported by this branch)
+- Classes moved to `src/` with the `GlpiPlugin\Onetimesecret` namespace
+- One-Time Secret configuration requires re-authentication, like the GLPI configuration
+- Requests to the One-Time Secret server use the GLPI HTTP client. A self-hosted server in a private network must be allowed with `GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS` (see README)
+
+### Security
+- Sending a secret checks the plugin right, the ticket access and the right to add followups to the ticket (any user could add followups to any ticket before)
+- The passphrase is no longer stored in the database
+- Plugin tables can no longer be read through the generic GLPI pages
+- The server must be a host name, and the secret link returned by the server is validated
+- Redirects from the One-Time Secret server are not followed (they could send the secret to another host)
+- Sending a secret as a requester no longer forces the ticket status to "Processing (assigned)"
+
+### Bugfixes
+- Secrets and passphrases containing HTML entities (like `&amp;`) were altered
+- The followup is written in the requester language
+- The One-Time Secret button is only shown to users who can add followups to the ticket
+- The plugin no longer creates the `notifications_push` setting in the GLPI configuration
 
 ## 3.3.1
 ### Features

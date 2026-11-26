@@ -30,13 +30,17 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+namespace GlpiPlugin\Onetimesecret;
 
-class PluginOnetimesecretProfile extends CommonGLPI
+use CommonGLPI;
+use Html;
+use Migration;
+use ProfileRight;
+use Session;
+
+class Profile extends CommonGLPI
 {
-    public static $rightname = 'profile';
+    public static string $rightname = 'profile';
 
     /** Right needed to see the One-Time Secret answer action in tickets */
     public const RIGHT_SEND = 'plugin_onetimesecret_send';
@@ -52,49 +56,45 @@ class PluginOnetimesecretProfile extends CommonGLPI
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
-        // Audit 2026-10-21 SEV-02, accepted: the tab is also shown on simplified-interface profiles. The right is not in
-        // Profile::$helpdesk_rights, so core strips it from their session: self-service users cannot send secrets.
-        if ($item instanceof Profile) {
-            return self::createTabEntry("One-Time Secret");
+        if ($item instanceof \Profile) {
+            return self::createTabEntry('One-Time Secret');
         }
         return '';
     }
 
-    public static function getIcon()
+    public static function getIcon(): string
     {
-        return "ti ti-user-check";
+        return 'ti ti-lock';
     }
 
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
-        if ($item instanceof Profile) {
+        if ($item instanceof \Profile) {
             return (new self())->displayProfileForm($item);
         }
         return false;
     }
 
-    public function displayProfileForm(Profile $profile): bool
+    public function displayProfileForm(\Profile $profile): bool
     {
         if (!Session::haveRight(self::$rightname, READ)) {
             return false;
         }
 
-        // Same right as the core profile form the rights are saved through
         $can_edit = Session::haveRight(self::$rightname, UPDATE);
 
-        echo "<div class='firstbloc'>";
+        echo "<div class='spaced'>";
         if ($can_edit) {
             echo "<form method='post' action='" . htmlescape($profile::getFormURL()) . "'>";
         }
 
         $profile->displayRightsChoiceMatrix(self::getGeneralRights(), [
-            'canedit'       => $can_edit,
-            'default_class' => 'tab_bg_2',
-            'title'         => __('General'),
+            'canedit' => $can_edit,
+            'title'   => __('General'),
         ]);
 
         if ($can_edit) {
-            echo "<div class='center'>";
+            echo "<div class='text-center'>";
             echo Html::hidden('id', ['value' => $profile->getID()]);
             echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
             echo "</div>";

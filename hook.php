@@ -30,22 +30,28 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 ----------------------------------------------------------------------
 */
 
+use GlpiPlugin\Onetimesecret\Config;
+use GlpiPlugin\Onetimesecret\Link;
+use GlpiPlugin\Onetimesecret\Profile;
+
+/**
+ * Classes with an install() / uninstall() method
+ *
+ * @return array<class-string>
+ */
+function plugin_onetimesecret_get_classes(): array
+{
+    return [Config::class, Link::class, Profile::class];
+}
+
 function plugin_onetimesecret_install(): bool
 {
     $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 
-    // Parse inc directory
-    foreach (glob(dirname(__FILE__) . '/inc/*') as $filepath) {
-        // Load *.class.php files and get the class name
-        if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
-            $classname = 'PluginOnetimesecret' . ucfirst($matches[1]);
-            include_once($filepath);
-            // If the install method exists, load it
-            if (method_exists($classname, 'install')) {
-                $classname::install($migration);
-            }
-        }
+    foreach (plugin_onetimesecret_get_classes() as $classname) {
+        $classname::install($migration);
     }
+
     $migration->executeMigration();
 
     return true;
@@ -55,17 +61,8 @@ function plugin_onetimesecret_uninstall(): bool
 {
     $migration = new Migration(PLUGIN_ONETIMESECRET_VERSION);
 
-    // Parse inc directory
-    foreach (glob(dirname(__FILE__) . '/inc/*') as $filepath) {
-        // Load *.class.php files and get the class name
-        if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
-            $classname = 'PluginOnetimesecret' . ucfirst($matches[1]);
-            include_once($filepath);
-            // If the uninstall method exists, load it
-            if (method_exists($classname, 'uninstall')) {
-                $classname::uninstall($migration);
-            }
-        }
+    foreach (plugin_onetimesecret_get_classes() as $classname) {
+        $classname::uninstall($migration);
     }
 
     $migration->executeMigration();

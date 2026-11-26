@@ -33,15 +33,16 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Onetimesecret\Config;
+use GlpiPlugin\Onetimesecret\Link;
+use GlpiPlugin\Onetimesecret\Profile;
+use GlpiPlugin\Onetimesecret\Secret;
 
-global $CFG_GLPI;
-
-$plugin = new Plugin();
-if (!$plugin->isInstalled('onetimesecret') || !$plugin->isActivated('onetimesecret')) {
-    Html::redirect($CFG_GLPI["root_doc"]);
+if (!Plugin::isPluginActive('onetimesecret')) {
+    throw new NotFoundHttpException();
 }
 
-Session::checkRight(PluginOnetimesecretProfile::RIGHT_SEND, READ);
+Session::checkRight(Profile::RIGHT_SEND, READ);
 
 if (!isset($_POST['add'], $_POST['tickets_id'])) {
     throw new BadRequestHttpException();
@@ -56,42 +57,44 @@ $followup = new ITILFollowup();
 $followup_input = ['itemtype' => Ticket::class, 'items_id' => $ticket->getID()];
 if (
     !$followup->can(-1, CREATE, $followup_input)
-    || !PluginOnetimesecretLink::canSendTo($ticket)
+    || !Link::canSendTo($ticket)
 ) {
     throw new AccessDeniedHttpException();
 }
 
-// GLPI 11 no longer encodes the input: the values are used as typed
 $secret     = (string) ($_POST['password'] ?? '');
 $passphrase = (string) ($_POST['passphrase'] ?? '');
-$lifetime   = $_POST['lifetime'] ?? PluginOnetimesecretConfig::getInstance()->fields['lifetime'];
+$lifetime   = $_POST['lifetime'] ?? Config::getInstance()->fields['lifetime'];
 
 if ($secret === '') {
     Session::addMessageAfterRedirect(htmlescape(__("Secret is missing", "onetimesecret")), false, ERROR);
-} elseif ($passphrase !== '' && mb_strlen($passphrase) < PluginOnetimesecretSecret::MIN_PASSPHRASE_LENGTH) {
+} elseif ($passphrase !== '' && mb_strlen($passphrase) < Secret::MIN_PASSPHRASE_LENGTH) {
     Session::addMessageAfterRedirect(
         htmlescape(sprintf(
             __('The passphrase must have at least %d characters', 'onetimesecret'),
-            PluginOnetimesecretSecret::MIN_PASSPHRASE_LENGTH
+            Secret::MIN_PASSPHRASE_LENGTH,
         )),
         false,
-        ERROR
+        ERROR,
     );
-} elseif (!PluginOnetimesecretConfig::isValidLifetime($lifetime)) {
+} elseif (!Config::isValidLifetime($lifetime)) {
     throw new BadRequestHttpException();
 } else {
-    $link = PluginOnetimesecretSecret::createSecret($secret, (int) $lifetime, $passphrase);
+    $link = Secret::createSecret($secret, (int) $lifetime, $passphrase);
     if ($link !== false) {
-        PluginOnetimesecretSecret::addFollowup($ticket, $link, (int) $lifetime, $passphrase);
+        Secret::addFollowup($ticket, $link, (int) $lifetime, $passphrase);
     } else {
         Session::addMessageAfterRedirect(htmlescape(__('Something wrong happened', 'onetimesecret')), false, ERROR);
-        $config = PluginOnetimesecretConfig::getInstance();
-        if ($config->fields['apiuser'] == '' || $config->fields['apikey'] == '') {
-            $href = $CFG_GLPI['root_doc'] . '/front/config.form.php?forcetab=' . urlencode(PluginOnetimesecretConfig::class . '$1');
+        $config = Config::getInstance();
+        if (empty($config->fields['apiuser']) || !Config::hasApiKey()) {
+            /** @var array $CFG_GLPI */
+            global $CFG_GLPI;
+
+            $href = $CFG_GLPI['root_doc'] . '/front/config.form.php?forcetab=' . urlencode(Config::class . '$1');
             Session::addMessageAfterRedirect(
                 '<a href="' . htmlescape($href) . '">' . htmlescape(__('Please, check the configuration', 'onetimesecret')) . '</a>',
                 false,
-                ERROR
+                ERROR,
             );
         }
     }
