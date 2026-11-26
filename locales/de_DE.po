@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-07 10:51+0200\n"
+"POT-Creation-Date: 2026-11-26 11:25+0000\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -10,27 +10,11 @@ msgstr ""
 "X-Generator: Localazy (https://localazy.com)\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
-#: front/link.form.php:70
-msgid "Secret is missing"
-msgstr "Es fehlt ein Geheimnis"
-
-#: front/link.form.php:78
-msgid "Something wrong happened"
-msgstr "Irgendetwas ist falsch gelaufen"
-
-#: front/link.form.php:86
-msgid "Please, check the configuration"
-msgstr "Bitte prüfen Sie die Konfiguration"
-
-#: src/Link.php:57
-msgid "One-Time Secret"
-msgstr "Einmaliges Geheimnis"
-
-#: src/Secret.php:182
+#: src/Secret.php:199
 msgid "Hi,"
 msgstr "Hallo"
 
-#: src/Secret.php:183
+#: src/Secret.php:200
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -38,7 +22,7 @@ msgstr ""
 "Wie in unserem vorherigen Gespräch erwähnt, soll diese Nachricht "
 "vertrauliche Informationen mit Ihnen teilen."
 
-#: src/Secret.php:184
+#: src/Secret.php:204
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -47,15 +31,15 @@ msgstr ""
 "für immer</b>. Öffnen Sie ihn nicht, wenn Sie nicht der beabsichtigte "
 "Empfänger sind."
 
-#: src/Secret.php:185
+#: src/Secret.php:206
 msgid "Here you have"
 msgstr "Hier haben Sie"
 
-#: src/Secret.php:186
+#: src/Secret.php:207
 msgid "your secret link"
 msgstr "Ihr geheimer Link"
 
-#: src/Secret.php:189
+#: src/Secret.php:210
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
@@ -63,59 +47,84 @@ msgstr ""
 "Ich werde Ihnen die erforderliche Passphrase zusenden, damit Sie sie aus "
 "Sicherheitsgründen mit einer alternativen Methode öffnen können."
 
-#: src/Secret.php:191
+#: src/Secret.php:212
 msgid "Bear in mind:"
 msgstr "Denken Sie daran:"
 
-#: src/Secret.php:191
+#: src/Secret.php:212
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "Ein geheimer Link kann nur einmal geöffnet werden und verfällt danach."
 
-#: src/Secret.php:192
+#: src/Secret.php:213
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "Dieser geheime Link läuft %1$s nach seiner Generierung ab."
 
-#: src/Secret.php:193
+#: src/Secret.php:214
 msgid "Regards,"
 msgstr "Grüße"
 
-#: src/Config.php:189
-msgid "Invalid server: use a host name like eu.onetimesecret.com"
-msgstr ""
+#: src/Link.php:56
+msgid "One-Time Secret"
+msgstr "Einmaliges Geheimnis"
 
 #: src/Profile.php:113
 msgid "Display OneTimeSecret button"
 msgstr "OneTimeSecret-Schaltfläche anzeigen"
 
-#: templates/link.html.twig:40
-msgid "Create a secret"
-msgstr "Erstelle ein Geheimniss"
+#: src/Config.php:209
+msgid "Invalid server: use a host name like eu.onetimesecret.com"
+msgstr "Invalid server: use a host name like eu.onetimesecret.com"
 
-#: templates/link.html.twig:45
-msgid "Secret"
-msgstr "Geheimniss"
-
-#: templates/link.html.twig:53 templates/config.html.twig:93
-msgid "Secret lifetime"
-msgstr "Geheimnis Lebenszeit"
-
-#: templates/link.html.twig:57
-msgid "Optional parameter"
-msgstr "Optionaler Parameter"
-
-#: templates/link.html.twig:62
-msgid "Passphrase"
-msgstr "Passphrase"
-
-#: templates/config.html.twig:64
-msgid "API username"
+#: src/Config.php:221
+msgid "The server has changed: please re-enter the API key."
 msgstr ""
 
-#: templates/config.html.twig:73
+#: front/link.form.php:70
+msgid "Secret is missing"
+msgstr "Es fehlt ein Geheimnis"
+
+#: front/link.form.php:74
+#, php-format
+msgid "The passphrase must have at least %d characters"
+msgstr ""
+
+#: front/link.form.php:87
+msgid "Something wrong happened"
+msgstr "Irgendetwas ist falsch gelaufen"
+
+#: front/link.form.php:95
+msgid "Please, check the configuration"
+msgstr "Bitte prüfen Sie die Konfiguration"
+
+#: ⁨standard input⁩:64
+msgid "API username"
+msgstr "API username"
+
+#: ⁨standard input⁩:73
 msgid "API key"
 msgstr "API-Schlüssel"
 
-#: templates/config.html.twig:85
+#: ⁨standard input⁩:85
 msgid "Lifetime"
 msgstr "Lebenszeit"
+
+#: ⁨standard input⁩:93 ⁨standard input⁩:58
+msgid "Secret lifetime"
+msgstr "Geheimnis Lebenszeit"
+
+#: ⁨standard input⁩:45
+msgid "Create a secret"
+msgstr "Erstelle ein Geheimniss"
+
+#: ⁨standard input⁩:50
+msgid "Secret"
+msgstr "Geheimniss"
+
+#: ⁨standard input⁩:62
+msgid "Optional parameter"
+msgstr "Optionaler Parameter"
+
+#: ⁨standard input⁩:67
+msgid "Passphrase"
+msgstr "Passphrase"

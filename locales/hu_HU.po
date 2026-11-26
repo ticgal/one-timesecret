@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: One-Time Secret-GLPI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-07 10:51+0200\n"
+"POT-Creation-Date: 2026-11-26 11:25+0000\n"
 "Language: hu_HU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -10,27 +10,11 @@ msgstr ""
 "X-Generator: Localazy (https://localazy.com)\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
-#: front/link.form.php:70
-msgid "Secret is missing"
-msgstr "Hiányzik a titok"
-
-#: front/link.form.php:78
-msgid "Something wrong happened"
-msgstr "Valami hiba történt"
-
-#: front/link.form.php:86
-msgid "Please, check the configuration"
-msgstr "Kérjük, ellenőrizze a konfigurációt"
-
-#: src/Link.php:57
-msgid "One-Time Secret"
-msgstr "Egyszeri titok"
-
-#: src/Secret.php:182
+#: src/Secret.php:199
 msgid "Hi,"
 msgstr "Szia,"
 
-#: src/Secret.php:183
+#: src/Secret.php:200
 msgid ""
 "As mentioned in our previous conversation, this message is meant to share "
 "sensitive information with you."
@@ -38,7 +22,7 @@ msgstr ""
 "Ahogy korábban említettük, ezen üzenet arra szolgál, hogy bizalmas "
 "információkat osszon meg Veled."
 
-#: src/Secret.php:184
+#: src/Secret.php:204
 msgid ""
 "A secret link <b>only works once</b> and <b>then disappears forever</b>. Do "
 "not open it if you are not the intended recipient."
@@ -46,73 +30,98 @@ msgstr ""
 "Ez egy titkos link<b> csak egyszer működik</b> <b> majd örökre eltűnik</b> . "
 "Ne nyisd ki, ha nem Te vagy a címzett."
 
-#: src/Secret.php:185
+#: src/Secret.php:206
 msgid "Here you have"
 msgstr "Itt van"
 
-#: src/Secret.php:186
+#: src/Secret.php:207
 msgid "your secret link"
 msgstr "a titkos linked"
 
-#: src/Secret.php:189
+#: src/Secret.php:210
 msgid ""
 "I will send you the required passphrase to open it using an alternative "
 "method for security reasons."
 msgstr "Biztonságos módszerrel küldöm a megnyitáshoz szükséges jelszót."
 
-#: src/Secret.php:191
+#: src/Secret.php:212
 msgid "Bear in mind:"
 msgstr "Ne felejtsd:"
 
-#: src/Secret.php:191
+#: src/Secret.php:212
 msgid "A secret link can only be opened once and will expire afterwards."
 msgstr "A titkos link csak egyszer nyitható meg, utána lejár."
 
-#: src/Secret.php:192
+#: src/Secret.php:213
 #, php-format
 msgid "This secret link will expire %1$s after its generation."
 msgstr "Ez a titkos link generálása %1$s után lejár."
 
-#: src/Secret.php:193
+#: src/Secret.php:214
 msgid "Regards,"
 msgstr "Üdvözlettel,"
 
-#: src/Config.php:189
-msgid "Invalid server: use a host name like eu.onetimesecret.com"
-msgstr ""
+#: src/Link.php:56
+msgid "One-Time Secret"
+msgstr "Egyszeri titok"
 
 #: src/Profile.php:113
 msgid "Display OneTimeSecret button"
 msgstr "OneTimeSecret gomb megjelenítése"
 
-#: templates/link.html.twig:40
-msgid "Create a secret"
-msgstr "Hozz létre egy titkot"
+#: src/Config.php:209
+msgid "Invalid server: use a host name like eu.onetimesecret.com"
+msgstr "Invalid server: use a host name like eu.onetimesecret.com"
 
-#: templates/link.html.twig:45
-msgid "Secret"
-msgstr "Titok"
-
-#: templates/link.html.twig:53 templates/config.html.twig:93
-msgid "Secret lifetime"
-msgstr "Titok élettartama"
-
-#: templates/link.html.twig:57
-msgid "Optional parameter"
-msgstr "Választható paraméter"
-
-#: templates/link.html.twig:62
-msgid "Passphrase"
-msgstr "Jelszó"
-
-#: templates/config.html.twig:64
-msgid "API username"
+#: src/Config.php:221
+msgid "The server has changed: please re-enter the API key."
 msgstr ""
 
-#: templates/config.html.twig:73
+#: front/link.form.php:70
+msgid "Secret is missing"
+msgstr "Hiányzik a titok"
+
+#: front/link.form.php:74
+#, php-format
+msgid "The passphrase must have at least %d characters"
+msgstr ""
+
+#: front/link.form.php:87
+msgid "Something wrong happened"
+msgstr "Valami hiba történt"
+
+#: front/link.form.php:95
+msgid "Please, check the configuration"
+msgstr "Kérjük, ellenőrizze a konfigurációt"
+
+#: ⁨standard input⁩:64
+msgid "API username"
+msgstr "API username"
+
+#: ⁨standard input⁩:73
 msgid "API key"
 msgstr "API kulcs"
 
-#: templates/config.html.twig:85
+#: ⁨standard input⁩:85
 msgid "Lifetime"
 msgstr "Élettartam"
+
+#: ⁨standard input⁩:93 ⁨standard input⁩:58
+msgid "Secret lifetime"
+msgstr "Titok élettartama"
+
+#: ⁨standard input⁩:45
+msgid "Create a secret"
+msgstr "Hozz létre egy titkot"
+
+#: ⁨standard input⁩:50
+msgid "Secret"
+msgstr "Titok"
+
+#: ⁨standard input⁩:62
+msgid "Optional parameter"
+msgstr "Választható paraméter"
+
+#: ⁨standard input⁩:67
+msgid "Passphrase"
+msgstr "Jelszó"
