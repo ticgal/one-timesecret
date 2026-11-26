@@ -39,7 +39,9 @@ Read about the project here: https://onetimesecret.com/about
     5. Add your API Key
     6. Choose a default expiration for the secret links
  - Permissions
-    1. Review your existing profiles we are adding this feature GLPI wide because passwords can be sent both ways
+    1. Review your existing profiles: the "Display OneTimeSecret button" right is meant for central (technician) profiles
+       that can add followups. Self-service (simplified interface) users cannot send secrets: GLPI removes this right
+       from their session, even if it is ticked on their profile
     2. Enable or disable profile-based as you like 
 
 ### Self-hosted One-Time Secret server in a private network
@@ -53,5 +55,9 @@ The plugin uses the GLPI proxy settings. Add `GlpiPlugin\Onetimesecret\Config` t
 
 ## How to use it
 You will have a new button on your processing view.
+
+The secret link is added to the ticket as a **public followup**: every actor of the ticket and every notification
+recipient gets it, and whoever opens it first consumes it. For sensitive secrets, set a **passphrase** and send it to
+the requester by another channel (phone, SMS...). The plugin does not store the passphrase.
 
 More info: https://tic.gal/project/onetimesecret

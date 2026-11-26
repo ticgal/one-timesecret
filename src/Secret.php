@@ -50,6 +50,9 @@ class Secret
     /** Hard limit on the size of the server's response body, to bound memory use */
     private const MAX_RESPONSE_SIZE = 65536;
 
+    /** Default minimum of a One-Time Secret server (a self-hosted one can raise it) */
+    public const MIN_PASSPHRASE_LENGTH = 4;
+
     /**
      * Create the secret on the One-Time Secret server
      *
