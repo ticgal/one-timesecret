@@ -1,6 +1,10 @@
 # One-Time Secret GLPI Plugin CHANGELOG
 <!-- changelog-format: 1 -->
 
+## 3.3.2
+### Bugs
+- Fixed a stray "1" shown below the Send button in the "Send secret" form of the ticket answer area
+
 ## 3.3.1
 ### Features
 - A server saved with `https://` or a trailing slash is corrected automatically when upgrading.
