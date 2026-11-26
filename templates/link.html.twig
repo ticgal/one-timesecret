@@ -32,6 +32,11 @@ http://www.gnu.org/licenses/agpl-3.0-standalone.html
 {% set field_options = {
 'field_class': 'col-12'
 } %}
+{# Included by the core timeline with `item` (the ticket) and `subitem` (the Link object) #}
+{% set rand = random() %}
+{% set action = subitem.getFormURL() %}
+{% set possible_values = subitem.getLifetimeChoices() %}
+{% set lifetime = subitem.getDefaultLifetime() %}
 
 <form name="onetimesecret_form{{ rand }}" id="onetimesecret_form{{ rand }}" method="post" action="{{ action }}" class="d-flex flex-column" data-submit-once>
     <input type="hidden" name="tickets_id" value="{{ item.getID() }}" />
