@@ -34,8 +34,6 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-use Glpi\Application\View\TemplateRenderer;
-
 /**
  * Secret links sent to tickets.
  *
@@ -118,6 +116,7 @@ class PluginOnetimesecretLink extends CommonDBTM
                 'class'         => self::class,
                 'item'          => new self(),
                 'itiltype'      => self::class,
+                'template'      => '@onetimesecret/link.html.twig',
                 'icon'          => "fa-solid fa-s px-1",
                 'label'         => self::getTypeName(),
                 'short_label'   => self::getTypeName(),
@@ -125,22 +124,17 @@ class PluginOnetimesecretLink extends CommonDBTM
         ];
     }
 
-    public function showForm($ID, array $params = []): bool
+    /**
+     * @return array<int, string>
+     */
+    public function getLifetimeChoices(): array
     {
-        $item = $params['parent'] ?? null;
-        if (!$item instanceof Ticket) {
-            return false;
-        }
+        return PluginOnetimesecretConfig::getLifetimes();
+    }
 
-        TemplateRenderer::getInstance()->display('@onetimesecret/link.html.twig', [
-            'item'            => $item,
-            'action'          => Toolbox::getItemTypeFormURL(self::getType()),
-            'rand'            => mt_rand(),
-            'possible_values' => PluginOnetimesecretConfig::getLifetimes(),
-            'lifetime'        => PluginOnetimesecretConfig::getInstance()->fields["lifetime"],
-        ]);
-
-        return true;
+    public function getDefaultLifetime(): mixed
+    {
+        return PluginOnetimesecretConfig::getInstance()->fields['lifetime'];
     }
 
     public function getEmpty(): bool
